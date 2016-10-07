@@ -15,6 +15,7 @@ import mongoose = require("mongoose");
 
 //routes
 import routeIndex = require("./routes/index");
+import routeApi = require("./routes/api");
 
 //config
 import cfg = require("./config");
@@ -65,6 +66,7 @@ export class AxApi {
 
   private configRoutes(app: express.Express) {
     app.use("/", routeIndex);
+    app.use("/api", routeApi);
   }
 
   public run() {

@@ -2,13 +2,11 @@
 "use strict";
 
 import express = require("express");
-//import mongoose = require("mongoose");
-let index = express.Router();
-//import cell = require ("../models/cell");
 
-index.get("/", (req, res) => {
-	//cell.find(function (err, todos))
+let router = express.Router();
+
+router.get("/", (req, res) => {
 	res.render("home");
 });
 
-export = index;
+export = router;
