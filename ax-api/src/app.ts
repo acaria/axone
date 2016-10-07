@@ -1,43 +1,66 @@
 /// <reference path="_all.d.ts" />
 "use strict";
 
+//express
+var debug = require("debug")("ax-api:express");
+import logger = require("morgan");
 import express = require("express");
 import bodyParser = require("body-parser");
+import cookieParser = require("cookie-parser");
+import methodOverride = require("method-override");
 import path = require("path");
+
+//data
+import mongoose = require("mongoose");
+
+//routes
 import routeIndex = require("./routes/index");
 
+//config
+import cfg = require("./config");
+//------------------------------------------------------------
 export class AxApi {
 
   constructor(private app: express.Express, private port: Number) {
+    //init database
+    mongoose.Promise = global.Promise;
+    mongoose.connect(cfg.DB_CNX)
+      .then(() => debug("cnx to " + cfg.DB_CNX))
+      .catch((err) => debug(err.message));
+
     //configure application
     this.configSetup(app);
     this.configMiddle(app);
     this.configRoutes(app);
   }
 
+  private logErrors(err: any, req: express.Request, res: express.Response, next: express.NextFunction) {
+    debug(err.stack);
+    var error = new Error("Not Found");
+    err.status = 404;
+    next(err);
+  }
+
   private configSetup(app: express.Express) {
     app.set("views", path.join(__dirname, "../views"));
     app.set("view engine", "ejs");
 
-    //mount json form parser
     app.use(bodyParser.json());
-
-    //mount query string parser
     app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(cookieParser());
+
+    app.use(methodOverride("X-HTTP-Method"));
+    app.use(methodOverride("X-HTTP-Method-Override"));
+    app.use(methodOverride("X-Method-Override"));
+    app.use(methodOverride("_method"));
 
     //add static paths
     app.use(express.static(path.join(__dirname, "public")));
-
-    // catch 404 and forward to error handler
-    app.use(function(err: any, req: express.Request, res: express.Response, next: express.NextFunction) {
-      var error = new Error("Not Found");
-      err.status = 404;
-      next(err);
-    });
   }
 
   private configMiddle(app: express.Express) {
-    //todo logger?
+    app.use(this.logErrors);
+    app.use(logger("dev"));
   }
 
   private configRoutes(app: express.Express) {
@@ -45,6 +68,8 @@ export class AxApi {
   }
 
   public run() {
-    this.app.listen(this.port);
+    this.app.listen(this.port, () => {
+      debug("App is running at localhost:" + this.port);
+    });
   }
 }

@@ -3,7 +3,7 @@
 module.exports = grunt => {
 
   require('load-grunt-tasks')(grunt);
-  require('time-grunt')(grunt);
+  //require('time-grunt')(grunt);
 
   grunt.initConfig({
 
@@ -70,9 +70,24 @@ module.exports = grunt => {
 
     clean: {
       dev : ['build/**']
-    }
+    },
+
+    shell: {
+      mongodb: {
+        command: 'mongod --dbpath ./data/db',
+        options: {
+          async: true,
+          stdout: false,
+          stderr: true,
+          failOnError: true,
+          execOptions: {
+            cwd: '.'
+          }
+        }
+      }
+    },
 
   });
 
-  grunt.registerTask("default", [ "ts", "tslint", "concurrent"]);
+  grunt.registerTask("default", ["shell:mongodb", "ts", "tslint", "concurrent"]);
 };
