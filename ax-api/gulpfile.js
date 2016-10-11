@@ -12,7 +12,7 @@ var gulp = require('gulp'),
     nodemon = require('gulp-nodemon'),
     gulpif = require('gulp-if'),
     open = require('gulp-open'),
-    livereload = require('gulp-livereload'),
+    browserSync = require('browser-sync'),
     del = require('del'),
     exec = require('child_process').exec,
     mkdirs = require('mkdirs');
@@ -26,20 +26,27 @@ if (argv.port && parseInt(argv.port)) {
     process.env.PORT = parseInt(argv.port);
 }
 
-var paths = {
-    jsFiles: ['src/**/*.js'],
-    tsFiles: ['src/**/*.ts'],
-    dbDir: './data/',
-};
-
 var cfg = {
+    path: {
+        files: {
+            js: ['./src/**/*.js'],
+            ts: ['./src/**/*.ts'],
+            ejs: ['./view/**/*.ejs']
+        },
+        dir: {
+            db: './data',
+            src: './src',
+            dest: './build',
+            view: './view'
+        }
+    },
     env: process.env.NODE_ENV || 'development',
     port: parseInt(process.env.PORT) || 8080
-}
+};
 
 function runCommand(command) {    
     exec(command, function(err, stdout, stderr) {
-        console.log(stdout);
+        //console.log(stdout);
         console.log(stderr);
         if (err !== null) {
             console.log('exec error: ' + err);
@@ -48,11 +55,23 @@ function runCommand(command) {
 }
 
 gulp.task('clean', function clean(done) {
-    return del(['build'], done);
+    return del([cfg.path.dir.dest], done);
+});
+
+gulp.task('browser-sync', function() {
+    browserSync.init({
+        browser: 'chrome',
+        notify: false,
+        files: [
+            cfg.path.files.js,
+            cfg.path.files.ejs
+        ],
+        proxy: 'localhost:8080'
+    });
 });
 
 gulp.task('build-ts', function() {
-    return gulp.src(paths.tsFiles, { since: gulp.lastRun('build-ts')})
+    return gulp.src(cfg.path.files.ts, { since: gulp.lastRun('build-ts')})
         .pipe(tslint({
             configuration: "tslint.json",
             formatter: "verbose"
@@ -67,27 +86,24 @@ gulp.task('build-ts', function() {
             declaration: false,
             removeComments: true
         }))
-        .pipe(gulp.dest('build'))
-        .pipe(livereload());
+        .pipe(gulp.dest('build'));
 });
 
 gulp.task('build-js', function() {
-    return gulp.src(paths.jsFiles, { since: gulp.lastRun('build-js')})
+    return gulp.src(cfg.path.files.js, { since: gulp.lastRun('build-js')})
         .pipe(jshint('jshint.json'))
         .pipe(jshint.reporter('default'))
-        .pipe(gulp.dest('build'))
-        .pipe(livereload());
+        .pipe(gulp.dest('build'));
 });
 
 gulp.task('watch', function() {
-    livereload.listen();
-    gulp.watch(paths.tsFiles, gulp.series('build-ts'));
-    gulp.watch(paths.jsFiles, gulp.series('build-js'));
+    gulp.watch(cfg.path.files.ts, gulp.series('build-ts'));
+    gulp.watch(cfg.path.files.js, gulp.series('build-js'));
 });
 
 gulp.task('mongo-start', function(done) {
-    mkdirs('./data');
-    runCommand('mongod --dbpath "' + paths.dbDir + '"');
+    mkdirs(cfg.path.dir.db);
+    runCommand('mongod --dbpath "' + cfg.path.dir.db + '"');
     done();
 });
 
@@ -101,8 +117,9 @@ gulp.task('nodemon', function() {
         script: './build/index.js',
         ext: 'html js',
         ignore: ['node_modules/**', 'public/**'],
+        watch: cfg.path.dir.dest,
         env: { 
-            PORT: cfg.port 
+            PORT: cfg.port
         },
         tasks: function(changedFiles) {
             var tasks = [];
@@ -112,7 +129,7 @@ gulp.task('nodemon', function() {
 
     stream
         .on('restart', function() {
-            console.log('restarted!');
+            browserSync.reload();
         })
         .on('crash', function() {
             console.error('Application has crashed!\n')
@@ -129,10 +146,9 @@ gulp.task('open-dev', function(){
 
 gulp.task(
     'build', 
-        gulp.series(
-            'clean', 
-            gulp.parallel('build-ts', 'build-js'
-        )
+    gulp.series(
+        'clean',
+        gulp.parallel('build-ts', 'build-js')
     )
 );
 
@@ -140,7 +156,7 @@ gulp.task(
     'run',
     gulp.series(
         gulp.parallel('mongo-start', 'build'),
-        gulp.parallel('nodemon', 'watch', 'open-dev')
+        gulp.parallel('nodemon', 'watch', 'browser-sync')
     )
 );
 
