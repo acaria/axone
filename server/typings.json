@@ -1,0 +1,16 @@
+{
+  "globalDependencies": {
+    "body-parser": "registry:dt/body-parser#0.0.0+20160619023215",
+    "cookie-parser": "registry:dt/cookie-parser#1.3.4+20160316155526",
+    "debug": "registry:dt/debug#0.0.0+20160317120654",
+    "express": "registry:dt/express#4.0.0+20160708185218",
+    "express-serve-static-core": "registry:dt/express-serve-static-core#4.0.0+20161008174359",
+    "method-override": "registry:dt/method-override#0.0.0+20160925094606",
+    "mime": "registry:dt/mime#0.0.0+20160316155526",
+    "mongodb": "registry:dt/mongodb#2.1.0+20160602142941",
+    "mongoose": "registry:dt/mongoose#4.5.9+20161001164137",
+    "morgan": "registry:dt/morgan#1.7.0+20160524142355",
+    "node": "registry:dt/node#6.0.0+20161008175459",
+    "serve-static": "registry:dt/serve-static#0.0.0+20160606155157"
+  }
+}
