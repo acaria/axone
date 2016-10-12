@@ -2,8 +2,7 @@
 "use strict";
 
 var debug = require("debug")("ax-api:api");
-import express = require("express");
-let router = express.Router();
+let router = require("express").Router();
 
 import { CellModel, CellRepository} from "./../models/cell";
 
@@ -42,7 +41,7 @@ router.post("/", (req, res) => {
 
 router.get("/:id", (req, res) => {
 	try {
-		repo.findById(req.params._id, (error, result) => {
+		repo.findById(req.params.id, (error, result) => {
 			if (error) {
 				res.send({"error": "internal error"});
 			} else {
@@ -57,7 +56,7 @@ router.get("/:id", (req, res) => {
 
 router.put("/:id", (req, res) => {
 	try {
-		repo.update(req.params._id, req.body, (error, result) => {
+		repo.update(req.params.id, req.body, (error, result) => {
 			if (error) {
 				res.send({"error": "internal error"});
 			} else {
@@ -72,7 +71,7 @@ router.put("/:id", (req, res) => {
 
 router.delete("/:id", (req, res) => {
 	try {
-		repo.delete(req.params._id, (error, result) => {
+		repo.delete(req.params.id, (error, result) => {
 			if (error) {
 				res.send({"error": "internal error"});
 			} else {

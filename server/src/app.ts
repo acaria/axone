@@ -3,12 +3,15 @@
 
 //express
 var debug = require("debug")("ax-api:express");
+var favicon = require("serve-favicon");
+
 import logger = require("morgan");
 import express = require("express");
 import bodyParser = require("body-parser");
 import cookieParser = require("cookie-parser");
 import methodOverride = require("method-override");
 import path = require("path");
+
 
 //data
 import mongoose = require("mongoose");
@@ -44,7 +47,7 @@ export class AxApi {
 
   private configSetup(app: express.Express) {
     app.set("views", path.join(__dirname, "../views"));
-    app.set("view engine", "ejs");
+    app.set("view engine", "pug");
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
@@ -56,10 +59,11 @@ export class AxApi {
     app.use(methodOverride("_method"));
 
     //add static paths
-    app.use(express.static(path.join(__dirname, "public")));
+    app.use(express.static(path.join(__dirname, "../public")));
   }
 
   private configMiddle(app: express.Express) {
+    app.use(favicon(path.join(__dirname, "../public/favicon.ico")));
     app.use(this.logErrors);
     app.use(logger("dev"));
   }

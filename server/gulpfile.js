@@ -129,7 +129,10 @@ gulp.task('nodemon', function() {
 
     stream
         .on('restart', function() {
-            browserSync.reload();
+            setTimeout(function() {
+                browserSync.reload();
+            }, 1000);
+            
         })
         .on('crash', function() {
             console.error('Application has crashed!\n')

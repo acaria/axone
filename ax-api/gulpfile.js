@@ -64,7 +64,7 @@ gulp.task('browser-sync', function() {
         notify: false,
         files: [
             cfg.path.files.js,
-            cfg.path.files.ejs
+            cfg.path.files.pug
         ],
         proxy: 'localhost:8080'
     });
