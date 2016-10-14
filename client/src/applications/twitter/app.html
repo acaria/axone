@@ -1,0 +1,14 @@
+<template>
+  <require from="./assets/styles/styles.css"></require>
+  <require from="./resources/elements/tweet"></require>
+  <h1>Tweeter</h1>
+  <div class="container">
+    <div class="compose-container">
+      <textarea placeholder="Say something" value.bind="composedTweet" keypress.delegate="handleKeyPress($event)"></textarea>
+      <button type="button" disabled.bind="!composedTweet" click.delegate="createTweet()">Say it!</button>
+    </div>
+    <tweet-feed>
+      <tweet repeat.for="tweet of tweets" tweet.bind="tweet"></tweet>
+    </tweet-feed>
+  </div>
+</template>

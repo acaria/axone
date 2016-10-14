@@ -40,11 +40,11 @@
   },
   "paths": {
     "root": "src",
-    "resources": "src\\resources",
-    "elements": "src\\resources\\elements",
-    "attributes": "src\\resources\\attributes",
-    "valueConverters": "src\\resources\\value-converters",
-    "bindingBehaviors": "src\\resources\\binding-behaviors"
+    "resources": "src\\common\\resources",
+    "elements": "src\\common\\resources\\elements",
+    "attributes": "src\\common\\resources\\attributes",
+    "valueConverters": "src\\common\\resources\\value-converters",
+    "bindingBehaviors": "src\\common\\resources\\binding-behaviors"
   },
   "testFramework": {
     "id": "jasmine",
@@ -90,7 +90,7 @@
         "name": "vendor-bundle.js",
         "prepend": [
           "node_modules/bluebird/js/browser/bluebird.core.js",
-          "scripts/require.js"
+          "src/common/scripts/require.js"
         ],
         "dependencies": [
           "aurelia-binding",
@@ -116,7 +116,7 @@
           "aurelia-templating-binding",
           {
             "name": "text",
-            "path": "../scripts/text"
+            "path": "common/scripts/text"
           },
           {
             "name": "aurelia-templating-resources",
@@ -133,6 +133,17 @@
             "path": "../node_modules/aurelia-testing/dist/amd",
             "main": "aurelia-testing",
             "env": "dev"
+          },
+          "jquery",
+          {
+            "name": "bootstrap",
+            "path": "../node_modules/bootstrap/dist",
+            "main": "js/bootstrap.min",
+            "deps": ["jquery"],
+            "exports": "$",
+            "resources": [
+              "css/bootstrap.css"
+            ]
           }
         ]
       }
