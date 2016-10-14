@@ -11,7 +11,7 @@ router.get("/", (req, res) => {
 	try {
 		repo.find().exec((err, cells) => {
 			res.render(
-				"index",
+				"home",
 				{ cells: cells });
 		});
 	} catch (e) {

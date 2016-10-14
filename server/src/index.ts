@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-import cfg = require("./config");
+import cfg from "./config";
 
 //module dependencies.
 var express = require("express");
