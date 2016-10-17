@@ -12,7 +12,7 @@ import environment from './environment';
 export function configure(aurelia: Aurelia) {
   aurelia.use
     .standardConfiguration()
-    .feature('common/resources');
+    .feature('resources');
 
   if (environment.debug) {
     aurelia.use.developmentLogging();
@@ -22,5 +22,5 @@ export function configure(aurelia: Aurelia) {
     aurelia.use.plugin('aurelia-testing');
   }
 
-  aurelia.start().then(() => aurelia.setRoot('applications/axview/app'));
+  aurelia.start().then(() => aurelia.setRoot(''));
 }

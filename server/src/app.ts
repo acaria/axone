@@ -53,8 +53,10 @@ export default class {
     	app.use(methodOverride("X-Method-Override"));
     	app.use(methodOverride("_method"));
 
-    	//add static paths
-    	app.use(express.static(path.join(__dirname, "../public")));
+    	//add static path
+    	//app.use(express.static(path.join(__dirname, "../public")));
+    	//add client path
+    	app.use(express.static(path.join(__dirname, "../../client/dist")));
     }
 
     private configMiddle(app: express.Express) {
@@ -65,7 +67,7 @@ export default class {
     private configRoutes(app: express.Express) {
     	app.use("/", routeIndex);
     	app.use("/api", routeApi);
-    	app.use("/app", express.static(path.join(__dirname, "../../client")));
+    	//app.use("/app", express.static(path.join(__dirname, "../../client")));
     }
 
     private errorHandling(app: express.Express) {

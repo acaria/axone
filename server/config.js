@@ -9,7 +9,7 @@ module.exports = {
 			db: './data',
 			src: './src',
 			dest: './build',
-			client: '../client/scripts',
+			client: '../client/dist',
 			view: './view'
 		}
 	},
