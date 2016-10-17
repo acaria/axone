@@ -100,6 +100,10 @@ gulp.task('mongo-stop', function(done) {
 
 gulp.task('build-client', shell.task('au build', {cwd: '../client'}));
 
+gulp.task('run-client', shell.task('au run --watch', {cwd: '../client'}));
+
+gulp.task('look-client', shell.task('au look', {cwd: '../client'}));
+
 gulp.task('nodemon', function() {
 	var stream = nodemon({
 		script: './build/index.js',
@@ -150,7 +154,7 @@ gulp.task('build',
 gulp.task('run',
 	gulp.series(
 		gulp.parallel('mongo-start', 'build'),
-		gulp.parallel('nodemon', 'watch', 'browser-sync')
+		gulp.parallel('look-client', 'nodemon', 'watch', 'browser-sync')
 		)
 	);
 
