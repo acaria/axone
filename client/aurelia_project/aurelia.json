@@ -93,6 +93,8 @@
           "src/common/scripts/require.js"
         ],
         "dependencies": [
+          "extend",
+          "aurelia-fetch-client",
           "aurelia-binding",
           "aurelia-bootstrapper",
           "aurelia-dependency-injection",
@@ -134,7 +136,12 @@
             "main": "aurelia-testing",
             "env": "dev"
           },
-          "jquery",
+          {
+            "name":"jquery",
+            "path":"../node_modules/jquery/dist",
+            "main":"jquery.min",
+            "export": "$"
+          },
           {
             "name": "bootstrap",
             "path": "../node_modules/bootstrap/dist",
