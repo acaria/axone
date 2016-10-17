@@ -1,6 +1,6 @@
 {
-  "name": "client",
-  "description": "An Aurelia client application.",
+  "name": "ax-client",
+  "description": "Axone viewer",
   "version": "0.1.0",
   "repository": {
     "type": "???",

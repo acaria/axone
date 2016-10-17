@@ -19,31 +19,15 @@ mkdirs = require('mkdirs');
 argv = require('yargs').argv;
 shell = require('gulp-shell');
 
-if (argv.production) {
-	process.env.NODE_ENV = 'production';
-}
+var cfg = require('./config.js');
 
-if (argv.port && parseInt(argv.port)) {
-	process.env.PORT = parseInt(argv.port);
-}
+// if (argv.production) {
+// 	process.env.NODE_ENV = 'production';
+// }
 
-var cfg = {
-	path: {
-		files: {
-			js: ['./src/**/*.js'],
-			ts: ['./src/**/*.ts'],
-			ejs: ['./view/**/*.ejs']
-		},
-		dir: {
-			db: './data',
-			src: './src',
-			dest: './build',
-			view: './view'
-		}
-	},
-	env: process.env.NODE_ENV || 'development',
-	port: parseInt(process.env.PORT) || 8080
-};
+// if (argv.port && parseInt(argv.port)) {
+// 	process.env.PORT = parseInt(argv.port);
+// }
 
 function runCommand(command) {    
 	exec(command, function(err, stdout, stderr) {
@@ -62,12 +46,13 @@ gulp.task('clean', function clean(done) {
 gulp.task('browser-sync', function() {
 	browserSync.init({
 		browser: 'chrome',
+		port: cfg.port.bs,
+		ui: {
+			port: cfg.port.bsUi
+		},
 		notify: false,
-		files: [
-		cfg.path.files.js,
-		cfg.path.files.ejs
-		],
-		proxy: 'localhost:8080'
+		files: [ cfg.path.files.js, cfg.path.files.ejs ],
+		proxy: cfg.uri + ':' + cfg.port.node
 	});
 });
 
@@ -104,7 +89,7 @@ gulp.task('watch', function() {
 
 gulp.task('mongo-start', function(done) {
 	mkdirs(cfg.path.dir.db);
-	runCommand('mongod --dbpath "' + cfg.path.dir.db + '"');
+	runCommand('mongod --dbpath "' + cfg.path.dir.db + '" --port ' + cfg.port.mongo);
 	done();
 });
 
@@ -122,7 +107,7 @@ gulp.task('nodemon', function() {
 		ignore: ['node_modules/**', 'public/**'],
 		watch: cfg.path.dir.dest,
 		env: { 
-			PORT: cfg.port
+			PORT: cfg.port.node
 		},
 		tasks: function(changedFiles) {
 			var tasks = [];
@@ -143,10 +128,15 @@ gulp.task('nodemon', function() {
 	})
 });
 
+gulp.task('config', function(done) {
+	console.log(JSON.stringify(cfg, null, 2));
+	done();
+})
+
 gulp.task('open-dev', function(){
 	setTimeout(function() {
 		gulp.src(__filename)
-		.pipe(open({uri: 'http://localhost:8080/'}));
+		.pipe(open({uri: cfg.uri + ':' + cfg.port.node + '/'}));
 	}, 1500);
 });
 

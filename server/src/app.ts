@@ -2,7 +2,7 @@
 "use strict";
 
 //express
-var debug = require("debug")("ax-api:express");
+var debug = require("debug")("ax-server:express");
 var favicon = require("serve-favicon");
 
 import logger = require("morgan");
@@ -20,16 +20,16 @@ import routeIndex = require("./routes/index");
 import routeApi = require("./routes/api");
 
 //config
-import cfg from "./config";
+var cfg = require("../config.js");
 //------------------------------------------------------------
-export class AxApi {
+export default class {
 
 	constructor(private app: express.Express, private port: Number) {
-    	//init database
-    	mongoose.Promise = global.Promise;
-    	mongoose.connect(cfg.DB_CNX)
-    	.then(() => debug("cnx to " + cfg.DB_CNX))
-    	.catch((err) => debug(err.message));
+        let cnx = `${cfg.mongo.uri}:${cfg.port.mongo}/${cfg.mongo.db}`;
+        mongoose.Promise = global.Promise;
+        mongoose.connect(cnx)
+        .then(() => debug(`cnx to ${cnx}`))
+        .catch((err) => debug(err.message));
 
     	//configure application
     	this.configSetup(app);
@@ -95,7 +95,7 @@ export class AxApi {
 
     public run() {
     	this.app.listen(this.port, () => {
-    		debug("App is running at localhost:" + this.port);
+    		debug(`App is running at localhost:${this.port}`);
     	});
     }
-  }
+}

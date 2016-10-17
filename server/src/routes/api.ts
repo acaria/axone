@@ -1,13 +1,20 @@
 /// <reference path="../_all.d.ts" />
 "use strict";
 
-var debug = require("debug")("ax-api:api");
+import {Request, Response, NextFunction} from "express";
+var debug = require("debug")("ax-server:routes");
 let router = require("express").Router();
 
 import { CellModel, CellRepository} from "./../models/cell";
 
 
 let repo = new CellRepository();
+
+router.use(function(req: Request, res: Response, next: NextFunction) {
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	next();
+});
 
 router.get("/", (req, res) => {
 	try {

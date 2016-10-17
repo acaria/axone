@@ -1,54 +1,11 @@
-define('app',["require", "exports"], function (require, exports) {
+define('config',["require", "exports"], function (require, exports) {
     "use strict";
-    var AVATAR = 'https://s3.amazonaws.com/uifaces/faces/twitter/sachagreif/128.jpg';
-    var NAME = 'John Citizen';
-    var HANDLE = '@johncitizen';
-    var App = (function () {
-        function App() {
-            this.composedTweet = null;
-            this.tweets = [];
-            this.tweets = [
-                {
-                    avatar: 'https://pbs.twimg.com/profile_images/615392662233808896/EtxjSSKk_bigger.jpg',
-                    name: 'TechCrunch',
-                    handle: '@TechCrunch',
-                    text: 'Naval Ravikant on China money into Silicon Valley: This trickle could become a tsunami'
-                },
-                {
-                    avatar: 'https://pbs.twimg.com/profile_images/1332650890/strayfromthepath_flagtee_artworkslide_bigger.jpg',
-                    name: 'Stray From The Path',
-                    handle: '@strayfromdapath',
-                    text: 'This week has been such shit. The only thing that\'s made me happy is the impending STYG/Expire/KL tour and Shinsuke Nakamura entrance at NXT'
-                },
-                {
-                    avatar: 'https://pbs.twimg.com/profile_images/668902554957316096/IpjBGyjC_bigger.jpg',
-                    name: 'Chris Sacca',
-                    handle: '@sacca',
-                    text: 'I want a sports channel that is only highlights. 100% plays of the day/week/month. No shows. No narrative. Who\'s with me?'
-                }
-            ];
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = {
+        server: {
+            api: 'http://localhost:8080/api/'
         }
-        App.prototype.createTweet = function () {
-            this.tweets.unshift({
-                avatar: AVATAR,
-                name: NAME,
-                handle: HANDLE,
-                text: this.composedTweet
-            });
-            this.composedTweet = null;
-        };
-        App.prototype.handleKeyPress = function (evt) {
-            if (evt.keyCode === 13 && this.composedTweet) {
-                this.createTweet();
-                evt.preventDefault();
-            }
-            else {
-                return true;
-            }
-        };
-        return App;
-    }());
-    exports.App = App;
+    };
 });
 
 define('environment',["require", "exports"], function (require, exports) {
@@ -80,25 +37,6 @@ define('main',["require", "exports", './environment'], function (require, export
         aurelia.start().then(function () { return aurelia.setRoot('applications/axview/app'); });
     }
     exports.configure = configure;
-});
-
-define('applications/axview/app',["require", "exports"], function (require, exports) {
-    "use strict";
-    var App = (function () {
-        function App() {
-        }
-        App.prototype.configureRouter = function (config, router) {
-            config.title = 'Axone';
-            config.map([
-                { route: ['', 'home'], name: 'home', moduleId: './routes/home', nav: true, title: 'Home' },
-                { route: ['cells'], name: 'cells', moduleId: './routes/cells', nav: true, title: 'Cells' },
-                { route: ['about'], name: 'about', moduleId: './routes/about', nav: true, title: 'About' }
-            ]);
-            this.router = router;
-        };
-        return App;
-    }());
-    exports.App = App;
 });
 
 define('applications/contactlist/app',["require", "exports"], function (require, exports) {
@@ -369,6 +307,25 @@ define('applications/contactlist/no-selection',["require", "exports"], function 
     exports.NoSelection = NoSelection;
 });
 
+define('applications/axview/app',["require", "exports"], function (require, exports) {
+    "use strict";
+    var App = (function () {
+        function App() {
+        }
+        App.prototype.configureRouter = function (config, router) {
+            config.title = 'Axone';
+            config.map([
+                { route: ['', 'home'], name: 'home', moduleId: './routes/home', nav: true, title: 'Home' },
+                { route: ['cells'], name: 'cells', moduleId: './routes/cells', nav: true, title: 'Cells' },
+                { route: ['about'], name: 'about', moduleId: './routes/about', nav: true, title: 'About' }
+            ]);
+            this.router = router;
+        };
+        return App;
+    }());
+    exports.App = App;
+});
+
 define('applications/twitter/app',["require", "exports"], function (require, exports) {
     "use strict";
     var AVATAR = 'https://s3.amazonaws.com/uifaces/faces/twitter/sachagreif/128.jpg';
@@ -435,7 +392,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define('common/services/ax-api-client',["require", "exports", 'aurelia-fetch-client'], function (require, exports, aurelia_fetch_client_1) {
+define('common/services/ax-api-client',["require", "exports", 'aurelia-fetch-client', './../../config'], function (require, exports, aurelia_fetch_client_1, config_1) {
     "use strict";
     var default_1 = (function (_super) {
         __extends(default_1, _super);
@@ -443,7 +400,7 @@ define('common/services/ax-api-client',["require", "exports", 'aurelia-fetch-cli
             _super.call(this);
             this.configure(function (config) {
                 config
-                    .withBaseUrl('http://localhost:3000/api/')
+                    .withBaseUrl(config_1.default.server.api)
                     .withDefaults({
                     credentials: 'same-origin',
                     headers: {
@@ -628,9 +585,9 @@ define('text!applications/twitter/assets/styles/styles.css', ['module'], functio
 define('text!applications/contactlist/no-selection.html', ['module'], function(module) { module.exports = "<template>\r\n  <div class=\"no-selection text-center\">\r\n    <h2>${message}</h2>\r\n  </div>\r\n</template>"; });
 define('text!applications/twitter/app.html', ['module'], function(module) { module.exports = "<template>\n  <require from=\"./assets/styles/styles.css\"></require>\n  <require from=\"./resources/elements/tweet\"></require>\n  <h1>Tweeter</h1>\n  <div class=\"container\">\n    <div class=\"compose-container\">\n      <textarea placeholder=\"Say something\" value.bind=\"composedTweet\" keypress.delegate=\"handleKeyPress($event)\"></textarea>\n      <button type=\"button\" disabled.bind=\"!composedTweet\" click.delegate=\"createTweet()\">Say it!</button>\n    </div>\n    <tweet-feed>\n      <tweet repeat.for=\"tweet of tweets\" tweet.bind=\"tweet\"></tweet>\n    </tweet-feed>\n  </div>\n</template>"; });
 define('text!applications/axview/routes/about.html', ['module'], function(module) { module.exports = "<template>\r\n\t<section class=\"au-animate\">\r\n\t\t<div class=\"well\">\r\n\t\t\t<h2>${title}</h2>\r\n\t\t\t<h4>${info}</h4>\r\n\t\t</div>\r\n\t</section>\r\n</template>"; });
-define('text!applications/axview/routes/cells.html', ['module'], function(module) { module.exports = "<template>\r\n\t<require from=\"../resources/elements/cells-view\"></require>\r\n\t<section class=\"au-animate\">\r\n\t\t<div class=\"well\">\r\n\t\t\t<button  if.bind=\"isLoading\" class=\"btn btn-default btn-lg\">\r\n\t\t\t\t<i class=\"fa fa-circle-o-notch fa-spin\"></i> Loading\r\n\t\t\t</button>\r\n\t\t\t<cells-view class=\"col-md-4\" cells.bind=\"cells\"></cells-view>\r\n\t\t</div>\r\n\t</section>\r\n</template>"; });
+define('text!applications/axview/routes/cells.html', ['module'], function(module) { module.exports = "<template>\r\n\t<require from=\"../resources/elements/cells-view\"></require>\r\n\t<section class=\"au-animate\">\r\n\t\t<div class=\"well\">\r\n\t\t\t<button show.bind=\"isLoading\" class=\"btn btn-default btn-lg\">\r\n\t\t\t\t<i class=\"fa fa-circle-o-notch fa-spin\"></i> Loading\r\n\t\t\t</button>\r\n\t\t\t<cells-view class=\"col-md-4\" cells.bind=\"cells\"></cells-view>\r\n\t\t</div>\r\n\t</section>\r\n</template>"; });
 define('text!applications/axview/routes/home.html', ['module'], function(module) { module.exports = "<template>\r\n\t<section class=\"au-animate\">\r\n\t\t<div class=\"well\">\r\n\t\t\t<h2>${title}</h2>\r\n\t\t\t<h4>${info}</h4>\r\n\t\t</div>\r\n\r\n\t</section>\r\n</template>"; });
 define('text!common/resources/elements/nav-bar.html', ['module'], function(module) { module.exports = "<template>\n\t<nav class=\"navbar navbar-default navbar-fixed-top\" role=\"navigation\">\n\t\t<div class=\"navbar-header\">\n\t\t\t<button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\"#bs-example-navbar-collapse-1\">\n\t\t\t\t<span class=\"sr-only\">Toggle Navigation</span>\n\t\t\t\t<span class=\"icon-bar\"></span>\n\t\t\t\t<span class=\"icon-bar\"></span>\n\t\t\t\t<span class=\"icon-bar\"></span>\n\t\t\t</button>\n\t\t\t<a class=\"navbar-brand\" href=\"#\">\n\t\t\t\t<i class=\"fa fa-home\"></i>\n\t\t\t\t<span>${router.title}</span>\n\t\t\t</a>\n\t\t</div>\n\n\t\t<div class=\"collapse navbar-collapse\" id=\"bs-example-navbar-collapse-1\">\n\t\t\t<ul class=\"nav navbar-nav\">\n\t\t\t\t<li repeat.for=\"row of router.navigation\" class=\"${row.isActive ? 'active' : ''}\">\n\t\t\t\t\t<a data-toggle=\"collapse\" data-target=\"#bs-example-navbar-collapse-1.in\" href.bind=\"row.href\">${row.title}</a>\n\t\t\t\t</li>\n\t\t\t</ul>\n\t\t\t<ul class=\"nav navbar-nav navbar-right\">\n\t\t\t\t<li class=\"loader\" if.bind=\"router.isNavigating\">\n\t\t\t\t\t<i class=\"fa fa-spinner fa-spin fa-2x\"></i>\n\t\t\t\t</li>\n\t\t\t</ul>\n\t\t</div>\n\t</nav>\n</template>"; });
-define('text!applications/axview/resources/elements/cells-view.html', ['module'], function(module) { module.exports = "<template>\r\n\t<ul>\r\n      <li repeat.for=\"cell of cells\">${cell.name}</li>\r\n    </ul>\r\n</template>"; });
+define('text!applications/axview/resources/elements/cells-view.html', ['module'], function(module) { module.exports = "<template>\r\n\t<ul>\r\n\t\t<li repeat.for=\"cell of cells\">${cell.name}</li>\r\n\t</ul>\r\n</template>"; });
 define('text!applications/twitter/resources/elements/tweet.html', ['module'], function(module) { module.exports = "<template>\n\t<div class=\"tweet-avatar\"><img src.bind=\"tweet.avatar\"></div>\n\t<div class=\"tweet-body\">\n\t\t<div class=\"tweet-meta\">\n\t\t\t<strong>${tweet.name}</strong> \n\t\t\t<span>${tweet.handle}</span>\n\t\t</div>\n\t\t<div class=\"tweet-content\">${tweet.text}</div>\n\t</div>\n</template>"; });
 //# sourceMappingURL=app-bundle.js.map

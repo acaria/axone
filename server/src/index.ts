@@ -1,12 +1,10 @@
 #!/usr/bin/env node
 "use strict";
 
-import cfg from "./config";
+var cfg = require("../config.js");
 
 //module dependencies.
 var express = require("express");
-import { AxApi } from "./app";
+import AxServer from "./app";
 
-var port = parseInt(process.env.PORT, 10) || cfg.PORT;
-
-new AxApi(express(), port).run();
+new AxServer(express(), cfg.port.node).run();

@@ -3,7 +3,7 @@
 
 import { CellModel, CellRepository} from "./../models/cell";
 
-var debug = require("debug")("ax-api:index");
+var debug = require("debug")("ax-server:routes");
 let router = require("express").Router();
 let repo = new CellRepository();
 
