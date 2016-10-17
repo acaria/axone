@@ -39,6 +39,25 @@ define('main',["require", "exports", './environment'], function (require, export
     exports.configure = configure;
 });
 
+define('applications/axview/app',["require", "exports"], function (require, exports) {
+    "use strict";
+    var App = (function () {
+        function App() {
+        }
+        App.prototype.configureRouter = function (config, router) {
+            config.title = 'Axone';
+            config.map([
+                { route: ['', 'home'], name: 'home', moduleId: './routes/home', nav: true, title: 'Home' },
+                { route: ['cells'], name: 'cells', moduleId: './routes/cells', nav: true, title: 'Cells' },
+                { route: ['about'], name: 'about', moduleId: './routes/about', nav: true, title: 'About' }
+            ]);
+            this.router = router;
+        };
+        return App;
+    }());
+    exports.App = App;
+});
+
 define('applications/contactlist/app',["require", "exports"], function (require, exports) {
     "use strict";
     var App = (function () {
@@ -307,25 +326,6 @@ define('applications/contactlist/no-selection',["require", "exports"], function 
     exports.NoSelection = NoSelection;
 });
 
-define('applications/axview/app',["require", "exports"], function (require, exports) {
-    "use strict";
-    var App = (function () {
-        function App() {
-        }
-        App.prototype.configureRouter = function (config, router) {
-            config.title = 'Axone';
-            config.map([
-                { route: ['', 'home'], name: 'home', moduleId: './routes/home', nav: true, title: 'Home' },
-                { route: ['cells'], name: 'cells', moduleId: './routes/cells', nav: true, title: 'Cells' },
-                { route: ['about'], name: 'about', moduleId: './routes/about', nav: true, title: 'About' }
-            ]);
-            this.router = router;
-        };
-        return App;
-    }());
-    exports.App = App;
-});
-
 define('applications/twitter/app',["require", "exports"], function (require, exports) {
     "use strict";
     var AVATAR = 'https://s3.amazonaws.com/uifaces/faces/twitter/sachagreif/128.jpg';
@@ -491,7 +491,7 @@ define('applications/axview/routes/home',["require", "exports"], function (requi
     "use strict";
     var default_1 = (function () {
         function default_1() {
-            this.title = 'Welcome';
+            this.title = 'Welcome !!!!';
         }
         return default_1;
     }());

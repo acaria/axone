@@ -1,3 +1,3 @@
 export default class {
-	title = 'Welcome';
+	title = 'Welcome !!!!';
 }

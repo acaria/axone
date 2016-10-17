@@ -105,7 +105,7 @@ gulp.task('nodemon', function() {
 		script: './build/index.js',
 		ext: 'html js',
 		ignore: ['node_modules/**', 'public/**'],
-		watch: cfg.path.dir.dest,
+		watch: [cfg.path.dir.dest, cfg.path.dir.client],
 		env: { 
 			PORT: cfg.port.node
 		},
