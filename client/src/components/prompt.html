@@ -1,0 +1,11 @@
+<template>
+   <ai-dialog>
+      <ai-dialog-body>
+         <h3>${message}</h3>
+      </ai-dialog-body>
+      <ai-dialog-footer>
+         <button click.trigger = "ctrl.cancel()">Cancel</button>
+         <button click.trigger = "ctrl.ok(message)">Ok</button>
+      </ai-dialog-footer>
+   </ai-dialog>
+</template>

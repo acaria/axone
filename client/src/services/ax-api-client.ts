@@ -12,9 +12,6 @@ export default class extends HttpClient {
 			.withDefaults({
 				credentials: 'same-origin',
 				headers: {
-					// 'Access-Control-Allow-Origin': 'http://localhost/',
-					// 'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
-    				// 'Access-Control-Allow-Headers': 'Content-type,Accept,X-Custom-Header',
 					'Accept': 'application/json',
 					'X-Requested-With': 'Fetch'
 				}

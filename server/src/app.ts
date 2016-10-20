@@ -5,19 +5,25 @@
 var debug = require("debug")("ax-server:express");
 var favicon = require("serve-favicon");
 
-import logger = require("morgan");
 import express = require("express");
 import bodyParser = require("body-parser");
 import cookieParser = require("cookie-parser");
 import methodOverride = require("method-override");
 import path = require("path");
 
+//log
+var fs = require("fs");
+var accessLogStream = fs.createWriteStream(path.join(__dirname, "../logs/access.log"), {flags: "a"});
+import morgan = require("morgan");
+
 //data
 import mongoose = require("mongoose");
 
 //routes
 import routeIndex = require("./routes/index");
-import routeApi = require("./routes/api");
+import { RouteApi } from "./routes/api";
+import { RouteApiCells } from "./routes/api/cells";
+import { CRoute } from "./routes/route-ctrl";
 
 //config
 var cfg = require("../config.js");
@@ -61,13 +67,17 @@ export default class {
 
     private configMiddle(app: express.Express) {
     	app.use(favicon(path.join(__dirname, "../public/favicon.ico")));
-    	app.use(logger("dev"));
+    	app.use(morgan("dev"));
+        app.use(morgan("combined", {stream: accessLogStream}));
     }
 
     private configRoutes(app: express.Express) {
-    	app.use("/", routeIndex);
-    	app.use("/api", routeApi);
-    	//app.use("/app", express.static(path.join(__dirname, "../../client")));
+    	//app.use("/", routeIndex);
+        var route = CRoute(RouteApi, this.app, "/api")
+            .addSub(CRoute(RouteApiCells, this.app, "/cells"));
+
+        route.process();
+        //app.use("/app", express.static(path.join(__dirname, "../../client")));
     }
 
     private errorHandling(app: express.Express) {
@@ -90,7 +100,11 @@ export default class {
     	}
 
     	app.use(function(req: express.Request, res: express.Response, next: express.NextFunction) {
-    		let err = new Error("Not Found");
+    		if ((app.get("env") === "development") && req.url.startsWith("/browser-sync/")) {
+                next();
+                return;
+            }
+            let err = new Error("Not Found");
     		next(err);
     	});
     }

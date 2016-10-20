@@ -40,7 +40,9 @@ function runCommand(command) {
 }
 
 gulp.task('clean', function clean(done) {
-	return del([cfg.path.dir.dest], done);
+	return del([cfg.path.dir.dest,
+					cfg.path.dir.client
+		], {force: true}, done);
 });
 
 gulp.task('browser-sync', function() {

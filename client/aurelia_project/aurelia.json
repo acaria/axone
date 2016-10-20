@@ -125,8 +125,8 @@
 				],
 				"source": [
 					"[**/*.js]",
-					"**/*.{css,html}"
-				],
+						"**/*.{css,html}"
+					],
 				"dependencies": [
 					"extend",
 					"aurelia-fetch-client",
@@ -175,6 +175,11 @@
 						"name":"jquery",
 						"path":"../node_modules/jquery/dist",
 						"main":"jquery.min"
+					},
+					{
+						"name": "aurelia-dialog",
+						"path": "../node_modules/aurelia-dialog/dist/amd",
+						"main": "aurelia-dialog"
 					},
 					{
 						"name": "bootstrap",
