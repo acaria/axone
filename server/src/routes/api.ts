@@ -10,19 +10,13 @@ export class RouteApi extends RouteCtrl {
 
 	private extractCommands() {
 		var commands = [];
-		for(var sub of this.subs) {
+		for (var sub of this.subs) {
 			commands.push(sub.root);
 		}
 		return commands;
 	}
 
 	defRoute() {
-		router.use(function(req: Express.Request, res: Express.Response, next: Express.NextFunction) {
-			res.header("Access-Control-Allow-Origin", "*");
-			res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-			next();
-		});
-
 		router.get("/", (req: Express.Request, res) => {
 			try {
 				res.send({"commands": this.extractCommands()});

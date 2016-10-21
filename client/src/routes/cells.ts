@@ -15,16 +15,16 @@ export default class {
 
 	activate(params, routeConfig) {
 		this.isLoading = true;
-		this.http.fetch('')
-		.then(response => response.json())
-		.then(cells => {
-			this.cells = cells;
-			this.isLoading = false;
-		})
-		.catch(err => {
-			console.log(err);
-			this.isLoading = false;
-		});
+		this.http.fetchGet('cells', 
+			cells => {
+				this.cells = cells;
+				this.isLoading = false;
+			},
+			error => {
+				log.error(error);
+				this.isLoading = false;
+			}
+		);
 	}
 
 	createCell(name:string) {
@@ -36,7 +36,6 @@ export default class {
 	}
 
 	editCell(id:number) {
-		log.debug('pouet');
 		for(let cell of this.cells) {
 			if (cell._id == id) {
 				this.editing[id] = JSON.parse(JSON.stringify(cell));
@@ -46,11 +45,35 @@ export default class {
 
 	saveCell(id:number) {
 		if (this.creating && this.creating._id == id) {
-
-		}
-		for(let cell of this.cells) {
-			if (cell._id == id) {
-				this.editing[id] = false;
+			var sendData = {
+				name: this.creating.name
+			};
+			this.http.fetchPost('cells', sendData, 
+				cell => {
+					this.creating.name = cell.name;
+					this.creating._id = cell._id;
+					this.creating = false;
+					for(let cell of this.cells) {
+						if (cell._id == id) {
+							this.editing[id] = false;
+						}
+					}
+				},
+				err => { log.error(err.message) }
+			);
+		} else {
+			for(let cell of this.cells) {
+				if (cell._id == id) {
+					var sendData = {
+						name: cell.name
+					};
+					this.http.fetchPut('cells/' + cell._id, sendData, 
+						cell => {
+							this.editing[id] = false;
+						},
+						err => { log.error(err.message) }
+					);		
+				}
 			}
 		}
 	}
@@ -80,8 +103,13 @@ export default class {
 					model: `Are you sure to delete the cell "${cell.name}"?`})
 				.then(res => {
 					if (!res.wasCancelled) {
-						let index = this.cells.indexOf(cell);
-						this.cells.splice(index, 1);
+						this.http.fetchDelete('cells/' + cell._id,
+							result => {
+								let index = this.cells.indexOf(cell);
+								var removed = this.cells.splice(index, 1);
+							},
+							error => {}
+						);
 					}
 				})
 			}

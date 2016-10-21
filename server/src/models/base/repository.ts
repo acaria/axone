@@ -12,7 +12,7 @@ interface IRead<T> {
 
 interface IWrite<T> {
 	create: (item: T, callback: (error: any, result: any) => void) => void;
-	update: (_id: mongoose.Types.ObjectId, item: T, callback: (error: any, result: any) => void) => void;
+	update: (_id: string, item: T, callback: (error: any, result: any) => void) => void;
 	delete: (_id: string, callback: (error: any, result: any) => void) => void;
 }
 
@@ -32,8 +32,13 @@ export class RepositoryBase<T extends mongoose.Document> implements IRead<T>, IW
 		this._model.find({}, callback);
 	}
 
-	update(_id: mongoose.Types.ObjectId, item: T, callback: (error: any, result: any) => void) {
-		this._model.update({ _id: _id }, item, callback);
+	update(_id: string, item: T, callback: (error: any, result: any) => void) {
+		this._model.update({ _id: _id }, item, (error: any, result: any) => {
+			if (error || !result) {
+				callback(error, result);
+			}
+			this.findById(_id, callback);
+		});
 	}
 
 	delete(_id: string, callback: (error: any, result: any) => void) {
