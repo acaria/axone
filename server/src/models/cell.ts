@@ -24,14 +24,18 @@ let entitySchema = new Schema({
 		required: false
 	}
 }).pre("save", function(next: () => void) {
-	if (this._doc) {
-		let doc = <ICellModel>this._doc;
-		let now = new Date();
-		if (!doc.createdAt) {
-			doc.createdAt = now;
-		}
-		doc.modifiedAt = now;
+	if (!this._doc) {
+		next();
+		return this;
 	}
+
+	let doc = <ICellModel>this._doc;
+	let now = new Date();
+	if (!doc.createdAt) {
+		doc.createdAt = now;
+	}
+	doc.modifiedAt = now;
+
 	next();
 	return this;
 });

@@ -1,17 +1,16 @@
 /// <reference path="../../_all.d.ts" />
 "use strict";
 
+import moment = require("moment");
+import { NextFunction, Request, Response } from "express";
+import { UserRepository } from "../../models/user";
+import jwt = require("jwt-simple");
+
 var cfg = require("../../../config.js");
 var debug = require("debug")("ax-server:auth");
 
-import bcrypt = require("bcryptjs");
-import { NextFunction, Request, Response } from "express";
-import { UserRepository } from "../../models/user";
-
 export class Register {
-
-	constructor(private repo: UserRepository) {
-	}
+	constructor(private repo: UserRepository) {}
 
 	private debugRepositoryError(err: any) {
 		if (err && err.name === "ValidationError") {
@@ -24,12 +23,6 @@ export class Register {
 		} else {
 			debug(err.message);
 		}
-	}
-
-	private comparePassword(p1: string, p2: string, done: (err: Error, isMatch: boolean) => void) {
-		bcrypt.compare(p1, p2, function(err: Error, isMatch: boolean) {
-			done(err, isMatch);
-		});
 	}
 
 	signup(req: Request, res: Response) {
@@ -49,15 +42,23 @@ export class Register {
 	}
 
 	login(req: Request, res: Response) {
-		this.repo.findOne({email: req.body.email}, (err, user) => {
+		this.repo.findOneP({email: req.body.email}, "+password", (err, user) => {
 			if (!user) {
 				return res.status(401).send({error: "wrong email or password"});
 			}
-			this.comparePassword(user.password, req.body.password, (err2, isMatch) => {
+			user.comparePassword(req.body.password, (err2, isMatch) => {
 				if (!isMatch) {
 					return res.status(401).send({error: "wrong email or password"});
 				}
-				return res.status(200).send({token: "todo"});
+
+				let payload = {
+					sub: user._id,
+					iat: moment().unix(),
+					exp: moment().add(14, "days").unix()
+				};
+
+				let token = jwt.encode(payload, cfg.secret);
+				return res.status(200).send({token: token});
 			});
 		});
 	}

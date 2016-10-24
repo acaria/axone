@@ -1,16 +1,15 @@
 /// <reference path="_all.d.ts" />
 "use strict";
 
-//express
-var debug = require("debug")("ax-server:express");
-var requireDir = require("require-dir");
-var favicon = require("serve-favicon");
-
 import express = require("express");
 import bodyParser = require("body-parser");
 import cookieParser = require("cookie-parser");
 import methodOverride = require("method-override");
 import path = require("path");
+
+var debug = require("debug")("ax-server:express");
+var requireDir = require("require-dir");
+var favicon = require("serve-favicon");
 
 //log
 var fs = require("fs");

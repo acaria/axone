@@ -2,10 +2,10 @@
 "use strict";
 
 import express = require("express");
-var debug = require("debug")("ax-server:auth");
-
 import { UserRepository } from "../../models/user";
 import { Register } from "./register";
+
+var  debug = require("debug")("ax-server:auth");
 
 let router = express.Router();
 let users = new UserRepository();
@@ -24,14 +24,13 @@ router.post("/login", (req, res) => {
 	try {
 		return register.login(req, res);
 	} catch (e) {
-			debug(e);
-			return res.status(500).send({error: "error"});
-		}
+		debug(e);
+		return res.status(500).send({error: "error"});
 	}
-})
+});
 
 router.use(function(req: express.Request, res: express.Response, next: express.NextFunction) {
-	res.status(404).send({error:"error"});
+	res.status(404).send({error: "error"});
 });
 
 module.exports = router;

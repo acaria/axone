@@ -10,13 +10,17 @@ interface IRead<T> {
 	find(cond: Object, fields: Object, options: Object, callback?: (err: any, res: T[]) => void): mongoose.Query<T[]>;
 }
 
+interface IAdminRead<T> {
+	findOneP(cond: Object, fields: Object, callback: (err: any, res: T) => void): mongoose.Query<T>;
+}
+
 interface IWrite<T> {
 	create: (item: T, callback: (error: any, result: any) => void) => void;
 	update: (_id: string, item: T, callback: (error: any, result: any) => void) => void;
 	delete: (_id: string, callback: (error: any, result: any) => void) => void;
 }
 
-export class RepositoryBase<T extends mongoose.Document> implements IRead<T>, IWrite<T> {
+export class RepositoryBase<T extends mongoose.Document> implements IRead<T>, IWrite<T>, IAdminRead<T> {
 
 	private _model: mongoose.Model<mongoose.Document>;
 
@@ -51,6 +55,10 @@ export class RepositoryBase<T extends mongoose.Document> implements IRead<T>, IW
 
 	findOne(cond?: Object, callback?: (err: any, res: T) => void): mongoose.Query<T> {
 		return this._model.findOne(cond, callback);
+	}
+
+	findOneP(cond: Object, fields: string, callback: (err: any, res: T) => void): mongoose.Query<T> {
+		return this._model.findOne(cond, fields, callback);
 	}
 
 	find(cond?: Object, fields?: Object, options?: Object, callback?: (err: any, res: T[]) => void): mongoose.Query<T[]> {

@@ -5,6 +5,8 @@ import { Document, Schema, model} from "mongoose";
 import { RepositoryBase } from "./base/repository";
 import bcrypt = require("bcryptjs");
 
+var debug = require("debug")("ax-server:user");
+
 export interface IUserModel extends Document {
 	email: string;
 	password: string;
@@ -12,6 +14,8 @@ export interface IUserModel extends Document {
 	isAdmin: boolean;
 	createdAt: Date;
 	modifiedAt: Date;
+
+	comparePassword: (password: string, done: (err: Error, isMatch: boolean) => void) => void;
 };
 
 let entitySchema = new Schema({
@@ -40,26 +44,44 @@ let entitySchema = new Schema({
 });
 
 entitySchema.pre("save", function(next: () => void) {
-	if (this._doc) {
-		let user = <IUserModel>this._doc;
-		let now = new Date();
-		if (!user.createdAt) {
-			user.createdAt = now;
-		}
-		user.modifiedAt = now;
-
-		if (this.isModified("password")) {
-			bcrypt.genSalt(10, (err, salt) => {
-				bcrypt.hash(user.password, salt, (err, hash) => {
-					user.password = hash;
-					next();
-				});
-			});
-		}
+	if (!this._doc) {
+		next();
+		return this;
 	}
-	next();
+
+	let user = <IUserModel>this._doc;
+	let now = new Date();
+	if (!user.createdAt) {
+		user.createdAt = now;
+	}
+	user.modifiedAt = now;
+
+	if (!this.isModified("password")) {
+		next();
+		return this;
+	}
+
+	bcrypt.genSalt(10, (err, salt) => {
+		if (err) {
+			throw new Error(err.message);
+		}
+		bcrypt.hash(user.password, salt, (err2, hash) => {
+			if (err2) {
+				throw new Error(err2.message);
+			}
+			user.password = hash;
+			return next();
+		});
+	});
+
 	return this;
 });
+
+entitySchema.methods.comparePassword = function(password: string, done: (err: Error, isMatch: boolean) => void) {
+	bcrypt.compare(password, this.password, function(err: Error, isMatch: boolean) {
+		done(err, isMatch);
+	});
+};
 
 let modelSchema = model<IUserModel>("user", entitySchema, "users", true);
 

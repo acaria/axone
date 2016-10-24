@@ -1,10 +1,10 @@
 /// <reference path="../../_all.d.ts" />
 "use strict";
 
-import * as Express from "express";
+import express = require("express");
 var debug = require("debug")("ax-server:api");
 
-let router = Express.Router();
+let router = express.Router();
 
 router.get("/", (req: Express.Request, res) => {
 	try {
@@ -15,8 +15,8 @@ router.get("/", (req: Express.Request, res) => {
 	}
 });
 
-router.use(function(req: express.Request, res: express.Response, next: express.NextFunction) {
-	res.status(404).send({error:"error"});
+router.use((req, res, next) => {
+	res.status(404).send({error: "error"});
 });
 
 module.exports = router;

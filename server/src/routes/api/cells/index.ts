@@ -1,12 +1,10 @@
 /// <reference path="../../../_all.d.ts" />
 "use strict";
 
-import { NextFunction, Request, Response } from "express";
 import express = require("express");
-var debug = require("debug")("ax-server:apiCells");
-
 import { CellRepository } from "../../../models/cell";
 
+var debug = require("debug")("ax-server:apiCells");
 let router = express.Router();
 let cells = new CellRepository();
 
