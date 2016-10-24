@@ -9,7 +9,7 @@ import jwt = require("jwt-simple");
 var cfg = require("../../../config.js");
 var debug = require("debug")("ax-server:auth");
 
-export class Register {
+export default class {
 	constructor(private repo: UserRepository) {}
 
 	private debugRepositoryError(err: any) {
@@ -25,6 +25,16 @@ export class Register {
 		}
 	}
 
+	private tokenize(userId: string): string {
+		let payload = {
+			sub: userId,
+			iat: moment().unix(),
+			exp: moment().add(14, "days").unix()
+		};
+
+		return jwt.encode(payload, cfg.secret);
+	}
+
 	signup(req: Request, res: Response) {
 		this.repo.findOne({email: req.body.email}, (err, oldUser) => {
 			if (oldUser) {
@@ -36,7 +46,7 @@ export class Register {
 					this.debugRepositoryError(err2);
 					return res.status(400).send({error: "error"});
 				}
-				return res.status(201).send(newUser);
+				return res.status(201).send({token: this.tokenize(newUser._id)});
 			});
 		});
 	}
@@ -51,15 +61,28 @@ export class Register {
 					return res.status(401).send({error: "wrong email or password"});
 				}
 
-				let payload = {
-					sub: user._id,
-					iat: moment().unix(),
-					exp: moment().add(14, "days").unix()
-				};
-
-				let token = jwt.encode(payload, cfg.secret);
-				return res.status(200).send({token: token});
+				return res.status(200).send({token: this.tokenize(user._id)});
 			});
+		});
+	}
+
+	get(req: Request, res: Response) {
+		let userIdKey = "user_id";
+		this.repo.findById(req[userIdKey], (err, user) => {
+			if (!user) {
+				return res.status(404).send({error: "User not found"});
+			}
+			return res.status(200).send(user);
+		});
+	}
+
+	update(req: Request, res: Response) {
+		let userIdKey = "user_id";
+		this.repo.update(req[userIdKey], req.body, (err, user) => {
+			if (err) {
+				return res.status(400).send({error: "error"});
+			}
+			return res.status(200).send(user);
 		});
 	}
 }

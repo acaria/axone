@@ -3,17 +3,18 @@
 
 import express = require("express");
 import { UserRepository } from "../../models/user";
-import { Register } from "./register";
+import Account from "./account";
+import Utils from "../utils";
 
 var  debug = require("debug")("ax-server:auth");
 
 let router = express.Router();
 let users = new UserRepository();
-let register = new Register(users);
+let account = new Account(users);
 
 router.post("/signup", (req, res) => {
 	try {
-		return register.signup(req, res);
+		return account.signup(req, res);
 	} catch (e) {
 		debug(e);
 		return res.status(500).send({error: "error"});
@@ -22,7 +23,27 @@ router.post("/signup", (req, res) => {
 
 router.post("/login", (req, res) => {
 	try {
-		return register.login(req, res);
+		return account.login(req, res);
+	} catch (e) {
+		debug(e);
+		return res.status(500).send({error: "error"});
+	}
+});
+
+router.use(Utils.ensureAuthenticated);
+
+router.get("/me", (req, res) => {
+	try {
+		return account.get(req, res);
+	} catch (e) {
+		debug(e);
+		return res.status(500).send({error: "error"});
+	}
+});
+
+router.put("/me", (req, res) => {
+	try {
+		return account.update(req, res);
 	} catch (e) {
 		debug(e);
 		return res.status(500).send({error: "error"});

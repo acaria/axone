@@ -6,7 +6,7 @@ var debug = require("debug")("ax-server:api");
 
 let router = express.Router();
 
-router.get("/", (req: Express.Request, res) => {
+router.get("/", (req, res) => {
 	try {
 		res.send({"commands": "api list"});
 	} catch (e) {

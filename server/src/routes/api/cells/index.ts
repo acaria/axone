@@ -3,6 +3,7 @@
 
 import express = require("express");
 import { CellRepository } from "../../../models/cell";
+import Utils from "../../utils";
 
 var debug = require("debug")("ax-server:apiCells");
 let router = express.Router();
@@ -20,6 +21,8 @@ function debugRepositoryError(err: any) {
 		debug(err.message);
 	}
 }
+
+//router.use(Utils.ensureAuthenticated);
 
 router.use((req, res, next) => {
 	res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
@@ -66,7 +69,7 @@ router.get("/:id", (req, res) => {
 				return res.status(400).send({error: "error"});
 			}
 			if (!result) {
-				return res.status(404).send({error: "error"});
+				return res.status(401).send({error: "error"});
 			}
 			return res.status(200).send(result);
 		});
@@ -84,7 +87,7 @@ router.put("/:id", (req, res) => {
 				return res.status(400).send({error: "error"});
 			}
 			if (!result) {
-				return res.status(404).send({error: "error"});
+				return res.status(401).send({error: "error"});
 			}
 			return res.status(200).send(result);
 		});
