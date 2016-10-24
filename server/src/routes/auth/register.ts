@@ -4,6 +4,7 @@
 var cfg = require("../../../config.js");
 var debug = require("debug")("ax-server:auth");
 
+import bcrypt = require("bcryptjs");
 import { NextFunction, Request, Response } from "express";
 import { UserRepository } from "../../models/user";
 
@@ -25,6 +26,12 @@ export class Register {
 		}
 	}
 
+	private comparePassword(p1: string, p2: string, done: (err: Error, isMatch: boolean) => void) {
+		bcrypt.compare(p1, p2, function(err: Error, isMatch: boolean) {
+			done(err, isMatch);
+		});
+	}
+
 	signup(req: Request, res: Response) {
 		this.repo.findOne({email: req.body.email}, (err, oldUser) => {
 			if (oldUser) {
@@ -42,6 +49,16 @@ export class Register {
 	}
 
 	login(req: Request, res: Response) {
-
+		this.repo.findOne({email: req.body.email}, (err, user) => {
+			if (!user) {
+				return res.status(401).send({error: "wrong email or password"});
+			}
+			this.comparePassword(user.password, req.body.password, (err2, isMatch) => {
+				if (!isMatch) {
+					return res.status(401).send({error: "wrong email or password"});
+				}
+				return res.status(200).send({token: "todo"});
+			});
+		});
 	}
 }

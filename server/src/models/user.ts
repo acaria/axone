@@ -41,17 +41,17 @@ let entitySchema = new Schema({
 
 entitySchema.pre("save", function(next: () => void) {
 	if (this._doc) {
-		let doc = <IUserModel>this._doc;
+		let user = <IUserModel>this._doc;
 		let now = new Date();
-		if (!doc.createdAt) {
-			doc.createdAt = now;
+		if (!user.createdAt) {
+			user.createdAt = now;
 		}
-		doc.modifiedAt = now;
+		user.modifiedAt = now;
 
 		if (this.isModified("password")) {
 			bcrypt.genSalt(10, (err, salt) => {
-				bcrypt.hash(doc.password, salt, (err, hash) => {
-					doc.password = hash;
+				bcrypt.hash(user.password, salt, (err, hash) => {
+					user.password = hash;
 					next();
 				});
 			});
@@ -60,12 +60,6 @@ entitySchema.pre("save", function(next: () => void) {
 	next();
 	return this;
 });
-
-entitySchema.methods.comparePassword = function(password: string, done: (err: Error, isMatch: boolean) => void) {
-	bcrypt.compare(password, this.password, function(err: Error, isMatch: boolean) {
-		done(err, isMatch);
-	});
-};
 
 let modelSchema = model<IUserModel>("user", entitySchema, "users", true);
 
