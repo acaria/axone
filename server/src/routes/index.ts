@@ -1,7 +1,7 @@
 /// <reference path="../_all.d.ts" />
 "use strict";
 
-import { CellModel, CellRepository} from "./../models/cell";
+import { CellRepository} from "./../models/cell";
 
 var debug = require("debug")("ax-server:routes");
 let router = require("express").Router();

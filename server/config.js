@@ -1,4 +1,6 @@
 module.exports = {
+	secret: "ajras",
+
 	path: {
 		files: {
 			js: ['./src/**/*.js'],

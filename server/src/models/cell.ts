@@ -38,18 +38,6 @@ let entitySchema = new Schema({
 
 let modelSchema = model<ICellModel>("cell", entitySchema, "cells", true);
 
-export class CellModel {
-	private model: ICellModel;
-
-	construct(cellModel: ICellModel) {
-		this.model = cellModel;
-	}
-
-	get name(): string {
-		return this.model.name;
-	}
-}
-
 export class CellRepository extends RepositoryBase<ICellModel> {
 	constructor() {
 		super(modelSchema);

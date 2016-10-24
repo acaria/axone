@@ -3,6 +3,7 @@
 
 //express
 var debug = require("debug")("ax-server:express");
+var requireDir = require("require-dir");
 var favicon = require("serve-favicon");
 
 import express = require("express");
@@ -18,12 +19,6 @@ import morgan = require("morgan");
 
 //data
 import mongoose = require("mongoose");
-
-//routes
-import routeIndex = require("./routes/index");
-import { RouteApi } from "./routes/api";
-import { RouteApiCells } from "./routes/api/cells";
-import { CRoute } from "./routes/route-ctrl";
 
 //config
 var cfg = require("../config.js");
@@ -72,12 +67,9 @@ export default class {
     }
 
     private configRoutes(app: express.Express) {
-    	//app.use("/", routeIndex);
-        var route = CRoute(RouteApi, this.app, "/api")
-            .addSub(CRoute(RouteApiCells, this.app, "/cells"));
-
-        route.process();
-        //app.use("/app", express.static(path.join(__dirname, "../../client")));
+    	app.use("/api/cells", require("./routes/api/cells"));
+        app.use("/api", require("./routes/api"));
+        app.use("/auth", require("./routes/auth"));
     }
 
     private errorHandling(app: express.Express) {
