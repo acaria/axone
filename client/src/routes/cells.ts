@@ -1,6 +1,5 @@
 import {autoinject, LogManager} from 'aurelia-framework';
 import {DialogService} from 'aurelia-dialog';
-import AxApiClient from '../services/ax-api-client';
 import {Config as ApiConfig, Rest} from "aurelia-api";
 import {Prompt} from '../components/prompt';
 var log = LogManager.getLogger('cells');

@@ -1,6 +1,7 @@
 import {Aurelia, LogManager} from "aurelia-framework";
 import {ConsoleAppender} from "aurelia-logging-console";
 import environment from './environment';
+import authConfig from './auth-config';
 
 (<any>Promise).config({
 	warnings: false
@@ -18,8 +19,13 @@ export function configure(aurelia: Aurelia) {
 		config.settings.startingZIndex = 1111115;
 	})
 
-	.plugin('aurelia-api', config => {
-		config.registerEndpoint('api', '/api/');
+	.plugin('aurelia-api', config => { config
+		.registerEndpoint('auth', '/auth/')
+		.registerEndpoint('api', '/api/');
+	})
+
+	.plugin('aurelia-authentication', baseConfig => {
+		baseConfig.configure(authConfig)
 	});
 
 	if (environment.debug) {
@@ -31,5 +37,5 @@ export function configure(aurelia: Aurelia) {
 		aurelia.use.plugin('aurelia-testing');
 	}
 
-	aurelia.start().then(() => aurelia.setRoot(''));
+	aurelia.start().then(a => a.setRoot());
 }
