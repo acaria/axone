@@ -22,7 +22,7 @@ function debugRepositoryError(err: any) {
 	}
 }
 
-//router.use(Utils.ensureAuthenticated);
+// router.use(Utils.ensureAuthenticated);
 
 router.use((req, res, next) => {
 	res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");

@@ -1,6 +1,8 @@
 {
 	"name": "ax-client",
 	"dependencies": {
+		"aurelia-api": "github:spoonx/aurelia-api",
+		"aurelia-authentication": "github:spoonx/aurelia-authentication",
 		"aurelia-dialog": "github:aurelia/dialog"
 	},
 	"globalDevDependencies": {

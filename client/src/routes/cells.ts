@@ -1,6 +1,7 @@
 import {autoinject, LogManager} from 'aurelia-framework';
 import {DialogService} from 'aurelia-dialog';
 import AxApiClient from '../services/ax-api-client';
+import {Config as ApiConfig, Rest} from "aurelia-api";
 import {Prompt} from '../components/prompt';
 var log = LogManager.getLogger('cells');
 
@@ -11,25 +12,28 @@ export default class {
 	creating:any = false;
 	cells = [];
 
-	constructor(private http: AxApiClient, private dlg: DialogService) { }
+	private apiClient: Rest; 
+
+	constructor(apiConfig: ApiConfig, private dlg: DialogService) {
+		this.apiClient = apiConfig.getEndpoint("api");
+	}
 
 	activate(params, routeConfig) {
 		this.isLoading = true;
-		this.http.fetchGet('cells', 
-			cells => {
-				this.cells = cells;
-				this.isLoading = false;
-			},
-			error => {
-				log.error(error);
-				this.isLoading = false;
-			}
-		);
+		this.apiClient.find('cells')
+		.then(cells => {
+			this.cells = cells;
+			this.isLoading = false;
+		})
+		.catch(err => {
+			log.error(err);
+			this.isLoading = false;
+		});
 	}
 
 	createCell(name:string) {
 		if (!this.creating) {
-			this.creating = {_id: 'NEW', name: name}
+			this.creating = {_id: 'NEW', name: name};
 			this.cells.unshift(this.creating);
 			this.editing[this.creating._id] = this.creating;
 		}
@@ -48,31 +52,29 @@ export default class {
 			var sendData = {
 				name: this.creating.name
 			};
-			this.http.fetchPost('cells', sendData, 
-				cell => {
-					this.creating.name = cell.name;
-					this.creating._id = cell._id;
-					this.creating = false;
-					for(let cell of this.cells) {
-						if (cell._id == id) {
-							this.editing[id] = false;
-						}
+			this.apiClient.create('cells', sendData)
+			.then(cell => {
+				this.creating.name = cell.name;
+				this.creating._id = cell._id;
+				this.creating = false;
+				for(let cell of this.cells) {
+					if (cell._id == id) {
+						this.editing[id] = false;
 					}
-				},
-				err => { log.error(err.message) }
-			);
+				}
+			})
+			.catch(err => log.error(err.message));
 		} else {
 			for(let cell of this.cells) {
 				if (cell._id == id) {
 					var sendData = {
 						name: cell.name
 					};
-					this.http.fetchPut('cells/' + cell._id, sendData, 
-						cell => {
-							this.editing[id] = false;
-						},
-						err => { log.error(err.message) }
-					);		
+					this.apiClient.update('cells', cell._id, sendData)
+					.then(cell => {
+						this.editing[id] = false;
+					})
+					.catch(err => log.error(err.message));		
 				}
 			}
 		}
@@ -103,13 +105,12 @@ export default class {
 					model: `Are you sure to delete the cell "${cell.name}"?`})
 				.then(res => {
 					if (!res.wasCancelled) {
-						this.http.fetchDelete('cells/' + cell._id,
-							result => {
-								let index = this.cells.indexOf(cell);
-								var removed = this.cells.splice(index, 1);
-							},
-							error => {}
-						);
+						this.apiClient.destroy('cells/', cell._id)
+						.then(() => {
+							let index = this.cells.indexOf(cell);
+							var removed = this.cells.splice(index, 1);
+						})
+						.catch(err => log.error(err.message));
 					}
 				})
 			}
