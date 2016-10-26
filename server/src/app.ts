@@ -64,6 +64,7 @@ export default class {
 
     private configRoutes(app: express.Express) {
     	app.use("/api/cells", require("./routes/api/cells"));
+        app.use("/api/neurons", require("./routes/api/neurons"));
         app.use("/api", require("./routes/api"));
         app.use("/auth", require("./routes/auth"));
     }
