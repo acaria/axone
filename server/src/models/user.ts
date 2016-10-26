@@ -11,7 +11,6 @@ export interface IUserModel extends Document {
 	email: string;
 	password: string;
 	name: string;
-	isAdmin: boolean;
 	createdAt: Date;
 	modifiedAt: Date;
 
@@ -19,28 +18,11 @@ export interface IUserModel extends Document {
 };
 
 let entitySchema = new Schema({
-	email: {
-		type: String,
-		unique: true,
-		required: true
-	},
-	password: {
-		type: String,
-		select: false,
-		required: true
-	},
-	name: {
-		type: String,
-		require: false
-	},
-	createdAt: {
-		type: Date,
-		required: false
-	},
-	modifiedAt: {
-		type: Date,
-		required: false
-	}
+	email: { type: String, unique: true, required: true},
+	password: { type: String, select: false, required: true},
+	name: { type: String, require: false},
+	createdAt: { type: Date, required: false},
+	modifiedAt: { type: Date, required: false}
 });
 
 entitySchema.pre("save", function(next: () => void) {

@@ -6,23 +6,16 @@ import { RepositoryBase } from "./base/repository";
 
 export interface ICellModel extends Document {
 	name: string;
+	user: string;
 	createdAt: Date;
 	modifiedAt: Date;
 };
 
 let entitySchema = new Schema({
-	name: {
-		type: String,
-		required: true
-	},
-	createdAt: {
-		type: Date,
-		required: false
-	},
-	modifiedAt: {
-		type: Date,
-		required: false
-	}
+	name: { type: String, required: true},
+	user: { type: Schema.Types.ObjectId, required: true},
+	createdAt: { type: Date, required: false},
+	modifiedAt: { type: Date, required: false}
 }).pre("save", function(next: () => void) {
 	if (!this._doc) {
 		next();

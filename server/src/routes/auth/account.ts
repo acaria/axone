@@ -67,8 +67,7 @@ export default class {
 	}
 
 	get(req: Request, res: Response) {
-		let userIdKey = "user_id";
-		this.repo.findById(req[userIdKey], (err, user) => {
+		this.repo.findById(req[cfg.tokenRef], (err, user) => {
 			if (!user) {
 				return res.status(404).send({error: "User not found"});
 			}
@@ -77,8 +76,7 @@ export default class {
 	}
 
 	update(req: Request, res: Response) {
-		let userIdKey = "user_id";
-		this.repo.update(req[userIdKey], req.body, (err, user) => {
+		this.repo.update(req[cfg.tokenref], req.body, (err, user) => {
 			if (err) {
 				return res.status(400).send({error: "error"});
 			}

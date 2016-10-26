@@ -1,14 +1,32 @@
 export default {
 	endpoint: 'auth',
 	configureEndpoints: ['auth', 'api'],
+	
 	baseUrl: '',
 	loginUrl: 'login',
+	logouturl: null,
+	logoutMethod: 'get',
 	signupUrl: 'signup',
 	profileUrl: 'me',
-	unlinkUrl: 'unlink',
+	profileMethod: 'put',
+	unlinkUrl: null,
+	unlinkMethod: 'get',
+	
 	loginOnSignup: true,
-   storageChangedReload: 1,
-   expiredRedirect: 1,
+	loginroute: '/login',
+	loginRedirect: '#/profile',
+	signupRedirect: '#/login',
+	logoutRedirect: '#/login',
+   expiredRedirect: true,
+   
+   authHeader: 'Authorization',
+   authTokenType: 'Bearer',
+   accessTokenProp: 'token',
+
+   storage: 'localStorage',
+   storageKey: 'axone_authentification',
+   storageChangedReload: false,
+
    providers: {
    	google: {
   			url: 'google',

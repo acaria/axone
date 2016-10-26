@@ -10,11 +10,11 @@ export class Signup {
 
 	email = '';
 	password = '';
-	displayName = '';
+	name = '';
 
 	signup() {
 		return this.auth.signup({
-			displayName: this.displayName,
+			name: this.name,
 			email: this.email,
 			password: this.password
 		});

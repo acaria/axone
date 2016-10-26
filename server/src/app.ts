@@ -6,18 +6,15 @@ import bodyParser = require("body-parser");
 import cookieParser = require("cookie-parser");
 import methodOverride = require("method-override");
 import path = require("path");
+import morgan = require("morgan");
+import mongoose = require("mongoose");
 
 var debug = require("debug")("ax-server:express");
 var requireDir = require("require-dir");
 var favicon = require("serve-favicon");
 
-//log
 var fs = require("fs");
 var accessLogStream = fs.createWriteStream(path.join(__dirname, "../logs/access.log"), {flags: "a"});
-import morgan = require("morgan");
-
-//data
-import mongoose = require("mongoose");
 
 //config
 var cfg = require("../config.js");

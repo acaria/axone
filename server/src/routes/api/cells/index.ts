@@ -6,6 +6,7 @@ import { CellRepository } from "../../../models/cell";
 import Utils from "../../utils";
 
 var debug = require("debug")("ax-server:apiCells");
+var cfg = require("../../../../config.js");
 let router = express.Router();
 let cells = new CellRepository();
 
@@ -22,7 +23,7 @@ function debugRepositoryError(err: any) {
 	}
 }
 
-// router.use(Utils.ensureAuthenticated);
+router.use(Utils.ensureAuthenticated);
 
 router.use((req, res, next) => {
 	res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
@@ -33,7 +34,11 @@ router.use((req, res, next) => {
 
 router.get("/", (req, res) => {
 	try {
-		cells.find().exec((error, result) => {
+		if (!req[cfg.tokenRef]) {
+			return res.status(401).send({error: "token error"});
+		}
+		var userId = req[cfg.tokenRef];
+		cells.find({user: userId}, (error, result) => {
 			if (error) {
 				debugRepositoryError(error);
 				return res.status(400).send({error: "error"});
@@ -48,6 +53,10 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
 	try {
+		if (!req[cfg.tokenRef]) {
+			return res.status(401).send({error: "token error"});
+		}
+		req.body.user = req[cfg.tokenRef];
 		cells.create(req.body, (error, result) => {
 			if (error) {
 				debugRepositoryError(error);
@@ -81,6 +90,9 @@ router.get("/:id", (req, res) => {
 
 router.put("/:id", (req, res) => {
 	try {
+		if (req[cfg.tokenRef]) {
+			req.body.user = req[cfg.tokenRef];
+		}
 		cells.update(req.params.id, req.body, (error, result) => {
 			if (error) {
 				debugRepositoryError(error);

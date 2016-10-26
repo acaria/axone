@@ -4,20 +4,19 @@
 import * as mongoose from "mongoose";
 
 interface IRead<T> {
-	retrieve: (callback: (error: any, result: any) => void) => void;
-	findById: (id: string, callback: (error: any, result: T) => void) => void;
-	findOne(cond?: Object, callback?: (err: any, res: T) => void): mongoose.Query<T>;
-	find(cond: Object, fields: Object, options: Object, callback?: (err: any, res: T[]) => void): mongoose.Query<T[]>;
+	findById(id: string, callback: (error: any, result: T) => void): void;
+	findOne(cond: Object, callback: (err: any, result: T) => void): void;
+	find(cond: Object, callback: (err: any, res: T[]) => void): void;
 }
 
 interface IAdminRead<T> {
-	findOneP(cond: Object, fields: Object, callback: (err: any, res: T) => void): mongoose.Query<T>;
+	findOneP(cond: Object, fields: Object, callback: (err: any, res: T) => void): void;
 }
 
 interface IWrite<T> {
-	create: (item: T, callback: (error: any, result: any) => void) => void;
-	update: (_id: string, item: T, callback: (error: any, result: any) => void) => void;
-	delete: (_id: string, callback: (error: any, result: any) => void) => void;
+	create(item: T, callback: (error: any, result: any) => void): void;
+	update(_id: string, item: T, callback: (error: any, result: any) => void): void;
+	delete(_id: string, callback: (error: any, result: any) => void): void;
 }
 
 export class RepositoryBase<T extends mongoose.Document> implements IRead<T>, IWrite<T>, IAdminRead<T> {
@@ -32,40 +31,27 @@ export class RepositoryBase<T extends mongoose.Document> implements IRead<T>, IW
 		this._model.create(item, callback);
 	}
 
-	retrieve(callback: (error: any, result: T) => void) {
-		this._model.find({}, callback);
-	}
-
 	update(_id: string, item: T, callback: (error: any, result: any) => void) {
-		this._model.update({ _id: _id }, item, (error: any, result: any) => {
-			if (error || !result) {
-				callback(error, result);
-			}
-			this.findById(_id, callback);
-		});
+		this._model.findOneAndUpdate({ _id: _id }, item, {new: true}, callback);
 	}
 
 	delete(_id: string, callback: (error: any, result: any) => void) {
-		this._model.remove({ _id: this.toObjectId(_id) }, (err) => callback(err, null));
+		this._model.remove({ _id: _id }, (err) => callback(err, null));
 	}
 
 	findById(_id: string, callback: (error: any, result: T) => void) {
 		this._model.findById(_id, callback);
 	}
 
-	findOne(cond?: Object, callback?: (err: any, res: T) => void): mongoose.Query<T> {
-		return this._model.findOne(cond, callback);
+	findOne(cond: Object, callback: (err: any, res: T) => void) {
+		this._model.findOne(cond, callback);
 	}
 
-	findOneP(cond: Object, fields: string, callback: (err: any, res: T) => void): mongoose.Query<T> {
-		return this._model.findOne(cond, fields, callback);
+	findOneP(cond: Object, fields: string, callback: (err: any, res: T) => void) {
+		this._model.findOne(cond, fields, callback);
 	}
 
-	find(cond?: Object, fields?: Object, options?: Object, callback?: (err: any, res: T[]) => void): mongoose.Query<T[]> {
-		return this._model.find(cond, options, callback);
-	}
-
-	private toObjectId(_id: string): mongoose.Types.ObjectId {
-		return mongoose.Types.ObjectId.createFromHexString(_id);
+	find(cond: Object, callback: (err: any, res: T[]) => void) {
+		this._model.find(cond, callback);
 	}
 }

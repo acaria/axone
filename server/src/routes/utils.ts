@@ -11,7 +11,6 @@ var cfg = require("../../config.js");
 export default class {
 	static ensureAuthenticated(req: express.Request, res: express.Response, next: express.NextFunction) {
 		let authKey = "authorization";
-		let userIdKey = "user_id";
 
 		if (!req.headers[authKey]) {
 			return res.status(401).send({error: "Authorized access only"});
@@ -28,7 +27,7 @@ export default class {
 		if (payload.exp <= moment().unix()) {
 			return res.status(401).send({error: "Expired token"});
 		}
-		req[userIdKey] = payload.sub;
+		req[cfg.tokenRef] = payload.sub;
 		next();
 	}
 }

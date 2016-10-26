@@ -1,6 +1,8 @@
 module.exports = {
 	secret: "ajras",
 
+	tokenRef: "user_id",
+
 	path: {
 		files: {
 			js: ['./src/**/*.js'],
