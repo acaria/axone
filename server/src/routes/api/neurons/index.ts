@@ -2,6 +2,7 @@
 "use strict";
 
 import express = require("express");
+import { CellRepository } from "../../../models/cell";
 import { NeuronRepository } from "../../../models/neuron";
 import Utils from "../../utils";
 
@@ -9,6 +10,7 @@ var debug = require("debug")("ax-server:apiCells");
 var cfg = require("../../../../config.js");
 let router = express.Router();
 let neurons = new NeuronRepository();
+let cells = new CellRepository();
 
 function debugRepositoryError(err: any) {
 	if (err && err.name === "ValidationError") {
@@ -38,12 +40,23 @@ router.get("/", (req, res) => {
 			return res.status(401).send({error: "token error"});
 		}
 		var userId = req[cfg.tokenRef];
-		neurons.find({user: userId}, (error, result) => {
-			if (error) {
-				debugRepositoryError(error);
-				return res.status(400).send({error: "error"});
-			}
-			return res.status(200).send(result);
+
+		let query;
+		if (req.query.axone) {
+			query = neurons.model.find({user: userId})
+			.where("axone").equals(req.query.axone)
+			.populate("_id axone dentrites");
+		} else {
+			query = neurons.model.find({user: userId})
+			.where("axone").exists(false)
+			.populate("_id axone dentrites");
+		}
+
+		query.exec()
+		.then(result => res.status(200).send(result))
+		.catch(error => {
+			debugRepositoryError(error);
+			return res.status(400).send({error: "error"});
 		});
 	} catch (e) {
 		debug(e);
@@ -72,19 +85,20 @@ router.post("/", (req, res) => {
 
 router.get("/:id", (req, res) => {
 	try {
-		neurons.findById(req.params.id, (error, result) => {
-			if (error) {
-				debugRepositoryError(error);
-				return res.status(400).send({error: "error"});
-			}
-			if (!result) {
-				return res.status(401).send({error: "error"});
-			}
-			return res.status(200).send(result);
+		if (!req[cfg.tokenRef]) {
+			return res.status(401).send({error: "token error"});
+		}
+		var userId = req[cfg.tokenRef];
+
+		neurons.model.findOne({user: userId, _id: req.params.id}).populate("_id axone dentrites").exec()
+		.then(result => res.status(200).send(result))
+		.catch(error => {
+			debugRepositoryError(error);
+			return res.status(400).send({error: "error"});
 		});
 	} catch (e) {
 		debug(e);
-		return res.status(500).send({error: "error in your request"});
+		return res.status(500).send({error: "error"});
 	}
 });
 

@@ -1,16 +1,17 @@
 <template>
 	<require from="../resources/elements/cells-list"></require>
 	<section class="au-animate">
+		<ol class="breadcrumb">
+			<li><a href="#/neurons">Root</a></li>
+			<li repeat.for="el of arborescence">
+				<a route-href="route: neurons; params.bind: {id: el.id}">${el.name}</a>
+			</li>
+			<li class="active">${heading}</li>
+		</ol>
 		<div class="panel panel-default panel-table">
-			<div class="panel-heading">
-				<div class="row">
-					<div class="col col-xs-6 text-left">
-						<h3 class="panel-title">List of cells</h3>
-					</div>
-				</div>
-			</div>
+			<div class="panel-heading"></div>
 			<div class="panel-body">
-				<cells-list cells.bind="cells"></cells-list>
+				<cells-list cells.bind="cells" axone.bind="axoneId"></cells-list>
 			</div>
 			<div class="panel-footer">
 				<div class="row">

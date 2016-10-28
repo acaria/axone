@@ -7,7 +7,7 @@
 			</tr> 
 		</thead>
 		<tbody>
-			<tr if.bind="!editing['NEW']">
+			<tr if.bind="!creating">
 				<td align="right">
 					<a class="btn btn-primary au-target" click.delegate="createCell('')" au-target-id="22"><em class="fa fa-plus"></em></a>
 				</td>
@@ -23,7 +23,7 @@
 					<a class="btn btn-warning" if.bind="editing[cell._id]" click.delegate="cancelCell(cell._id)"><em class="fa fa-times"></em></a>
 				</td>
 				<td>
-					<text if.bind="!editing[cell._id]">${cell.name}</text>
+					<a route-href="route: neurons; params.bind: {id: cell._id}" if.bind="!editing[cell._id]">${cell.name}</a>
 					<input class="form-control" type="text" if.bind="editing[cell._id]" value.bind="cell.name"> 
 				</td>
 			</tr>

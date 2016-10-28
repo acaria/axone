@@ -7,6 +7,7 @@ interface IRead<T> {
 	findById(id: string, callback: (error: any, result: T) => void): void;
 	findOne(cond: Object, callback: (err: any, result: T) => void): void;
 	find(cond: Object, callback: (err: any, res: T[]) => void): void;
+	find(cond: Object, fields: Object, callback: (err: any, res: T[]) => void): void;
 }
 
 interface IAdminRead<T> {
@@ -25,6 +26,10 @@ export class RepositoryBase<T extends mongoose.Document> implements IRead<T>, IW
 
 	constructor(schemaModel: mongoose.Model<mongoose.Document>) {
 		this._model = schemaModel;
+	}
+
+	get model(): mongoose.Model<T> {
+		return this._model as mongoose.Model<T>;
 	}
 
 	create(item: T, callback: (error: any, result: T) => void) {

@@ -12,10 +12,10 @@ export interface ICellModel extends Document {
 };
 
 let entitySchema = new Schema({
-	name: { type: String, required: true},
-	user: { type: Schema.Types.ObjectId, required: true},
-	createdAt: { type: Date, required: false},
-	modifiedAt: { type: Date, required: false}
+	name: 		{ type: String, 						required: true},
+	user: 		{ type: Schema.Types.ObjectId, 	required: true, ref: "user"},
+	createdAt: 	{ type: Date, 							required: false},
+	modifiedAt: { type: Date, 							required: false}
 }).pre("save", function(next: () => void) {
 	if (!this._doc) {
 		next();

@@ -8,6 +8,7 @@ var log = LogManager.getLogger('cells-list');
 @autoinject()
 export class CellsList {
 	@bindable cells = [];
+	@bindable axone: string = null;
 
 	private editing = {};
 	private creating:any = false;
@@ -35,8 +36,9 @@ export class CellsList {
 
 	saveCell(id:number) {
 		if (this.creating && this.creating._id == id) {
-			var sendData = {
-				name: this.creating.name
+			let sendData = {
+				name: this.creating.name,
+				axone: this.axone
 			};
 			this.apiClient.create('cells', sendData)
 			.then(cell => {
@@ -53,8 +55,9 @@ export class CellsList {
 		} else {
 			for(let cell of this.cells) {
 				if (cell._id == id) {
-					var sendData = {
-						name: cell.name
+					let sendData = {
+						name: cell.name,
+						axone: this.axone
 					};
 					this.apiClient.update('cells', cell._id, sendData)
 					.then(cell => {

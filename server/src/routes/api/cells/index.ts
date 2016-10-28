@@ -3,11 +3,13 @@
 
 import express = require("express");
 import { CellRepository } from "../../../models/cell";
+import { NeuronRepository } from "../../../models/neuron";
 import Utils from "../../utils";
 
 var debug = require("debug")("ax-server:apiCells");
 var cfg = require("../../../../config.js");
 let router = express.Router();
+let neurons = new NeuronRepository();
 let cells = new CellRepository();
 
 function debugRepositoryError(err: any) {
@@ -57,12 +59,24 @@ router.post("/", (req, res) => {
 			return res.status(401).send({error: "token error"});
 		}
 		req.body.user = req[cfg.tokenRef];
+		debug(req.body);
 		cells.create(req.body, (error, result) => {
 			if (error) {
 				debugRepositoryError(error);
 				return res.status(400).send({error: "error"});
 			}
-			return res.status(201).send(result);
+			var neuron: any = {
+				_id: result._id,
+				axone: req.body.axone,
+				user: result.user
+			};
+			neurons.create(neuron, (error2, result2) => {
+				if (error2) {
+					debugRepositoryError(error2);
+					return res.status(400).send({error: "error"});
+				}
+				return res.status(201).send(result);
+			});
 		});
 	} catch (e) {
 		debug(e);
@@ -116,7 +130,13 @@ router.delete("/:id", (req, res) => {
 				debugRepositoryError(error);
 				return res.status(400).send({error: "error"});
 			}
-			return res.status(200).send({success: "success"});
+			neurons.delete(req.params.id, (error2, result2) => {
+				if (error2) {
+					debugRepositoryError(error2);
+					return res.status(400).send({error: "error"});
+				}
+				return res.status(200).send({success: "success"});
+			});
 		});
 	} catch (e) {
 		debug(e);
