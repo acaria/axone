@@ -4,12 +4,17 @@ import {Config as ApiConfig, Rest} from "aurelia-api";
 import {Prompt} from '../components/prompt';
 var log = LogManager.getLogger('neurons');
 
+interface IArborescence {
+	name: string;
+	id: string;
+}
+
 @autoinject
 export default class {
 	private heading = "List of neurons";
 
 	axoneId = null;
-	arborescence = [];
+	arb:Array<IArborescence> = [];
 	cells = [];
 
 	private apiClient: Rest; 
@@ -18,31 +23,39 @@ export default class {
 		this.apiClient = apiConfig.getEndpoint("api");
 	}
 
-	private buildArborescence(neuron: any) {
-		let index = 0;
-		for(let el of this.arborescence) {
-			if (el.id == neuron._id._id) {
-				log.info(this.arborescence);
-				this.arborescence = this.arborescence.slice(0, index);
-				log.info(this.arborescence);
-				break;
+	private buildArb(neuron: any): Array<IArborescence> {
+		log.info(this.arb);
+		let found = false;
+		let result:Array<IArborescence> = [];
+
+		if (neuron.axone) {
+			for(let el of this.arb) {
+				result.push(el);
+				if (el.id == neuron.axone._id) {
+					found = true;
+					break;
+				}
 			}
-			index++;
 		}
-		if (index == (this.arborescence.length + 1)) {
-			this.arborescence = [];
+		if (!found && neuron.axone) {
+			result = [{
+				name: "...",
+				id: null
+			}];
 		}
-		this.arborescence.push({
+		result.push({
 			name: neuron._id.name,
 			id: neuron._id._id
 		});
+
+		return result;
 	}
 
 	activate(params, routeConfig) {
 		this.axoneId = null;
 		if (!params.id) {
 			this.cells = [];
-			this.arborescence = [];
+			this.arb = [];
 			this.axoneId = null;
 			this.apiClient.find('neurons')
 			.then(neurons => {
@@ -55,7 +68,7 @@ export default class {
 			this.apiClient.findOne('neurons', params.id)
 			.then(neuron => {
 				this.axoneId = neuron._id._id;
-				this.buildArborescence(neuron);
+				this.arb = this.buildArb(neuron);
 				this.apiClient.find(`neurons?axone=${params.id}`)
 				.then(neurons => {
 					this.cells = [];

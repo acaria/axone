@@ -2,9 +2,10 @@
 	<require from="../resources/elements/cells-list"></require>
 	<section class="au-animate">
 		<ol class="breadcrumb">
-			<li><a href="#/neurons">Root</a></li>
-			<li repeat.for="el of arborescence">
-				<a route-href="route: neurons; params.bind: {id: el.id}">${el.name}</a>
+			<li><a href="#/neurons">root</a></li>
+			<li repeat.for="el of arb">
+				<label if.bind="!el.id">${el.name}</label>
+				<a if.bind="el.id" route-href="route: neurons; params.bind: {id: el.id}">${el.name}</a>
 			</li>
 			<li class="active">${heading}</li>
 		</ol>
