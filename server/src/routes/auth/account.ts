@@ -36,7 +36,7 @@ export default class {
 	}
 
 	signup(req: Request, res: Response) {
-		this.repo.findOne({email: req.body.email}, (err, oldUser) => {
+		this.repo.findOne({email: req.body.email}, null, null, (err, oldUser) => {
 			if (oldUser) {
 				return res.status(409).send({error: "email already exists"});
 			}
@@ -52,7 +52,7 @@ export default class {
 	}
 
 	login(req: Request, res: Response) {
-		this.repo.findOneP({email: req.body.email}, "+password", (err, user) => {
+		this.repo.findOne({email: req.body.email}, "+password", null, (err, user) => {
 			if (!user) {
 				return res.status(401).send({error: "wrong email or password"});
 			}
@@ -67,7 +67,7 @@ export default class {
 	}
 
 	get(req: Request, res: Response) {
-		this.repo.findById(req[cfg.tokenRef], (err, user) => {
+		this.repo.find(req[cfg.tokenRef], null, null, (err, user) => {
 			if (!user) {
 				return res.status(404).send({error: "User not found"});
 			}

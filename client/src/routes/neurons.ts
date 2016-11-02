@@ -3,10 +3,12 @@ import {DialogService} from 'aurelia-dialog';
 import {Config as ApiConfig, Rest} from "aurelia-api";
 import {Prompt} from '../components/prompt';
 import {log} from '../logger';
+import {Item, DendriteItem} from '../resources/elements/cells-list';
 
 interface IArborescence {
 	name: string;
 	id: string;
+	disabled: boolean;
 }
 
 @autoinject
@@ -15,7 +17,7 @@ export default class {
 
 	axoneId = null;
 	arb:Array<IArborescence> = [];
-	cells = [];
+	items:Array<Item> = [];
 
 	private apiClient: Rest; 
 
@@ -30,6 +32,7 @@ export default class {
 
 		if (neuron.axone) {
 			for(let el of this.arb) {
+				el.disabled = false;
 				result.push(el);
 				if (el.id == neuron.axone._id) {
 					found = true;
@@ -40,28 +43,46 @@ export default class {
 		if (!found && neuron.axone) {
 			result = [{
 				name: "...",
-				id: null
+				id: null,
+				disabled: true
 			}];
 		}
 		result.push({
 			name: neuron._id.name,
-			id: neuron._id._id
+			id: neuron._id._id,
+			disabled: true
 		});
 
 		return result;
 	}
 
+	private createItem(neuron):Item {
+		let dendrites: Array<DendriteItem> = [];
+		if (neuron.dendrite) {
+			for(let d of neuron.dendrites) {
+				dendrites.push({
+					_id: d._id,
+					name: d.name
+				});
+			}
+		}
+		return {
+			_id: neuron._id._id,
+			name: neuron._id.name,
+			dendrites: dendrites
+		};
+	}
+
 	activate(params, routeConfig) {
 		this.axoneId = null;
 		if (!params.id) {
-			this.cells = [];
+			this.items = [];
 			this.arb = [];
 			this.axoneId = null;
 			this.apiClient.find('neurons')
 			.then(neurons => {
 				for (let neuron of neurons) {
-					neuron._id.dentrites = [];
-					this.cells.push(neuron._id);
+					this.items.push(this.createItem(neuron));
 				}
 			})
 			.catch(err => log.error(err));
@@ -70,12 +91,11 @@ export default class {
 			.then(neuron => {
 				this.axoneId = neuron._id._id;
 				this.arb = this.buildArb(neuron);
-				this.apiClient.find(`neurons?axone=${params.id}`)
+				this.apiClient.find('neurons', {axone: params.id})
 				.then(neurons => {
-					this.cells = [];
+					this.items = [];
 					for (let neuron of neurons) {
-						neuron._id.dentrites = [];
-						this.cells.push(neuron._id);
+						this.items.push(this.createItem(neuron));
 					}
 				})
 				.catch(err => log.error(err));

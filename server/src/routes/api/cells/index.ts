@@ -40,12 +40,20 @@ router.get("/", (req, res) => {
 			return res.status(401).send({error: "token error"});
 		}
 		var userId = req[cfg.tokenRef];
-		cells.find({user: userId}, (error, result) => {
-			if (error) {
-				debugRepositoryError(error);
-				return res.status(400).send({error: "error"});
-			}
-			return res.status(200).send(result);
+
+		let query = cells.model.find({user: userId});
+		if (req.query.sort) {
+			query = query.sort(req.query.sort);
+		}
+		if (req.query.mode && req.query.mode == "nameids") {
+			query = query.select("id name");
+		}
+
+		query.exec()
+		.then(result => res.status(200).send(result))
+		.catch(error => {
+			debugRepositoryError(error);
+			return res.status(400).send({error: "error"});
 		});
 	} catch (e) {
 		debug(e);
@@ -85,7 +93,7 @@ router.post("/", (req, res) => {
 
 router.get("/:id", (req, res) => {
 	try {
-		cells.findById(req.params.id, (error, result) => {
+		cells.find(req.params.id, null, null, (error, result) => {
 			if (error) {
 				debugRepositoryError(error);
 				return res.status(400).send({error: "error"});

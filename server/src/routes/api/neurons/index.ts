@@ -41,18 +41,14 @@ router.get("/", (req, res) => {
 		}
 		var userId = req[cfg.tokenRef];
 
-		let query;
+		let query = neurons.model.find({user: userId});
 		if (req.query.axone) {
-			query = neurons.model.find({user: userId})
-			.where("axone").equals(req.query.axone)
-			.populate("_id axone dentrites");
+			query = query.where("axone").equals(req.query.axone);
 		} else {
-			query = neurons.model.find({user: userId})
-			.where("axone").equals(null)
-			.populate("_id axone dentrites");
+			query = query.where("axone").equals(null);
 		}
 
-		query.exec()
+		query.populate("_id axone dendrites").exec()
 		.then(result => res.status(200).send(result))
 		.catch(error => {
 			debugRepositoryError(error);
@@ -90,7 +86,7 @@ router.get("/:id", (req, res) => {
 		}
 		var userId = req[cfg.tokenRef];
 
-		neurons.model.findOne({user: userId, _id: req.params.id}).populate("_id axone dentrites").exec()
+		neurons.model.findOne({user: userId, _id: req.params.id}).populate("_id axone dendrites").exec()
 		.then(result => res.status(200).send(result))
 		.catch(error => {
 			debugRepositoryError(error);

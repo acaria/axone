@@ -4,14 +4,8 @@
 import * as mongoose from "mongoose";
 
 interface IRead<T> {
-	findById(id: string, callback: (error: any, result: T) => void): void;
-	findOne(cond: Object, callback: (err: any, result: T) => void): void;
-	find(cond: Object, callback: (err: any, res: T[]) => void): void;
-	find(cond: Object, fields: Object, callback: (err: any, res: T[]) => void): void;
-}
-
-interface IAdminRead<T> {
-	findOneP(cond: Object, fields: Object, callback: (err: any, res: T) => void): void;
+	findOne(cond: Object, fields: Object, options: Object, callback: (err: any, result: T) => void): void;
+	find(cond: Object, fields: Object, options: Object, callback: (err: any, res: T[]) => void): void;
 }
 
 interface IWrite<T> {
@@ -20,7 +14,7 @@ interface IWrite<T> {
 	delete(_id: string, callback: (error: any, result: any) => void): void;
 }
 
-export class RepositoryBase<T extends mongoose.Document> implements IRead<T>, IWrite<T>, IAdminRead<T> {
+export class RepositoryBase<T extends mongoose.Document> implements IRead<T>, IWrite<T> {
 
 	private _model: mongoose.Model<mongoose.Document>;
 
@@ -44,19 +38,11 @@ export class RepositoryBase<T extends mongoose.Document> implements IRead<T>, IW
 		this._model.remove({ _id: _id }, (err) => callback(err, null));
 	}
 
-	findById(_id: string, callback: (error: any, result: T) => void) {
-		this._model.findById(_id, callback);
+	findOne(cond: Object, fields: Object, options: Object, callback: (err: any, res: T) => void) {
+		this._model.findOne(cond, fields, options, callback);
 	}
 
-	findOne(cond: Object, callback: (err: any, res: T) => void) {
-		this._model.findOne(cond, callback);
-	}
-
-	findOneP(cond: Object, fields: string, callback: (err: any, res: T) => void) {
-		this._model.findOne(cond, fields, callback);
-	}
-
-	find(cond: Object, callback: (err: any, res: T[]) => void) {
-		this._model.find(cond, callback);
+	find(cond: Object, fields: Object, options: Object,  callback: (err: any, res: T[]) => void) {
+		this._model.find(cond, fields, options, callback);
 	}
 }

@@ -4,7 +4,7 @@
 			<tr>
 				<th><em class="fa fa-cog"></em></th>
 				<th>Name</th>
-				<th>Dentrites</th>
+				<th>Dendrites</th>
 			</tr> 
 		</thead>
 		<tbody>
@@ -16,39 +16,20 @@
 					<i>new cell</i>
 				</td>
 			</tr>
-			<tr repeat.for="cell of cells">
+			<tr repeat.for="item of items">
 				<td align="center">
-					<a class="btn btn-primary" if.bind="!editing[cell._id]" click.delegate="editCell(cell._id)"><em class="fa fa-pencil"></em></a>
-					<a class="btn btn-danger" if.bind="!editing[cell._id]" click.delegate="removeCell(cell._id)"><em class="fa fa-trash"></em></a>
-					<a class="btn btn-success" if.bind="editing[cell._id]" click.delegate="saveCell(cell._id)"><em class="fa fa-check"></em></a>
-					<a class="btn btn-warning" if.bind="editing[cell._id]" click.delegate="cancelCell(cell._id)"><em class="fa fa-times"></em></a>
+					<a class="btn btn-primary" if.bind="!editing[item._id]" click.delegate="editCell(item._id)"><em class="fa fa-pencil"></em></a>
+					<a class="btn btn-danger" if.bind="!editing[item._id]" click.delegate="removeCell(item._id)"><em class="fa fa-trash"></em></a>
+					<a class="btn btn-success" if.bind="editing[item._id]" click.delegate="saveCell(item._id)"><em class="fa fa-check"></em></a>
+					<a class="btn btn-warning" if.bind="editing[item._id]" click.delegate="cancelCell(item._id)"><em class="fa fa-times"></em></a>
 				</td>
 				<td>
-					<a route-href="route: neurons; params.bind: {id: cell._id}" if.bind="!editing[cell._id]">${cell.name}</a>
-					<input class="form-control" type="text" if.bind="editing[cell._id]" value.bind="cell.name">
-					<!-- <form class="form-inline">
-						<div class="form-group">
-							<label class="sr-only" for="exampleInputEmail3">Email address</label>
-							<input type="email" class="form-control" id="exampleInputEmail3" placeholder="Email">
-						</div>
-						<div class="form-group">
-							<label class="sr-only" for="example InputPassword3">Password</label>
-							<tag-editor></tag-editor>
-						</div>
-						<div class="checkbox">
-							<label>
-								<input type="checkbox"> Remember me
-							</label>
-						</div>
-						<button type="submit" class="btn btn-default">Sign in</button>
-					</form>  -->
-
-
-					<!-- <span class="pull-right label label-info">Pouet</span> -->
+					<a route-href="route: neurons; params.bind: {id: item._id}" if.bind="!editing[item._id]">${item.name}</a>
+					<input class="form-control" type="text" if.bind="editing[item._id]" value.bind="item.name">
 				</td>
 				<td>
-					<tag-editor content.bind="cell.dentrites" if.bind="editing[cell._id]"></tag-editor>
-					<span if.bind="!editing[cell._id]" class="label label-info">Pouet</span>
+					<tag-editor content.bind="allCells" selection.bind="item.dendrites" if.bind="editing[item._id]"></tag-editor>
+					<span if.bind="!editing[item._id]" class="label label-info">Pouet</span>
 				</td>
 			</tr>
 		</tbody>
