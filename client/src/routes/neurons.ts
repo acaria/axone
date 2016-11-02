@@ -1,8 +1,8 @@
-import {autoinject, LogManager} from 'aurelia-framework';
+import {autoinject} from 'aurelia-framework';
 import {DialogService} from 'aurelia-dialog';
 import {Config as ApiConfig, Rest} from "aurelia-api";
 import {Prompt} from '../components/prompt';
-var log = LogManager.getLogger('neurons');
+import {log} from '../logger';
 
 interface IArborescence {
 	name: string;
@@ -24,8 +24,8 @@ export default class {
 	}
 
 	private buildArb(neuron: any): Array<IArborescence> {
-		log.info(this.arb);
-		let found = false;
+		log.debug(this.arb);
+		let found = false; 
 		let result:Array<IArborescence> = [];
 
 		if (neuron.axone) {
@@ -60,6 +60,7 @@ export default class {
 			this.apiClient.find('neurons')
 			.then(neurons => {
 				for (let neuron of neurons) {
+					neuron._id.dentrites = [];
 					this.cells.push(neuron._id);
 				}
 			})
@@ -73,6 +74,7 @@ export default class {
 				.then(neurons => {
 					this.cells = [];
 					for (let neuron of neurons) {
+						neuron._id.dentrites = [];
 						this.cells.push(neuron._id);
 					}
 				})

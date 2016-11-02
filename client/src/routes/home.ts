@@ -1,5 +1,5 @@
+import {log} from '../logger';
 import {computedFrom} from 'aurelia-framework';
-
 
 export class Welcome {
 	title = 'Welcome !!!!';
@@ -25,7 +25,7 @@ export class Welcome {
 }
 
 export class UpperValueConverter {
-  toView(value) {
-    return value && value.toUpperCase();
-  }
+	toView(value) {
+		return value && value.toUpperCase();
+	}
 }

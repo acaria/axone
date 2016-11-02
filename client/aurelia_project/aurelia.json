@@ -44,7 +44,7 @@
 	},
 	"minifyCss": {
 		"output": "css",
-		"sources": ["src/assets/css/base.css", "src/assets/css/app.css"],
+		"sources": ["src/assets/css/*.css"],
 		"filename": "styles.min.css"
 	},
 	"copyCss": {
@@ -52,7 +52,9 @@
 		"filename": "base.css",
 		"sources": [
 			"node_modules/bootstrap/dist/css/*.min.css",
-			"node_modules/font-awesome/css/*.min.css"
+			"node_modules/font-awesome/css/*.min.css",
+			"node_modules/jquery-ui-dist/*.min.css",
+			"node_modules/magicsuggest/*-min.css"
 		]
 	},
 	"copyFiles": [
@@ -63,6 +65,14 @@
 				"node_modules/font-awesome/fonts/*",
 				"node_modules/bootstrap/dist/fonts/*"
 			]
+		},
+		{
+			"name": "copyImages",
+			"output": "images",
+			"sources": [
+				"src/assets/images/*",
+				"node_modules/jquery-ui-dist/images/*"
+			]
 		}
 	],
 	"dist": {
@@ -71,6 +81,7 @@
 			"./css/**/*",
 			"./data/**/*",
 			"./fonts/**/*",
+			"./images/**/*",
 			"./locales/**/*",
 			"./scripts/**/*",
 			"./index.html"
@@ -141,7 +152,6 @@
 					"aurelia-loader",
 					"aurelia-loader-default",
 					"aurelia-logging",
-					"aurelia-logging-console",
 					"aurelia-metadata",
 					"aurelia-pal",
 					"aurelia-pal-browser",
@@ -176,6 +186,18 @@
 						"name":"jquery",
 						"path":"../node_modules/jquery/dist",
 						"main":"jquery.min"
+					},
+					{
+						"name":"jquery-ui",
+						"path":"../node_modules/jquery-ui-dist",
+						"main":"jquery-ui.min",
+						"deps": ["jquery"]
+					},
+					{
+						"name":"magicsuggest",
+						"path":"../node_modules/magicsuggest",
+						"main":"magicsuggest-min",
+						"deps": ["jquery", "bootstrap"]
 					},
 					{
 						"name": "aurelia-dialog",

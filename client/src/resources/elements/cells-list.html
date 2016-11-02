@@ -4,6 +4,7 @@
 			<tr>
 				<th><em class="fa fa-cog"></em></th>
 				<th>Name</th>
+				<th>Dentrites</th>
 			</tr> 
 		</thead>
 		<tbody>
@@ -24,7 +25,30 @@
 				</td>
 				<td>
 					<a route-href="route: neurons; params.bind: {id: cell._id}" if.bind="!editing[cell._id]">${cell.name}</a>
-					<input class="form-control" type="text" if.bind="editing[cell._id]" value.bind="cell.name"> 
+					<input class="form-control" type="text" if.bind="editing[cell._id]" value.bind="cell.name">
+					<!-- <form class="form-inline">
+						<div class="form-group">
+							<label class="sr-only" for="exampleInputEmail3">Email address</label>
+							<input type="email" class="form-control" id="exampleInputEmail3" placeholder="Email">
+						</div>
+						<div class="form-group">
+							<label class="sr-only" for="example InputPassword3">Password</label>
+							<tag-editor></tag-editor>
+						</div>
+						<div class="checkbox">
+							<label>
+								<input type="checkbox"> Remember me
+							</label>
+						</div>
+						<button type="submit" class="btn btn-default">Sign in</button>
+					</form>  -->
+
+
+					<!-- <span class="pull-right label label-info">Pouet</span> -->
+				</td>
+				<td>
+					<tag-editor content.bind="cell.dentrites" if.bind="editing[cell._id]"></tag-editor>
+					<span if.bind="!editing[cell._id]" class="label label-info">Pouet</span>
 				</td>
 			</tr>
 		</tbody>

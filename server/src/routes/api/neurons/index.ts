@@ -48,7 +48,7 @@ router.get("/", (req, res) => {
 			.populate("_id axone dentrites");
 		} else {
 			query = neurons.model.find({user: userId})
-			.where("axone").exists(false)
+			.where("axone").equals(null)
 			.populate("_id axone dentrites");
 		}
 

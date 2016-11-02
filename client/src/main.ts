@@ -1,5 +1,5 @@
 import {Aurelia, LogManager} from "aurelia-framework";
-import {ConsoleAppender} from "aurelia-logging-console";
+import {log, ConsoleAppender} from './logger';
 import environment from './environment';
 import authConfig from './auth-config';
 

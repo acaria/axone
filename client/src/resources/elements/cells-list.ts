@@ -1,9 +1,9 @@
 
-import {bindable, autoinject, LogManager} from 'aurelia-framework';
+import {bindable, autoinject} from 'aurelia-framework';
 import {DialogService} from 'aurelia-dialog';
 import {Config as ApiConfig, Rest} from "aurelia-api";
 import {Prompt} from '../../components/prompt';
-var log = LogManager.getLogger('cells-list');
+import {log} from '../../logger';
 
 @autoinject()
 export class CellsList {
@@ -29,6 +29,7 @@ export class CellsList {
 	editCell(id:number) {
 		for(let cell of this.cells) {
 			if (cell._id == id) {
+				cell.dentrites = [];
 				this.editing[id] = JSON.parse(JSON.stringify(cell));
 			}
 		}
@@ -102,6 +103,7 @@ export class CellsList {
 						.catch(err => log.error(err.message));
 					}
 				})
+				.catch(err => log.error(err.message));
 			}
 		}
 	}

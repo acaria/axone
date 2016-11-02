@@ -59,7 +59,6 @@ router.post("/", (req, res) => {
 			return res.status(401).send({error: "token error"});
 		}
 		req.body.user = req[cfg.tokenRef];
-		debug(req.body);
 		cells.create(req.body, (error, result) => {
 			if (error) {
 				debugRepositoryError(error);
