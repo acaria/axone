@@ -183,6 +183,11 @@
 						"env": "dev"
 					},
 					{
+						"name": "lodash",
+						"path": "../node_modules/lodash",
+						"main": "lodash.min"
+					},
+					{
 						"name":"jquery",
 						"path":"../node_modules/jquery/dist",
 						"main":"jquery.min"

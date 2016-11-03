@@ -24,7 +24,7 @@
 					<a class="btn btn-warning" if.bind="editing[item._id]" click.delegate="cancelCell(item._id)"><em class="fa fa-times"></em></a>
 				</td>
 				<td>
-					<a route-href="route: neurons; params.bind: {id: item._id}" if.bind="!editing[item._id]">${item.name}</a>
+					<a route-href="route: neurons; params.bind: {id: item.__neuron}" if.bind="!editing[item._id]">${item.name}</a>
 					<input class="form-control" type="text" if.bind="editing[item._id]" value.bind="item.name">
 				</td>
 				<td>

@@ -34,6 +34,7 @@
 	"globalDependencies": {
 		"jquery": "registry:dt/jquery#1.10.0+20160929162922",
 		"jqueryui": "registry:dt/jqueryui#1.11.0+20160727153854",
+		"lodash": "registry:dt/lodash#4.14.0+20161004174455",
 		"magicsuggest": "registry:dt/magicsuggest#0.0.0+20160316171810",
 		"url": "github:aurelia/fetch-client/doc/url.d.ts#bbe0777ef710d889a05759a65fa2c9c3865fc618",
 		"whatwg-fetch": "registry:dt/whatwg-fetch#0.0.0+20161004182750",

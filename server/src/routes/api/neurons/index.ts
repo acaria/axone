@@ -5,6 +5,7 @@ import express = require("express");
 import { CellRepository } from "../../../models/cell";
 import { NeuronRepository } from "../../../models/neuron";
 import Utils from "../../utils";
+import * as _ from "lodash";
 
 var debug = require("debug")("ax-server:apiCells");
 var cfg = require("../../../../config.js");
@@ -13,6 +14,9 @@ let neurons = new NeuronRepository();
 let cells = new CellRepository();
 
 function debugRepositoryError(err: any) {
+	if (!err) {
+		return;
+	}
 	if (err && err.name === "ValidationError") {
 		for (var field in err.errors) {
 			if (err.errors.hasOwnProperty(field)) {
@@ -39,16 +43,17 @@ router.get("/", (req, res) => {
 		if (!req[cfg.tokenRef]) {
 			return res.status(401).send({error: "token error"});
 		}
-		var userId = req[cfg.tokenRef];
+		let selector = {
+			user: req[cfg.tokenRef] as string,
+			axone: req.query.axone,
+		};
 
-		let query = neurons.model.find({user: userId});
-		if (req.query.axone) {
-			query = query.where("axone").equals(req.query.axone);
-		} else {
-			query = query.where("axone").equals(null);
+		if (req.query.cell) {
+			selector = _.extend({cell: req.query.cell}, selector);
 		}
 
-		query.populate("_id axone dendrites").exec()
+		let query = neurons.model.find(selector)
+		.populate("axone dendrites cell").exec()
 		.then(result => res.status(200).send(result))
 		.catch(error => {
 			debugRepositoryError(error);
@@ -66,12 +71,14 @@ router.post("/", (req, res) => {
 			return res.status(401).send({error: "token error"});
 		}
 		req.body.user = req[cfg.tokenRef];
-		neurons.create(req.body, (error, result) => {
-			if (error) {
+
+		let selector = _.pick(req.body, ["axone", "user", "cell"]);
+		neurons.upsert(selector, req.body, (error, isNew, result) => {
+			if (error || !result) {
 				debugRepositoryError(error);
 				return res.status(400).send({error: "error"});
 			}
-			return res.status(201).send(result);
+			return res.status(isNew ? 201 : 200).send(result);
 		});
 	} catch (e) {
 		debug(e);
@@ -84,10 +91,18 @@ router.get("/:id", (req, res) => {
 		if (!req[cfg.tokenRef]) {
 			return res.status(401).send({error: "token error"});
 		}
-		var userId = req[cfg.tokenRef];
+		let selector = {
+			_id: req.params.id as string,
+			user: req[cfg.tokenRef] as string
+		};
 
-		neurons.model.findOne({user: userId, _id: req.params.id}).populate("_id axone dendrites").exec()
-		.then(result => res.status(200).send(result))
+		neurons.model.findOne(selector).populate("cell axone dendrites").exec()
+		.then(result => {
+			if (!result) {
+				return res.status(400).send({error: "error"});
+			}
+			res.status(200).send(result);
+		})
 		.catch(error => {
 			debugRepositoryError(error);
 			return res.status(400).send({error: "error"});
@@ -100,16 +115,17 @@ router.get("/:id", (req, res) => {
 
 router.put("/:id", (req, res) => {
 	try {
-		if (req[cfg.tokenRef]) {
-			req.body.user = req[cfg.tokenRef];
+		if (!req[cfg.tokenRef]) {
+			return res.status(401).send({error: "token error"});
 		}
-		neurons.update(req.params.id, req.body, (error, result) => {
-			if (error) {
+		let selector = {
+			_id: req.params.id as string,
+			user: req[cfg.tokenRef] as string
+		};
+		neurons.update(selector, req.body, (error, result) => {
+			if (error || !result) {
 				debugRepositoryError(error);
 				return res.status(400).send({error: "error"});
-			}
-			if (!result) {
-				return res.status(401).send({error: "error"});
 			}
 			return res.status(200).send(result);
 		});
@@ -121,7 +137,15 @@ router.put("/:id", (req, res) => {
 
 router.delete("/:id", (req, res) => {
 	try {
-		neurons.delete(req.params.id, (error, result) => {
+		if (!req[cfg.tokenRef]) {
+			return res.status(401).send({error: "token error"});
+		}
+		let selector = {
+			_id: req.params.id as string,
+			user: req[cfg.tokenRef] as string
+		};
+
+		neurons.delete(selector, (error, result) => {
 			if (error) {
 				debugRepositoryError(error);
 				return res.status(400).send({error: "error"});

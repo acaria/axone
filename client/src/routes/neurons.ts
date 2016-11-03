@@ -3,7 +3,7 @@ import {DialogService} from 'aurelia-dialog';
 import {Config as ApiConfig, Rest} from "aurelia-api";
 import {Prompt} from '../components/prompt';
 import {log} from '../logger';
-import {Item, DendriteItem} from '../resources/elements/cells-list';
+import {Item} from '../resources/elements/cells-list';
 
 interface IArborescence {
 	name: string;
@@ -48,8 +48,8 @@ export default class {
 			}];
 		}
 		result.push({
-			name: neuron._id.name,
-			id: neuron._id._id,
+			name: neuron.cell.name,
+			id: neuron._id,
 			disabled: true
 		});
 
@@ -57,7 +57,7 @@ export default class {
 	}
 
 	private createItem(neuron):Item {
-		let dendrites: Array<DendriteItem> = [];
+		let dendrites: Array<{_id: string, name: string}> = [];
 		if (neuron.dendrite) {
 			for(let d of neuron.dendrites) {
 				dendrites.push({
@@ -67,9 +67,10 @@ export default class {
 			}
 		}
 		return {
-			_id: neuron._id._id,
-			name: neuron._id.name,
-			dendrites: dendrites
+			_id: neuron.cell._id,
+			name: neuron.cell.name,
+			__dendrites: neuron.dendrites,
+			__neuron: neuron._id
 		};
 	}
 
@@ -82,14 +83,15 @@ export default class {
 			this.apiClient.find('neurons')
 			.then(neurons => {
 				for (let neuron of neurons) {
-					this.items.push(this.createItem(neuron));
+					let item = this.createItem(neuron);
+					this.items.push(item);
 				}
 			})
 			.catch(err => log.error(err));
 		} else {
 			this.apiClient.findOne('neurons', params.id)
 			.then(neuron => {
-				this.axoneId = neuron._id._id;
+				this.axoneId = neuron._id;
 				this.arb = this.buildArb(neuron);
 				this.apiClient.find('neurons', {axone: params.id})
 				.then(neurons => {

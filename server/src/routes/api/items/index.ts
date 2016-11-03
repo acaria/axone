@@ -39,104 +39,54 @@ router.use((req, res, next) => {
 	next();
 });
 
-router.get("/", (req, res) => {
-	try {
-		if (!req[cfg.tokenRef]) {
-			return res.status(401).send({error: "token error"});
-		}
+function batchUpdateOrCreate(req: any, res: any, callback: (error: any, isNew: boolean, result: ICellModel) => void) {
+	if (!req[cfg.tokenRef]) {
+		return res.status(401).send({error: "token error"});
+	}
+
+	if (!req.body.cell) {
+		return res.status(400).send({error: "cell field missing"});
+	}
+	req.body.cell.user = req[cfg.tokenRef];
+
+	if (req.body.cell._id) {
 		let selector = {
+			_id: req.body.cell._id as string,
 			user: req[cfg.tokenRef] as string
 		};
-
-		let query = cells.model.find(selector);
-		if (req.query.sort) {
-			query = query.sort(req.query.sort);
-		}
-		if (req.query.mode && req.query.mode === "nameids") {
-			query = query.select("id name");
-		}
-
-		query.exec()
-		.then(result => res.status(200).send(result))
-		.catch(error => {
-			debugRepositoryError(error);
-			return res.status(400).send({error: "error"});
+		cells.update(selector, req.body.cell, (error, result) => {
+			callback(error, false, result);
 		});
-	} catch (e) {
-		debug(e);
-		return res.status(500).send({error: "error"});
+	} else {
+		let cellSelect = _.pick(req.body.cell, ["name", "user"]);
+		cells.upsert(cellSelect, req.body.cell, callback);
 	}
-});
+}
 
 router.post("/", (req, res) => {
 	try {
-		if (!req[cfg.tokenRef]) {
-			return res.status(401).send({error: "token error"});
-		}
-		req.body.user = req[cfg.tokenRef];
-
-		var selector = _.pick(req.body, ["_id", "user"]);
-		cells.upsert(selector, req.body, (error, isNew, result) => {
-			if (error) {
+		batchUpdateOrCreate(req, res, (error, isNew, result) => {
+			if (error || !result) {
 				debugRepositoryError(error);
 				return res.status(400).send({error: "error"});
 			}
-			if (!result) {
-				return res.status(400).send({error: "error"});
-			}
 
-			return res.status(isNew ? 201 : 200).send(result);
-		});
-	} catch (e) {
-		debug(e);
-		return res.status(500).send({error: "error in your request"});
-	}
-});
+			if (req.body.neuron) {
+				req.body.neuron.user = result.user;
+				req.body.neuron.cell = result._id;
 
-router.get("/:id", (req, res) => {
-	try {
-		if (!req[cfg.tokenRef]) {
-			return res.status(401).send({error: "token error"});
-		}
-		let selector = {
-			_id: req.params.id as string,
-			user: req[cfg.tokenRef] as string
-		};
-		cells.find(selector, null, null, (error, result) => {
-			if (error) {
-				debugRepositoryError(error);
-				return res.status(400).send({error: "error"});
+				let neuronSelect = _.pick(req.body.neuron, ["cell", "user", "axone"]);
+				neurons.upsert(neuronSelect, req.body.neuron, (error2, isNew2, result2) => {
+					if (error2) {
+						debugRepositoryError(error2);
+						return res.status(400).send({error: "error"});
+					}
+					return res.status(isNew ? 201 : 200).send({
+						cell: result,
+						neuron: result2
+					});
+				});
 			}
-			if (!result) {
-				return res.status(400).send({error: "error"});
-			}
-			return res.status(200).send(result);
-		});
-	} catch (e) {
-		debug(e);
-		return res.status(500).send({error: "error in your request"});
-	}
-});
-
-router.put("/:id", (req, res) => {
-	try {
-		if (!req[cfg.tokenRef]) {
-			return res.status(401).send({error: "token error"});
-		}
-		var selector = {
-			_id: req.params.id as string,
-			user: req[cfg.tokenRef] as string
-		};
-
-		cells.update(selector, req.body, (error, result) => {
-			if (error) {
-				debugRepositoryError(error);
-				return res.status(400).send({error: "error"});
-			}
-			if (!result) {
-				return res.status(400).send({error: "error"});
-			}
-			return res.status(200).send(result);
 		});
 	} catch (e) {
 		debug(e);

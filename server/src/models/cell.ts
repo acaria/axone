@@ -16,7 +16,9 @@ let entitySchema = new Schema({
 	user: 		{ type: Schema.Types.ObjectId, 	required: true, ref: "user"},
 	createdAt: 	{ type: Date, 							required: false},
 	modifiedAt: { type: Date, 							required: false}
-}).pre("save", function(next: () => void) {
+});
+
+entitySchema.pre("save", function(next: () => void) {
 	if (!this._doc) {
 		next();
 		return this;
@@ -38,5 +40,13 @@ let modelSchema = model<ICellModel>("cell", entitySchema, "cells", true);
 export class CellRepository extends RepositoryBase<ICellModel> {
 	constructor() {
 		super(modelSchema);
+	}
+
+	update(selector: {_id: string, user: string}, item: ICellModel, callback: (err: any, res: ICellModel) => void) {
+		this._model.findOneAndUpdate(selector, item, {new: true}, callback);
+	}
+
+	delete(selector: {_id: string, user: string}, callback: (err: any, res: any) => void) {
+		this._model.remove(selector, (err) => callback(err, null));
 	}
 }

@@ -67,7 +67,10 @@ export default class {
 	}
 
 	get(req: Request, res: Response) {
-		this.repo.find(req[cfg.tokenRef], null, null, (err, user) => {
+		let selector = {
+			_id: req[cfg.tokenRef] as string
+		};
+		this.repo.find(selector, null, null, (err, user) => {
 			if (!user) {
 				return res.status(404).send({error: "User not found"});
 			}
@@ -76,7 +79,10 @@ export default class {
 	}
 
 	update(req: Request, res: Response) {
-		this.repo.update(req[cfg.tokenref], req.body, (err, user) => {
+		let selector = {
+			_id: req[cfg.tokenRef] as string
+		};
+		this.repo.update(selector, req.body, (err, user) => {
 			if (err) {
 				return res.status(400).send({error: "error"});
 			}

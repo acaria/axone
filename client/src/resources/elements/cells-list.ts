@@ -4,16 +4,13 @@ import {DialogService} from 'aurelia-dialog';
 import {Config as ApiConfig, Rest} from "aurelia-api";
 import {Prompt} from '../../components/prompt';
 import {log} from '../../logger';
-
-export interface DendriteItem {
-	_id: string,
-	name: string
-}
+import * as _ from 'lodash';
 
 export interface Item {
 	_id: string;
 	name: string;
-	dendrites: Array<DendriteItem>;
+	__dendrites: Array<{_id: string, name: string}>;
+	__neuron: string;
 }
 
 @autoinject()
@@ -39,7 +36,7 @@ export class CellsList {
 
 	createCell(name:string) {
 		if (!this.creating) {
-			this.creating = {_id: 'NEW', name: name, dendrites: []};
+			this.creating = {_id: 'NEW', name: name, __dendrites: [], __neuron: null};
 			this.items.unshift(this.creating);
 			this.editing[this.creating._id] = this.creating;
 		}
@@ -54,38 +51,47 @@ export class CellsList {
 	}
 
 	saveCell(id:string) {
+		let sendData:Object = null;
+		let creatingProgress = false;
 		if (this.creating && this.creating._id == id) {
-			let sendData = {
-				name: this.creating.name,
-				axone: this.axone
-			};
-			this.apiClient.create('cells', sendData)
-			.then(cell => {
-				this.creating.name = cell.name;
-				this.creating._id = cell._id;
-				this.creating = null;
-				for(let cell of this.items) {
-					if (cell._id == id) {
-						this.editing[id] = false;
-					}
+			creatingProgress = true;
+			sendData = {
+				cell: _.pick(this.creating, ["name"]),
+				neuron: {
+					axone: this.axone,
+					dentrites: this.creating.__dendrites
 				}
-			})
-			.catch(err => log.error(err.message));
+			};
 		} else {
-			for(let cell of this.items) {
-				if (cell._id == id) {
-					let sendData = {
-						name: cell.name,
-						axone: this.axone
+			for(let item of this.items) {
+				if (item._id == id) {
+					sendData = {
+						cell: _.pick(item, ["name", "_id"]),
+						neuron: {
+							axone: this.axone,
+							dentrites: item.__dendrites
+						}
 					};
-					this.apiClient.update('cells', cell._id, sendData)
-					.then(cell => {
-						this.editing[id] = false;
-					})
-					.catch(err => log.error(err.message));		
+					break;
 				}
 			}
 		}
+
+		if (sendData === null) {
+			log.error("missing element " + id);
+			return;
+		}
+
+		this.apiClient.create("items", sendData)
+		.then(item => {
+			this.editing[id]._id = item.cell._id;
+			this.editing[id].__neuron = item.neuron._id;
+			if (creatingProgress) {
+				this.creating = null;
+			}
+			this.editing[id] = false;
+		})
+		.catch(error => log.error(error.message));
 	}
 
 	cancelCell(id:string) {
