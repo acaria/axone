@@ -3,23 +3,16 @@ import {bindable, autoinject} from 'aurelia-framework';
 import {DialogService} from 'aurelia-dialog';
 import {Config as ApiConfig, Rest} from "aurelia-api";
 import {Prompt} from '../../components/prompt';
+import {Item} from '../../models/neuron-item';
 import {log} from '../../logger';
 import * as _ from 'lodash';
-
-export interface Item {
-	_id: string;
-	name: string;
-	__dendrites: Array<{_id: string, name: string}>;
-	__neuron: string;
-}
 
 @autoinject()
 export class CellsList {
 	@bindable items: Array<Item> = [];
 	@bindable axone: string = null;
 
-
-	private editing = {};
+	private editing = new Map<string, Item>();
 	private creating:Item = null;
 	private apiClient: Rest;
 
@@ -27,7 +20,7 @@ export class CellsList {
 
 	constructor(apiConfig: ApiConfig, private dlg: DialogService) {
 		this.apiClient = apiConfig.getEndpoint("api");
-		this.apiClient.find('cells', {sort: "name", mode: "nameids"})
+		this.apiClient.find('items/nameids')
 		.then(cells => {
 			this.allCells = cells;
 		})
@@ -43,10 +36,9 @@ export class CellsList {
 	}
 
 	editCell(id:string) {
-		for(let cell of this.items) {
-			if (cell._id == id) {
-				this.editing[id] = JSON.parse(JSON.stringify(cell));
-			}
+		let item = _.find(this.items, {_id: id});
+		if (item) {
+			this.editing[id] = JSON.parse(JSON.stringify(item));
 		}
 	}
 
@@ -59,21 +51,19 @@ export class CellsList {
 				cell: _.pick(this.creating, ["name"]),
 				neuron: {
 					axone: this.axone,
-					dentrites: this.creating.__dendrites
+					dendrites: this.creating.__dendrites
 				}
 			};
 		} else {
-			for(let item of this.items) {
-				if (item._id == id) {
-					sendData = {
-						cell: _.pick(item, ["name", "_id"]),
-						neuron: {
-							axone: this.axone,
-							dentrites: item.__dendrites
-						}
-					};
-					break;
-				}
+			let item = _.find(this.items, {_id: id});
+			if (item != null) {
+				sendData = {
+					cell: _.pick(item, ["name", "_id"]),
+					neuron: {
+						axone: this.axone,
+						dendrites: item.__dendrites
+					}
+				};
 			}
 		}
 
@@ -83,9 +73,15 @@ export class CellsList {
 		}
 
 		this.apiClient.create("items", sendData)
-		.then(item => {
-			this.editing[id]._id = item.cell._id;
-			this.editing[id].__neuron = item.neuron._id;
+		.then(result => {
+			let item = _.find(this.items, {_id: id});
+			if (item) {
+				item.name = result.cell.name;
+				item._id = result.cell._id;
+				item.__neuron = result.neuronId;
+				item.__dendrites = result.dendrites;
+			}
+
 			if (creatingProgress) {
 				this.creating = null;
 			}
@@ -105,6 +101,7 @@ export class CellsList {
 			for(let cell of this.items) {
 				if (cell._id == id) {
 					cell.name = this.editing[id].name;
+					cell.__dendrites = this.editing[id].__dendrites;
 				}
 			}
 			this.editing[id] = false;
@@ -112,23 +109,22 @@ export class CellsList {
 	}
 
 	removeCell(id:string) {
-		for(let cell of this.items) {
-			if (cell._id == id) {
-				this.dlg.open({
-					viewModel: Prompt, 
-					model: `Are you sure to delete the cell "${cell.name}"?`})
-				.then(res => {
-					if (!res.wasCancelled) {
-						this.apiClient.destroy('cells/', cell._id)
-						.then(() => {
-							let index = this.items.indexOf(cell);
-							var removed = this.items.splice(index, 1);
-						})
-						.catch(err => log.error(err.message));
-					}
-				})
-				.catch(err => log.error(err.message));
-			}
+		let item = _.find(this.items, {_id: id});
+		if (item != null) {
+			this.dlg.open({
+				viewModel: Prompt, 
+				model: `Are you sure to delete the cell "${item.name}"?`})
+			.then(res => {
+				if (!res.wasCancelled) {
+					this.apiClient.destroy('cells/', item._id)
+					.then(() => {
+						let index = this.items.indexOf(item);
+						var removed = this.items.splice(index, 1);
+					})
+					.catch(err => log.error(err.message));
+				}
+			})
+			.catch(err => log.error(err.message));
 		}
 	}
 }

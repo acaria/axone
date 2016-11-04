@@ -89,6 +89,7 @@ router.post("/", (req, res) => {
 		});
 	} catch (e) {
 		debug(e);
+
 		return res.status(500).send({error: "error in your request"});
 	}
 });

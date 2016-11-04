@@ -53,7 +53,7 @@ router.get("/", (req, res) => {
 		}
 
 		let query = neurons.model.find(selector)
-		.populate("axone dendrites cell").exec()
+		.populate("axone cell").exec()
 		.then(result => res.status(200).send(result))
 		.catch(error => {
 			debugRepositoryError(error);

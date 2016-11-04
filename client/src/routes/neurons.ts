@@ -3,7 +3,7 @@ import {DialogService} from 'aurelia-dialog';
 import {Config as ApiConfig, Rest} from "aurelia-api";
 import {Prompt} from '../components/prompt';
 import {log} from '../logger';
-import {Item} from '../resources/elements/cells-list';
+import {Item} from '../models/neuron-item';
 
 interface IArborescence {
 	name: string;
@@ -80,26 +80,16 @@ export default class {
 			this.items = [];
 			this.arb = [];
 			this.axoneId = null;
-			this.apiClient.find('neurons')
-			.then(neurons => {
-				for (let neuron of neurons) {
-					let item = this.createItem(neuron);
-					this.items.push(item);
-				}
-			})
+			this.apiClient.find('items')
+			.then(items => this.items = items)
 			.catch(err => log.error(err));
 		} else {
 			this.apiClient.findOne('neurons', params.id)
 			.then(neuron => {
 				this.axoneId = neuron._id;
 				this.arb = this.buildArb(neuron);
-				this.apiClient.find('neurons', {axone: params.id})
-				.then(neurons => {
-					this.items = [];
-					for (let neuron of neurons) {
-						this.items.push(this.createItem(neuron));
-					}
-				})
+				this.apiClient.find('items', {axone: params.id})
+				.then(items => this.items = items)
 				.catch(err => log.error(err));
 			})
 			.catch(err => log.error(err));

@@ -22,6 +22,9 @@ section {
 .panel-table .panel-body {
   padding: 0;
 }
+.tag-dendrite {
+  margin: 5px 5px;
+}
 .panel-table .panel-body .table-bordered {
   border-style: none;
   margin: 0;

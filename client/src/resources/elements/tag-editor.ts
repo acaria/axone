@@ -13,7 +13,7 @@ export class TagEditor {
 		var myThis = this;
 		this.el = $(this.tagInput).magicSuggest({
 			displayField: "name",
-			placeholder: "Please choose any cell",
+			placeholder: "Tags",
 			data: this.content,
 			value: this.selection,
 			selectionRenderer: function(data){

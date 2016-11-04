@@ -28,8 +28,10 @@
 					<input class="form-control" type="text" if.bind="editing[item._id]" value.bind="item.name">
 				</td>
 				<td>
-					<tag-editor content.bind="allCells" selection.bind="item.dendrites" if.bind="editing[item._id]"></tag-editor>
-					<span if.bind="!editing[item._id]" class="label label-info">Pouet</span>
+					<tag-editor content.bind="allCells" selection.bind="item.__dendrites" if.bind="editing[item._id]"></tag-editor>
+					<template if.bind="!editing[item._id]">
+						<span repeat.for="dendrite of item.__dendrites" class="label label-info tag-dendrite">${dendrite.name}</span>
+					</template>
 				</td>
 			</tr>
 		</tbody>
