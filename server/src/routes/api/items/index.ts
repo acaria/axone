@@ -9,6 +9,7 @@ import * as _ from "lodash";
 
 var debug = require("debug")("ax-server:apiCells");
 var cfg = require("../../../../config.js");
+var oid = require("mongoose").Types.ObjectId;
 let router = express.Router();
 let neurons = new NeuronRepository();
 let cells = new CellRepository();
@@ -83,7 +84,7 @@ function createBucket(bucketName: string, user: string, callback: (error: any, n
 function genNewDendrites(names: Set<string>, user: string, bucketId: string, callback: (error: any, result: Array<IDendrite>) => void) {
 	let bulk = cells.model.collection.initializeUnorderedBulkOp();
 	names.forEach(el => {
-		bulk.find({name: el, user: user}).upsert().update({"$set": {name: el}});
+		bulk.find({name: el, user: oid(user)}).upsert().update({"$set": {name: el}});
 	});
 	bulk.execute()
 	.then(results => {
@@ -94,7 +95,7 @@ function genNewDendrites(names: Set<string>, user: string, bucketId: string, cal
 		.then(ids => {
 			let bulk = neurons.model.collection.initializeUnorderedBulkOp();
 			for (let el of ids) {
-				bulk.find({user: user, cell: el._id, axone: bucketId}).upsert().update({"$set": {cell: el._id}});
+				bulk.find({user: oid(user), cell: oid(el._id), axone: oid(bucketId)}).upsert().update({"$set": {cell: el._id}});
 			}
 			bulk.execute()
 			.then(results => {

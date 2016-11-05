@@ -9,6 +9,8 @@ import * as _ from "lodash";
 
 var debug = require("debug")("ax-server:apiCells");
 var cfg = require("../../../../config.js");
+var oid = require("mongoose").Types.ObjectId;
+
 let router = express.Router();
 let neurons = new NeuronRepository();
 let cells = new CellRepository();
@@ -155,23 +157,36 @@ router.delete("/:id", (req, res) => {
 			user: req[cfg.tokenRef] as string
 		};
 
-		cells.delete(selector, (error, result) => {
-			if (error) {
-				debugRepositoryError(error);
-				return res.status(400).send({error: "cell error"});
+		neurons.model.find({user: selector.user, cell: selector._id}).select("_id").exec()
+		.then(ids => {
+			let bulk = neurons.model.collection.initializeOrderedBulkOp();
+			for (let id of _.map(ids, "_id")) {
+				bulk.find({user: oid(selector.user), axone: oid(id)}).update({"$set": {axone: null}});
+				bulk.find({user: oid(selector.user)}).update({"$pull": {dendrites: oid(id)}});
+				bulk.find({_id: oid(id), user: oid(selector.user)}).delete();
 			}
-			let neuronSelect = {
-				cell: req.params.id as string,
-				user: req[cfg.tokenRef] as string
-			};
-			neurons.model.remove(neuronSelect).exec()
-			.then(result => {
-				return res.status(200).send({success: "success"});
+			bulk.execute()
+			.then(results => {
+				debug(results.getRawResponse());
+				if (!results.ok) {
+					return res.status(500).send({error: "error"});
+				}
+				cells.delete(selector, (error, result) => {
+					if (error) {
+						debugRepositoryError(error);
+						return res.status(500).send({error: "error"});
+					}
+					return res.status(200).send({success: "success"});
+				});
 			})
 			.catch(error => {
-				debugRepositoryError(error);
-				return res.status(400).send({error: "neuron error"});
+				debug(error);
+				return res.status(500).send({error: "error"});
 			});
+		})
+		.catch(error => {
+			debug(error);
+			return res.status(500).send({error: "error"});
 		});
 	} catch (e) {
 		debug(e);
