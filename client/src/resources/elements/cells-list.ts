@@ -3,7 +3,7 @@ import {bindable, autoinject} from 'aurelia-framework';
 import {DialogService} from 'aurelia-dialog';
 import {Config as ApiConfig, Rest} from "aurelia-api";
 import {Prompt} from '../../components/prompt';
-import {Item} from '../../models/neuron-item';
+import {Item, INameID} from '../../models/neuron-item';
 import {log} from '../../logger';
 import * as _ from 'lodash';
 
@@ -16,13 +16,13 @@ export class CellsList {
 	private creating:Item = null;
 	private apiClient: Rest;
 
-	private allCells;
+	private neuronsList: Array<INameID>;
 
 	constructor(apiConfig: ApiConfig, private dlg: DialogService) {
 		this.apiClient = apiConfig.getEndpoint("api");
 		this.apiClient.find('items/nameids')
-		.then(cells => {
-			this.allCells = cells;
+		.then(items => {
+			this.neuronsList = _.sortBy(items, "name") as Array<INameID>;
 		})
 		.catch(error => log.error(error));
 	}
@@ -74,6 +74,10 @@ export class CellsList {
 
 		this.apiClient.create("items", sendData)
 		.then(result => {
+			if (result.dendrites) {
+				this.neuronsList = _.sortBy(_.unionWith(this.neuronsList, result.dendrites), "name");
+			}
+
 			let item = _.find(this.items, {_id: id});
 			if (item) {
 				item.name = result.cell.name;

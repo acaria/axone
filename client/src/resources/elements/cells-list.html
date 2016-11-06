@@ -28,7 +28,7 @@
 					<input class="form-control" type="text" if.bind="editing[item._id]" value.bind="item.name">
 				</td>
 				<td>
-					<tag-editor content.bind="allCells" selection.bind="item.__dendrites" if.bind="editing[item._id]"></tag-editor>
+					<tag-editor content.bind="neuronsList" selection.bind="item.__dendrites" if.bind="editing[item._id]"></tag-editor>
 					<template if.bind="!editing[item._id]">
 						<span repeat.for="dendrite of item.__dendrites" class="label label-info tag-dendrite">${dendrite.name}</span>
 					</template>

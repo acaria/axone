@@ -167,21 +167,15 @@ router.delete("/:id", (req, res) => {
 			}
 			bulk.execute()
 			.then(results => {
-				debug(results.getRawResponse());
 				if (!results.ok) {
 					return res.status(500).send({error: "error"});
 				}
 				cells.delete(selector, (error, result) => {
 					if (error) {
-						debugRepositoryError(error);
-						return res.status(500).send({error: "error"});
+						throw error;
 					}
 					return res.status(200).send({success: "success"});
 				});
-			})
-			.catch(error => {
-				debug(error);
-				return res.status(500).send({error: "error"});
 			});
 		})
 		.catch(error => {

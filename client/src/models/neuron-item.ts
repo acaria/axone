@@ -4,3 +4,8 @@ export interface Item {
 	__dendrites: Array<{_id: string, name: string}>;
 	__neuron: string;
 };
+
+export interface INameID {
+	_id: string,
+	name: string
+};
