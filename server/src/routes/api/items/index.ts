@@ -194,8 +194,13 @@ router.get("/", (req, res) => {
 			axone: req.query.axone,
 		};
 
-		let query = neurons.model.find(selector)
-		.populate([
+		let query = neurons.model.find(selector);
+
+		if (Number(req.query.limit) && Number(req.query.page)) {
+			query = query.skip(Number(req.query.limit) * (Number(req.query.page) - 1)).limit(Number(req.query.limit));
+		}
+
+		query.populate([
 			{path: "axone", select: "_id name"},
 			{path: "cell", select: "-user"},
 			{path: "dendrites", select: "_id cell", populate: {path: "cell", select: "_id name"}}

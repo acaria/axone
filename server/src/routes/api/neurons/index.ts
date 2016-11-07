@@ -65,6 +65,30 @@ router.get("/", (req, res) => {
 	}
 });
 
+router.get("/count", (req, res) => {
+	try {
+		if (!req[cfg.tokenRef]) {
+			return res.status(401).send({error: "token error"});
+		}
+		let selector = {
+			user: req[cfg.tokenRef] as string,
+			axone: req.query.axone,
+		};
+
+		let query = neurons.model.count(selector);
+
+		query.exec()
+		.then(count => res.status(200).send({success: "success", count: count}))
+		.catch(error => {
+			debugRepositoryError(error);
+			return res.status(400).send({error: "error"});
+		});
+	} catch (e) {
+		debug(e);
+		return res.status(500).send({error: "error"});
+	}
+});
+
 router.post("/", (req, res) => {
 	try {
 		if (!req[cfg.tokenRef]) {

@@ -1,5 +1,5 @@
 <template>
-	<require from="../resources/elements/cells-list"></require>
+	<require from="../views/neuron-list"></require>
 	<section class="au-animate">
 		<ol class="breadcrumb">
 			<li><a href="#/neurons">root</a></li>
@@ -11,27 +11,12 @@
 		</ol>
 		<div class="panel panel-default panel-table">
 			<div class="panel-heading"></div>
+			
 			<div class="panel-body">
-				<cells-list items.bind="items" axone.bind="axoneId"></cells-list>
+				<neuron-list items.bind="items" axone.bind="axoneId"></neuron-list>
 			</div>
 			<div class="panel-footer">
-				<div class="row">
-					<div class="col col-xs-4">Page 1 of 5
-					</div>
-					<div class="col col-xs-8">
-						<ul class="pagination hidden-xs pull-right">
-							<li><a href="#">1</a></li>
-							<li><a href="#">2</a></li>
-							<li><a href="#">3</a></li>
-							<li><a href="#">4</a></li>
-							<li><a href="#">5</a></li>
-						</ul>
-						<ul class="pagination visible-xs pull-right">
-							<li><a href="#">«</a></li>
-							<li><a href="#">»</a></li>
-						</ul>
-					</div>
-				</div>
+				<pager nbitems.bind="nbItems" limit.bind="itemsPerPages" page.bind="currentPage"></pager>
 			</div>
 		</div>
 	</section>

@@ -2,13 +2,13 @@
 import {bindable, autoinject} from 'aurelia-framework';
 import {DialogService} from 'aurelia-dialog';
 import {Config as ApiConfig, Rest} from "aurelia-api";
-import {Prompt} from '../../components/prompt';
-import {Item, INameID} from '../../models/neuron-item';
-import {log} from '../../logger';
+import {Prompt} from './prompt';
+import {Item, INameID} from '../models/neuron-item';
+import {log} from '../logger';
 import * as _ from 'lodash';
 
 @autoinject()
-export class CellsList {
+export class NeuronList {
 	@bindable items: Array<Item> = [];
 	@bindable axone: string = null;
 
