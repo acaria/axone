@@ -180,23 +180,35 @@ router.delete("/:id", (req, res) => {
 
 		neurons.model.find({user: selector.user, cell: selector._id}).select("_id").exec()
 		.then(ids => {
-			let bulk = neurons.model.collection.initializeOrderedBulkOp();
-			for (let id of _.map(ids, "_id")) {
-				bulk.find({user: oid(selector.user), axone: oid(id)}).update({"$set": {axone: null}});
-				bulk.find({user: oid(selector.user)}).update({"$pull": {dendrites: oid(id)}});
-				bulk.find({_id: oid(id), user: oid(selector.user)}).delete();
-			}
-			bulk.execute()
-			.then(results => {
-				if (!results.ok) {
-					return res.status(500).send({error: "error"});
+			return new Promise((resolve, reject) => {
+				try {
+					let bulk = neurons.model.collection.initializeOrderedBulkOp();
+					for (let id of _.map(ids, "_id")) {
+						bulk.find({user: oid(selector.user), axone: oid(id)}).update({"$set": {axone: null}});
+						bulk.find({user: oid(selector.user)}).update({"$pull": {dendrites: oid(id)}});
+						bulk.find({_id: oid(id), user: oid(selector.user)}).delete();
+					}
+					if (bulk.length === 0) {
+						return resolve();
+					}
+					bulk.execute().then(results => {
+						if (!results.ok) {
+							return reject(new Error("error"));
+						}
+						return resolve();
+					});
+				} catch (err) {
+					return reject(err);
 				}
+			}).then(() => {
 				cells.delete(selector, (error, result) => {
 					if (error) {
 						throw error;
 					}
 					return res.status(200).send({success: "success"});
 				});
+			}).catch(error => {
+				throw error;
 			});
 		})
 		.catch(error => {

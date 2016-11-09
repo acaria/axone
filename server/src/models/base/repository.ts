@@ -55,7 +55,7 @@ export class RepositoryBase<T extends mongoose.Document> implements IRead<T>, IW
 			if (result === null) {
 				throw new Error("missing");
 			}
-			this._model.findOneAndUpdate(selector, item, {new: true, upsert: false}).exec()
+			this._model.findOneAndUpdate(selector, item, {new: true, upsert: false, runValidators: true}).exec()
 			.then(result => {
 				callback(null, false, result as T);
 			})
@@ -64,7 +64,7 @@ export class RepositoryBase<T extends mongoose.Document> implements IRead<T>, IW
 			});
 		})
 		.catch(error => {
-			this._model.findOneAndUpdate(selector, item, {new: true, upsert: true, setDefaultsOnInsert: true}).exec()
+			this._model.findOneAndUpdate(selector, item, {runValidators: true, new: true, upsert: true, setDefaultsOnInsert: true}).exec()
 			.then(result => {
 				callback(null, true, result as T);
 			})

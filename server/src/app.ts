@@ -7,7 +7,7 @@ import cookieParser = require("cookie-parser");
 import methodOverride = require("method-override");
 import path = require("path");
 import morgan = require("morgan");
-import mongoose = require("mongoose");
+import database from "./database";
 
 var debug = require("debug")("ax-server:express");
 var requireDir = require("require-dir");
@@ -22,11 +22,10 @@ var cfg = require("../config.js");
 export default class {
 
 	constructor(private app: express.Express, private port: Number) {
-        let cnx = `${cfg.mongo.uri}:${cfg.port.mongo}/${cfg.mongo.db}`;
-        mongoose.Promise = global.Promise;
-        mongoose.connect(cnx)
-        .then(() => debug(`cnx to ${cnx}`))
-        .catch((err) => debug(err.message));
+        database.connect()
+        .catch(error => {
+            throw error;
+        });
 
     	//configure application
     	this.configSetup(app);

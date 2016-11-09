@@ -4,6 +4,8 @@
 import { Document, Schema, model} from "mongoose";
 import { RepositoryBase } from "./base/repository";
 
+var debug = require("debug")("ax-server:cell");
+
 export interface ICellModel extends Document {
 	name: string;
 	user: string;
@@ -19,6 +21,8 @@ let entitySchema = new Schema({
 	createdAt: 	{ type: Date, 							required: false},
 	modifiedAt: { type: Date, 							required: false}
 });
+
+entitySchema.index({user: 1, name: 1}, {unique: true});
 
 entitySchema.pre("save", function(next: () => void) {
 	if (!this._doc) {
@@ -39,13 +43,17 @@ entitySchema.pre("save", function(next: () => void) {
 
 let modelSchema = model<ICellModel>("cell", entitySchema, "cells", true);
 
+modelSchema.on("index", function(err: any) {
+	debug(err);
+});
+
 export class CellRepository extends RepositoryBase<ICellModel> {
 	constructor() {
 		super(modelSchema);
 	}
 
 	update(selector: {_id: string, user: string}, item: ICellModel, callback: (err: any, res: ICellModel) => void) {
-		this._model.findOneAndUpdate(selector, item, {new: true}, callback);
+		this._model.findOneAndUpdate(selector, item, {new: true, runValidators: true}, callback);
 	}
 
 	delete(selector: {_id: string, user: string}, callback: (err: any, res: any) => void) {

@@ -31,6 +31,7 @@ module.exports = {
 
 	mongo: {
 		uri: process.env.MONGO_URI || 'localhost',
-		db: 'axone'
+		db: 'axone',
+		debug: true
 	}
 };
