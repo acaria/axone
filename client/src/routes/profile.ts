@@ -1,17 +1,19 @@
-import {inject} from 'aurelia-framework';
+import {autoinject} from 'aurelia-framework';
 import {AuthService} from 'aurelia-authentication';
+import {EventAggregator} from 'aurelia-event-aggregator';
 
-@inject(AuthService)
+@autoinject()
 export class Profile {
 	heading = 'Profile';
 	profile: Object;
 
-	constructor(private auth:AuthService) {
+	constructor(private auth:AuthService, private event:EventAggregator) {
 		this.profile = null;
 	}
 
 	setProfile = data => {
 		this.profile = data;
+		this.event.publish("profile-change", this.profile);
 	}
 
 	activate() {
@@ -19,9 +21,13 @@ export class Profile {
 		.then(this.setProfile);
 	}
 
-	update() {
+	save() {
 		return this.auth.updateMe(this.profile)
 		.then(this.setProfile);
+	}
+
+	logout() {
+		this.auth.logout();
 	}
 
 	link(provider) {

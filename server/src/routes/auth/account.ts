@@ -70,7 +70,7 @@ export default class {
 		let selector = {
 			_id: req[cfg.tokenRef] as string
 		};
-		this.repo.find(selector, null, null, (err, user) => {
+		this.repo.findOne(selector, null, null, (err, user) => {
 			if (!user) {
 				return res.status(404).send({error: "User not found"});
 			}

@@ -7,6 +7,7 @@ import { RepositoryBase } from "./base/repository";
 export interface ICellModel extends Document {
 	name: string;
 	user: string;
+	properties: Object;
 	createdAt: Date;
 	modifiedAt: Date;
 };
@@ -14,6 +15,7 @@ export interface ICellModel extends Document {
 let entitySchema = new Schema({
 	name: 		{ type: String, 						required: true},
 	user: 		{ type: Schema.Types.ObjectId, 	required: true, ref: "user"},
+	properties:	{ type: Schema.Types.Mixed,		required: false},
 	createdAt: 	{ type: Date, 							required: false},
 	modifiedAt: { type: Date, 							required: false}
 });

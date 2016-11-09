@@ -51,6 +51,7 @@ router.get("/", (req, res) => {
 		};
 
 		let query = cells.model.find(selector);
+
 		if (req.query.sort) {
 			query = query.sort(req.query.sort);
 		}
@@ -58,8 +59,35 @@ router.get("/", (req, res) => {
 			query = query.select("id name");
 		}
 
+		if (Number(req.query.limit) && Number(req.query.page)) {
+			query = query.skip(Number(req.query.limit) * (Number(req.query.page) - 1)).limit(Number(req.query.limit));
+		}
+
 		query.exec()
 		.then(result => res.status(200).send(result))
+		.catch(error => {
+			debugRepositoryError(error);
+			return res.status(400).send({error: "error"});
+		});
+	} catch (e) {
+		debug(e);
+		return res.status(500).send({error: "error"});
+	}
+});
+
+router.get("/count", (req, res) => {
+	try {
+		if (!req[cfg.tokenRef]) {
+			return res.status(401).send({error: "token error"});
+		}
+		let selector = {
+			user: req[cfg.tokenRef] as string
+		};
+
+		let query = cells.model.count(selector);
+
+		query.exec()
+		.then(count => res.status(200).send({success: "success", count: count}))
 		.catch(error => {
 			debugRepositoryError(error);
 			return res.status(400).send({error: "error"});
@@ -77,17 +105,13 @@ router.post("/", (req, res) => {
 		}
 		req.body.user = req[cfg.tokenRef];
 
-		var selector = _.pick(req.body, ["_id", "user"]);
-		cells.upsert(selector, req.body, (error, isNew, result) => {
-			if (error) {
+		var selector = _.pick(req.body, ["user"]);
+		cells.create(req.body, (error, result) => {
+			if (error || !result) {
 				debugRepositoryError(error);
 				return res.status(400).send({error: "error"});
 			}
-			if (!result) {
-				return res.status(400).send({error: "error"});
-			}
-
-			return res.status(isNew ? 201 : 200).send(result);
+			return res.status(201).send(result);
 		});
 	} catch (e) {
 		debug(e);
@@ -105,7 +129,7 @@ router.get("/:id", (req, res) => {
 			_id: req.params.id as string,
 			user: req[cfg.tokenRef] as string
 		};
-		cells.find(selector, null, null, (error, result) => {
+		cells.findOne(selector, null, null, (error, result) => {
 			if (error) {
 				debugRepositoryError(error);
 				return res.status(400).send({error: "error"});
@@ -132,11 +156,8 @@ router.put("/:id", (req, res) => {
 		};
 
 		cells.update(selector, req.body, (error, result) => {
-			if (error) {
+			if (error || !result) {
 				debugRepositoryError(error);
-				return res.status(400).send({error: "error"});
-			}
-			if (!result) {
 				return res.status(400).send({error: "error"});
 			}
 			return res.status(200).send(result);

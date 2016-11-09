@@ -12,6 +12,7 @@
     "aurelia-animator-css": "^1.0.0",
     "aurelia-api": "^3.0.0",
     "aurelia-authentication": "^3.0.3",
+    "aurelia-binding": "^1.0.9",
     "aurelia-bootstrapper": "^1.0.0",
     "aurelia-cli": "^0.20.2",
     "aurelia-dialog": "^1.0.0-beta.3.0.1",
