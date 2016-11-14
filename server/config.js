@@ -33,5 +33,10 @@ module.exports = {
 		uri: process.env.MONGO_URI || 'localhost',
 		db: 'axone',
 		debug: true
+	},
+
+	storage: {
+		avatar: "storage/avatar",
+		uploads: "uploads",
 	}
 };

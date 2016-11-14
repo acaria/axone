@@ -27,32 +27,40 @@ export default class {
             throw error;
         });
 
-    	//configure application
-    	this.configSetup(app);
-    	this.configMiddle(app);
-    	this.configRoutes(app);
-    	this.errorHandling(app);
+        try {
+            this.configSetup(app);
+            this.configMiddle(app);
+            this.configRoutes(app);
+            this.errorHandling(app);
+        } catch (error) {
+            throw error;
+        }
     }
 
     private configSetup(app: express.Express) {
-    	app.disable("x-powered-by");
+        for (let dir of ["storage", cfg.storage.avatar]) {
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir);
+            }
+        }
 
-    	app.set("views", path.join(__dirname, "../views"));
-    	app.set("view engine", "pug");
+        app.disable("x-powered-by");
 
-    	app.use(bodyParser.json());
-    	app.use(bodyParser.urlencoded({ extended: true }));
-    	app.use(cookieParser());
+        app.set("views", path.join(__dirname, "../views"));
+        app.set("view engine", "pug");
 
-    	app.use(methodOverride("X-HTTP-Method"));
-    	app.use(methodOverride("X-HTTP-Method-Override"));
-    	app.use(methodOverride("X-Method-Override"));
-    	app.use(methodOverride("_method"));
+        app.use(bodyParser.json());
+        app.use(bodyParser.urlencoded({ extended: true }));
+        app.use(cookieParser());
 
-    	//add static path
-    	//app.use(express.static(path.join(__dirname, "../public")));
-    	//add client path
-    	app.use(express.static(path.join(__dirname, "../../client/dist")));
+        app.use(methodOverride("X-HTTP-Method"));
+        app.use(methodOverride("X-HTTP-Method-Override"));
+        app.use(methodOverride("X-Method-Override"));
+        app.use(methodOverride("_method"));
+
+        //add static paths
+        app.use(express.static(path.join(__dirname, "../storage")));
+        app.use(express.static(path.join(__dirname, "../../client/dist")));
     }
 
     private configMiddle(app: express.Express) {
@@ -94,8 +102,8 @@ export default class {
                 return;
             }
             let err = new Error("Not Found");
-    		next(err);
-    	});
+            next(err);
+        });
     }
 
     public run() {

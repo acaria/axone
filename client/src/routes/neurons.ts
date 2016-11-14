@@ -82,7 +82,7 @@ export default class {
 			} catch(err) {
 				reject(err);
 			}
-		}); 
+		});
 	}
 
 	private asyncCountItems():Promise<any> {

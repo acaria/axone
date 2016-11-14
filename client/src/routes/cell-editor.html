@@ -14,7 +14,7 @@
 					<div repeat.for="property of properties" class="form-group">
 						<compose class="col-sm-11" model.bind="cell.properties" view-model="../views/fields/${property.type}"></compose>
 						<div class="col-sm-1">
-						<i class="remove-property fa fa-trash-o" click.trigger="$parent.removeProperty($event, property.name)"></i>
+						<i class="cursor-pointer fa fa-trash-o" click.trigger="$parent.removeProperty($event, property.name)"></i>
 						</div>
 					</div>
 					<hr if.bind="withNewProperties">
