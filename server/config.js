@@ -37,6 +37,7 @@ module.exports = {
 
 	storage: {
 		avatar: "storage/avatar",
+		picture: "storage/picture",
 		uploads: "uploads",
 	}
 };

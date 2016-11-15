@@ -49,7 +49,6 @@ export class Profile {
 		this.event.publish("profile-change", this.profile);
 	}
 
-	private pouet;
 	activate() {
 		this.fetch.configure(this.client);
 

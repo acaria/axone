@@ -4,11 +4,9 @@
 			<div class="panel-heading">Edit my profile</div>
 			<div class="panel-body">
 				<!-- <legend><i class="ion-clipboard"></i> Edit My Profile</legend> -->
-				<form class="form-horizontal" method="post" ng-submit="updateProfile()">
+				<form class="form-horizontal">
 					<div class="profile-header-container col-sm-4">   
 						<div class="profile-header-img">
-							<!-- <img if.bind="!avatarImg && !profile.avatar" class="img-circle" src="images/avatar.svg"/>
-							<img if.bind="!avatarImg && profile.avatar" class="img-circle" src="avatar/${profile.avatar}"/> -->
 							<img if.bind="!avatarImg" class="img-circle" src="avatar/${profile.avatar}" onerror="this.src='images/avatar.svg';" />
 							<img if.bind="avatarImg" class="img-circle profile-edition" src.bind="avatarImg"/>
 							<div class="rank-label-container">

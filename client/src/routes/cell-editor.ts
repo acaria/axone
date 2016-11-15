@@ -1,4 +1,6 @@
 import {bindable, autoinject} from 'aurelia-framework';
+import {AuthService, FetchConfig} from 'aurelia-authentication';
+import {HttpClient} from 'aurelia-fetch-client';
 import {RouteConfig} from "aurelia-router";
 import {Config as ApiConfig, Rest} from "aurelia-api";
 import {log} from '../logger';
@@ -11,6 +13,7 @@ import {IField} from "../views/fields/base/field";
 export class CellEditor {
 	private heading;
 	private apiClient: Rest;
+	private client: HttpClient;
 	private routeConfig: RouteConfig;
 
 	private cell: any;
@@ -21,13 +24,26 @@ export class CellEditor {
 
 	private propertiesKey = "properties";
 
-	constructor(apiConfig: ApiConfig) {
+	constructor(apiConfig: ApiConfig, private auth:AuthService, private fetch:FetchConfig) {
 		this.heading = "Cell editor";
 		this.apiClient = apiConfig.getEndpoint("api");
+
+		this.client = new HttpClient();
+		this.client.configure(config => { config
+			.withBaseUrl("api/cells/")
+			.withDefaults({
+				credentials: 'same-origin',
+				headers: {
+					'Accept': 'application/json',
+					'X-Requested-With': 'Fetch'
+				}
+			});
+		});
 	}
 
 	activate(params, routeConfig: RouteConfig){
 		this.routeConfig = routeConfig;
+		this.fetch.configure(this.client);
 
 		return this.apiClient.findOne("cells", params.id)
 		.then(cell => {
@@ -79,11 +95,42 @@ export class CellEditor {
 	}
 
 	save() {
-		this.apiClient.update("cells", this.cell._id, this.cell).then(cell => {
-			this.cell = cell
-			this.routeConfig.navModel.setTitle(cell.name);
-			this.originalCell = _.clone(cell);
-			history.back();
+		this.asyncPreSave()
+		.then(() => {
+			this.apiClient.update("cells", this.cell._id, this.cell).then(cell => {
+				this.cell = cell
+				this.routeConfig.navModel.setTitle(cell.name);
+				this.originalCell = _.clone(cell);
+				history.back();
+			});
+		})
+		.catch(error => {
+			log.error(error);
+		});
+	}
+
+	asyncPreSave() {
+		let model = this.cell[this.propertiesKey];
+		return new Promise((resolve, reject) => {
+			try {
+				let list = new Array<Promise<any>>();
+				for(let property of this.properties) {
+					if (property.preSave) {
+						property.preSave(model, this.client, list);
+					}
+				}
+				if (list.length > 0) {
+					Promise.all(list)
+					.then(() => resolve())
+					.catch((error) => {
+						reject(error);
+					});
+				} else {
+					resolve();
+				}
+			} catch(error) {
+				reject(error);
+			}
 		});
 	}
 

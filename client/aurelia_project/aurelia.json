@@ -54,7 +54,8 @@
 			"node_modules/bootstrap/dist/css/*.min.css",
 			"node_modules/font-awesome/css/*.min.css",
 			"node_modules/jquery-ui-dist/*.min.css",
-			"node_modules/magicsuggest/*-min.css"
+			"node_modules/magicsuggest/*-min.css",
+			"node_modules/bootstrap-fileinput/css/*.min.css"
 		]
 	},
 	"copyFiles": [
@@ -215,6 +216,12 @@
 						"main": "js/bootstrap.min",
 						"deps": ["jquery"],
 						"exports": "$"
+					},
+					{
+						"name": "bootstrap-fileinput",
+						"path": "../node_modules/bootstrap-fileinput",
+						"main": "js/fileinput.min",
+						"deps": ["bootstrap"]
 					},
 					{
 						"name": "aurelia-authentication",

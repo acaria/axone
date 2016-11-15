@@ -8,17 +8,15 @@ import methodOverride = require("method-override");
 import path = require("path");
 import morgan = require("morgan");
 import database from "./database";
+import fs = require("fs");
 
 var debug = require("debug")("ax-server:express");
 var requireDir = require("require-dir");
 var favicon = require("serve-favicon");
 
-var fs = require("fs");
 var accessLogStream = fs.createWriteStream(path.join(__dirname, "../logs/access.log"), {flags: "a"});
-
-//config
 var cfg = require("../config.js");
-//------------------------------------------------------------
+
 export default class {
 
 	constructor(private app: express.Express, private port: Number) {
@@ -38,7 +36,7 @@ export default class {
     }
 
     private configSetup(app: express.Express) {
-        for (let dir of ["storage", cfg.storage.avatar]) {
+        for (let dir of ["storage", cfg.storage.avatar, cfg.storage.picture]) {
             if (!fs.existsSync(dir)) {
                 fs.mkdirSync(dir);
             }

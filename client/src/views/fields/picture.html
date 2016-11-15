@@ -1,0 +1,20 @@
+<template>
+	<label class="col-sm-2 control-label"><i class="ion-at"></i>${title}</label>
+	<div class="col-sm-10">
+		<div class="thumbnail" style="width:300px; background: lightgrey">
+			<div class="col-sm-12">
+				<img if.bind="!img && original" class="thumbnail img-responsive" src="picture/${original}"/>
+				<img if.bind="img" class="thumbnail img-responsive" style="background: darkred" src.bind="img"/>
+			</div>
+			<div class="btn btn-primary btn-file">
+				<i class="glyphicon glyphicon-folder-open" aria-hidden="true"></i>
+				&nbsp; <span>Browse...</span>
+				<input type="file" accept="image/*" files.bind="imgFiles" change.delegate="onSelectPicture($event)">
+			</div>
+			<button if.bind="img" type="button" class="btn btn-danger" click.trigger="onRemovePicture($event)">
+				<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+				&nbsp; Remove
+			</button>
+		</div>
+	</div>
+</template>

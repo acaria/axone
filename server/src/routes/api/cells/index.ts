@@ -5,6 +5,10 @@ import express = require("express");
 import { CellRepository, ICellModel } from "../../../models/cell";
 import { NeuronRepository } from "../../../models/neuron";
 import Utils from "../../utils";
+import path = require("path");
+import mime = require("mime");
+import fs = require("fs");
+import multer = require("multer");
 import * as _ from "lodash";
 
 var debug = require("debug")("ax-server:apiCells");
@@ -14,6 +18,7 @@ var oid = require("mongoose").Types.ObjectId;
 let router = express.Router();
 let neurons = new NeuronRepository();
 let cells = new CellRepository();
+let uploads = multer({dest: cfg.storage.uploads});
 
 function debugRepositoryError(err: any) {
 	if (err && err.name === "ValidationError") {
@@ -117,6 +122,29 @@ router.post("/", (req, res) => {
 		debug(e);
 
 		return res.status(500).send({error: "error in your request"});
+	}
+});
+
+router.post("/picture", uploads.single("file"), (req, res) => {
+	try {
+		let fileName = req.file.filename + "." + mime.extension(req.file.mimetype);
+		fs.rename(
+			path.join(req.file.destination, req.file.filename),
+			path.join(cfg.storage.picture, fileName),
+			function(error: any) {
+				if (error) {
+					debug(error);
+					return res.status(500).send({error: "error"});
+				}
+				return res.status(201).send({
+					success: "success",
+					picture: fileName
+				});
+			}
+		);
+	} catch (e) {
+		debug(e);
+		return res.status(500).send({error: "error"});
 	}
 });
 
