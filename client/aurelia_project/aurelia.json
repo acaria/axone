@@ -55,7 +55,8 @@
 			"node_modules/font-awesome/css/*.min.css",
 			"node_modules/jquery-ui-dist/*.min.css",
 			"node_modules/magicsuggest/*-min.css",
-			"node_modules/bootstrap-fileinput/css/*.min.css"
+			"node_modules/bootstrap-fileinput/css/*.min.css",
+			"node_modules/bootstrap-datepicker/dist/css/*.min.css"
 		]
 	},
 	"copyFiles": [
@@ -222,6 +223,12 @@
 						"path": "../node_modules/bootstrap-fileinput",
 						"main": "js/fileinput.min",
 						"deps": ["bootstrap"]
+					},
+					{
+						"name": "bootstrap-datepicker",
+						"path": "../node_modules/bootstrap-datepicker/dist",
+						"main": "js/bootstrap-datepicker.min",
+						"deps": ["bootstrap", "jquery"]
 					},
 					{
 						"name": "aurelia-authentication",
