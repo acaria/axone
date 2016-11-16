@@ -5,6 +5,7 @@ export function configure(config: FrameworkConfiguration) {
 		'./elements/tag-editor',
 		'./elements/pager',
 		'./elements/date-picker',
+		'./elements/date-range',
 		'./value-converters/object-keys',
 		'./value-converters/name-index'
 	]);
