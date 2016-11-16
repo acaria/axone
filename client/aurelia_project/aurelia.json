@@ -51,7 +51,8 @@
 		"output": "src/assets/css",
 		"filename": "base.css",
 		"sources": [
-			"node_modules/bootstrap/dist/css/*.min.css",
+			"node_modules/bootstrap/dist/css/bootstrap.min.css",
+			"node_modules/bootstrap/dist/css/bootstrap-theme.min.css",
 			"node_modules/font-awesome/css/*.min.css",
 			"node_modules/jquery-ui-dist/*.min.css",
 			"node_modules/magicsuggest/*-min.css",
