@@ -10,18 +10,25 @@
 		<tbody>
 			<tr if.bind="!creating">
 				<td align="right">
-					<a class="btn btn-primary au-target" click.delegate="createCell('')" au-target-id="22"><em class="fa fa-plus"></em></a>
+					<a class="btn btn-primary au-target" click.delegate="createNeuron('')" au-target-id="22"><em class="fa fa-plus"></em></a>
 				</td>
 				<td colspan=4>
-					<i>new cell</i>
+					<label class="radio-inline"><input class="new-cell" type="radio" name="newCellMode" checked.bind="newCellMode" model.bind="true">New cell</label>
+					<label if.bind="unassignedCells.length" class="radio-inline"><input class="new-cell" type="radio" name="newCellMode" checked.bind="newCellMode" model.bind="false">or existing</label>
+					<dropdown
+						if.bind="unassignedCells.length"
+						items.bind="unassignedCells"
+						selection.two-way="unassignedSelection" 
+						emptydesc.bind="'cell'">
+					</dropdown>
 				</td>
 			</tr>
 			<tr repeat.for="item of items">
 				<td align="center">
-					<a class="btn btn-primary" if.bind="!editing[item._id]" click.delegate="editCell(item._id)"><em class="fa fa-pencil"></em></a>
-					<a class="btn btn-danger" if.bind="!editing[item._id]" click.delegate="removeCell(item._id)"><em class="fa fa-trash"></em></a>
-					<a class="btn btn-success" if.bind="editing[item._id]" click.delegate="saveCell(item._id)"><em class="fa fa-check"></em></a>
-					<a class="btn btn-warning" if.bind="editing[item._id]" click.delegate="cancelCell(item._id)"><em class="fa fa-times"></em></a>
+					<a class="btn btn-primary" if.bind="!editing[item._id]" click.delegate="editNeuron(item._id)"><em class="fa fa-pencil"></em></a>
+					<a class="btn btn-danger" if.bind="!editing[item._id]" click.delegate="removeNeuron(item._id)"><em class="fa fa-trash"></em></a>
+					<a class="btn btn-success" if.bind="editing[item._id]" click.delegate="saveNeuron(item._id)"><em class="fa fa-check"></em></a>
+					<a class="btn btn-warning" if.bind="editing[item._id]" click.delegate="cancelNeuron(item._id)"><em class="fa fa-times"></em></a>
 				</td>
 				<td>
 					<a route-href="route: neurons; params.bind: {id: item.__neuron}" if.bind="!editing[item._id]">${item.name}</a>

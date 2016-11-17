@@ -1,0 +1,12 @@
+<template>
+	<div class="btn-group">
+		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			${displayTxt}<span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu">
+			<li repeat.for="item of items">
+				<a href="#" click.trigger="select(getId(item))" onclick="return false;">${getName(item)}</a>
+			</li>
+		</ul>
+	</div>
+</template>

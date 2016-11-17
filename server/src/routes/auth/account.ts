@@ -3,7 +3,7 @@
 
 import moment = require("moment");
 import { NextFunction, Request, Response } from "express";
-import { UserRepository } from "../../models/user";
+import { UserRepository } from "../../models/repository/user";
 import jwt = require("jwt-simple");
 
 var cfg = require("../../../config.js");

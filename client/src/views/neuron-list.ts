@@ -2,7 +2,7 @@
 import {bindable, autoinject} from 'aurelia-framework';
 import {DialogService} from 'aurelia-dialog';
 import {Config as ApiConfig, Rest} from "aurelia-api";
-import {Prompt} from './prompt';
+import {Confirm} from './dialogs/confirm';
 import {Item, INameID} from '../models/neuron-item';
 import {log} from '../logger';
 import * as _ from 'lodash';
@@ -15,40 +15,70 @@ export class NeuronList {
 	private editing = new Map<string, Item>();
 	private creating:Item = null;
 	private apiClient: Rest;
+	private newCellMode:boolean = true;
 
 	private neuronsList: Array<INameID>;
+	private unassignedCells: Array<INameID>;
+	@bindable private unassignedSelection: string = null;
 
 	constructor(apiConfig: ApiConfig, private dlg: DialogService) {
 		this.apiClient = apiConfig.getEndpoint("api");
-		this.apiClient.find('items/nameids')
+	}
+
+	attached() {
+		this.loadSelectorLists();
+	}
+
+	private loadSelectorLists() {
+		this.apiClient.find('items/list', {cat: "neurons"})
 		.then(items => {
 			this.neuronsList = _.sortBy(items, "name") as Array<INameID>;
 		})
 		.catch(error => log.error(error));
+
+		this.apiClient.find('items/list', {cat: "ucells"})
+		.then(items => {
+			this.unassignedCells = _.sortBy(items, "name") as Array<INameID>;
+		})
+		.catch(error => log.error(error));
 	}
 
-	createCell(name:string) {
+	unassignedSelectionChanged(newValue, oldValue) {
+		this.newCellMode = false;
+	}
+
+	createNeuron(name:string) {
 		if (!this.creating) {
-			this.creating = {_id: 'NEW', name: name, __dendrites: [], __neuron: null};
+			let tmp = null;
+			if (!this.newCellMode && this.unassignedSelection) {
+				let item = _.find(this.unassignedCells, {_id: this.unassignedSelection});
+				if (item) {
+					tmp = {_id: item._id, name: item.name, __dendrites: [], __neuron: null};
+				}
+			}
+			if (!tmp) {
+				tmp = {_id: 'NEW', name: name, __dendrites: [], __neuron: null};
+			}
+			this.creating = tmp;
 			this.items.unshift(this.creating);
 			this.editing[this.creating._id] = this.creating;
 		}
 	}
 
-	editCell(id:string) {
+	editNeuron(id:string) {
 		let item = _.find(this.items, {_id: id});
 		if (item) {
 			this.editing[id] = JSON.parse(JSON.stringify(item));
 		}
 	}
 
-	saveCell(id:string) {
+	saveNeuron(id:string) {
 		let sendData:Object = null;
 		let creatingProgress = false;
 		if (this.creating && this.creating._id == id) {
 			creatingProgress = true;
 			sendData = {
-				cell: _.pick(this.creating, ["name"]),
+				cell: _.pick(this.creating, this.newCellMode ? ["name"] : ["name", "_id"]),
 				neuron: {
 					axone: this.axone,
 					dendrites: this.creating.__dendrites
@@ -84,9 +114,16 @@ export class NeuronList {
 				item._id = result.cell._id;
 				item.__neuron = result.neuronId;
 				item.__dendrites = result.dendrites;
+
+				//dirty clear unassigned
+				let uidx = _.findIndex(this.unassignedCells, {_id: item._id});
+				if (uidx >= 0) {
+					this.unassignedCells.splice(uidx, 1);
+				}
 			}
 
 			if (creatingProgress) {
+				this.newCellMode = true;
 				this.creating = null;
 			}
 			this.editing[id] = false;
@@ -94,7 +131,7 @@ export class NeuronList {
 		.catch(error => log.error(error.message));
 	}
 
-	cancelCell(id:string) {
+	cancelNeuron(id:string) {
 		if (this.creating && this.creating._id == id) {
 			let index = this.items.indexOf(this.creating);
 			this.items.splice(index, 1);
@@ -112,23 +149,36 @@ export class NeuronList {
 		}
 	}
 
-	removeCell(id:string) {
+	removeNeuron(id:string) {
 		let item = _.find(this.items, {_id: id});
 		if (item != null) {
 			this.dlg.open({
-				viewModel: Prompt, 
-				model: `Are you sure to delete the cell "${item.name}"?`})
-			.then(res => {
-				if (!res.wasCancelled) {
-					this.apiClient.destroy('cells/', item._id)
-					.then(() => {
-						let index = this.items.indexOf(item);
-						var removed = this.items.splice(index, 1);
-					})
-					.catch(err => log.error(err.message));
-				}
-			})
-			.catch(err => log.error(err.message));
+				viewModel: Confirm, 
+				model: {
+					message: `Are you sure you want to delete the neuron "${item.name}"?`, 
+					option: `Also delete the associated cell`,
+					precheck: true
+				}}).then(res => {
+					if (!res.wasCancelled) {
+						if (res.output) {
+							this.apiClient.destroy('cells/', item._id)
+							.then(() => {
+								let index = this.items.indexOf(item);
+								var removed = this.items.splice(index, 1);
+								this.loadSelectorLists();
+							})
+							.catch(err => log.error(err.message));
+						} else {
+							this.apiClient.destroy("neurons/", item.__neuron)
+							.then(() => {
+								let index = this.items.indexOf(item);
+								var removed = this.items.splice(index, 1);
+								this.loadSelectorLists();
+							})
+						}
+					}
+				})
+				.catch(err => log.error(err.message));
+			}
 		}
 	}
-}

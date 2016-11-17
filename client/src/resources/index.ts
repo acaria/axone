@@ -4,6 +4,7 @@ export function configure(config: FrameworkConfiguration) {
 	config.globalResources([
 		'./elements/tag-editor',
 		'./elements/pager',
+		'./elements/dropdown',
 		'./elements/date-picker',
 		'./elements/date-range',
 		'./value-converters/object-keys',

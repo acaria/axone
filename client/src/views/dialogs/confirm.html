@@ -1,0 +1,12 @@
+<template>
+   <ai-dialog>
+      <ai-dialog-body>
+         <h4>${message}</h4>
+         <label if.bind="option" class="checkbox-inline"><input type="checkbox" checked.bind="check">${option}</label>
+      </ai-dialog-body>
+      <ai-dialog-footer>
+         <button click.trigger = "ctrl.cancel()">Cancel</button>
+         <button click.trigger = "ctrl.ok(check)">Ok</button>
+      </ai-dialog-footer>
+   </ai-dialog>
+</template>

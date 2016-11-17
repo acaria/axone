@@ -7,6 +7,10 @@ import mongoose = require("mongoose");
 var debug = require("debug")("ax-server:database");
 var cfg = require("../config.js");
 
+require("./models/schema/cell");
+require("./models/schema/neuron");
+require("./models/schema/user");
+
 export default class {
 	static connect() {
 		let cnx = `${cfg.mongo.uri}:${cfg.port.mongo}/${cfg.mongo.db}`;
@@ -15,6 +19,6 @@ export default class {
 		mongoose.set("debug", cfg.mongo.debug);
 
 		return mongoose.connect(cnx)
-		.then(() => debug("connect."));
+		.then(() => debug("connected."));
 	}
 }

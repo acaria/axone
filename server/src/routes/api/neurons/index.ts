@@ -2,8 +2,8 @@
 "use strict";
 
 import express = require("express");
-import { CellRepository } from "../../../models/cell";
-import { NeuronRepository } from "../../../models/neuron";
+import { CellRepository } from "../../../models/repository/cell";
+import { NeuronRepository } from "../../../models/repository/neuron";
 import Utils from "../../utils";
 import * as _ from "lodash";
 

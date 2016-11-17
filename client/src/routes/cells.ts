@@ -1,7 +1,7 @@
 import {bindable, autoinject} from 'aurelia-framework';
 import {DialogService} from 'aurelia-dialog';
 import {Config as ApiConfig, Rest} from "aurelia-api";
-import {Prompt} from '../views/prompt';
+import {Prompt} from '../views/dialogs/prompt';
 import {log} from '../logger';
 
 @autoinject

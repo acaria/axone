@@ -2,7 +2,7 @@
 import {bindable, autoinject} from 'aurelia-framework';
 import {DialogService} from 'aurelia-dialog';
 import {Config as ApiConfig, Rest} from "aurelia-api";
-import {Prompt} from './prompt';
+import {Prompt} from './dialogs/prompt';
 import {INameID} from '../models/neuron-item';
 import {log} from '../logger';
 import * as _ from 'lodash';
@@ -23,10 +23,6 @@ export class CellList {
 			this.creating = {_id: 'NEW', name: name};
 			this.items.unshift(this.creating);
 		}
-	}
-
-	editCell(id:string) {
-		
 	}
 
 	saveCell(id:string) {

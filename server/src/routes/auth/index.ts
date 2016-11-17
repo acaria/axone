@@ -2,7 +2,7 @@
 "use strict";
 
 import * as express from "express";
-import { UserRepository } from "../../models/user";
+import { UserRepository } from "../../models/repository/user";
 import Account from "./account";
 import Utils from "../utils";
 import path = require("path");

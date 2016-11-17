@@ -1,8 +1,7 @@
-/// <reference path="../_all.d.ts" />
+/// <reference path="../../_all.d.ts" />
 "use strict";
 
 import { Document, Schema, model} from "mongoose";
-import { RepositoryBase } from "./base/repository";
 import bcrypt = require("bcryptjs");
 
 var debug = require("debug")("ax-server:user");
@@ -18,7 +17,7 @@ export interface IUserModel extends Document {
 	comparePassword: (password: string, done: (err: Error, isMatch: boolean) => void) => void;
 };
 
-let entitySchema = new Schema({
+let userSchema = new Schema({
 	email: { type: String, unique: true, required: true},
 	password: { type: String, select: false, required: true},
 	name: { type: String, require: false},
@@ -27,7 +26,7 @@ let entitySchema = new Schema({
 	modifiedAt: { type: Date, required: false}
 });
 
-entitySchema.pre("save", function(next: () => void) {
+userSchema.pre("save", function(next: () => void) {
 	if (!this._doc) {
 		next();
 		return this;
@@ -61,16 +60,10 @@ entitySchema.pre("save", function(next: () => void) {
 	return this;
 });
 
-entitySchema.methods.comparePassword = function(password: string, done: (err: Error, isMatch: boolean) => void) {
+userSchema.methods.comparePassword = function(password: string, done: (err: Error, isMatch: boolean) => void) {
 	bcrypt.compare(password, this.password, function(err: Error, isMatch: boolean) {
 		done(err, isMatch);
 	});
 };
 
-let modelSchema = model<IUserModel>("user", entitySchema, "users", true);
-
-export class UserRepository extends RepositoryBase<IUserModel> {
-	constructor() {
-		super(modelSchema);
-	}
-}
+export var userModel = model<IUserModel>("user", userSchema, "users", true);

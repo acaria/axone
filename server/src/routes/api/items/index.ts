@@ -2,8 +2,9 @@
 "use strict";
 
 import express = require("express");
-import { CellRepository, ICellModel } from "../../../models/cell";
-import { NeuronRepository, INeuronModel } from "../../../models/neuron";
+import { CellRepository } from "../../../models/repository/cell";
+import { ICellModel } from "../../../models/schema/cell";
+import { NeuronRepository } from "../../../models/repository/neuron";
 import Utils from "../../utils";
 import * as _ from "lodash";
 
@@ -31,7 +32,7 @@ function debugRepositoryError(err: any) {
 	}
 }
 
-interface IDendrite {
+interface INameID {
 	_id: string;
 	name: string;
 }
@@ -81,7 +82,7 @@ function createBucket(bucketName: string, user: string, callback: (error: any, n
 	.catch(error => callback(error, null));
 }
 
-function genNewDendrites(names: Set<string>, user: string, bucketId: string, callback: (error: any, result: Array<IDendrite>) => void) {
+function genNewDendrites(names: Set<string>, user: string, bucketId: string, callback: (error: any, result: Array<INameID>) => void) {
 	let bulk = cells.model.collection.initializeUnorderedBulkOp();
 	names.forEach(el => {
 		bulk.find({name: el, user: oid(user)}).upsert().update({"$set": {name: el}});
@@ -115,10 +116,10 @@ function genNewDendrites(names: Set<string>, user: string, bucketId: string, cal
 	.catch(error => callback(error, null));
 }
 
-function prepareDendriteIds(neuronBody: any, user: string, callback: (error: any, result: Array<IDendrite>) => void) {
+function prepareDendriteIds(neuronBody: any, user: string, callback: (error: any, result: Array<INameID>) => void) {
 
 	let buckNewNames = new Set<string>();
-	let buckOldIds = new Array<IDendrite>();
+	let buckOldIds = new Array<INameID>();
 	let needBucket = false;
 	if (neuronBody.dendrites) {
 		for (let den of neuronBody.dendrites) {
@@ -148,36 +149,62 @@ function prepareDendriteIds(neuronBody: any, user: string, callback: (error: any
 	});
 }
 
-router.get("/nameids", (req, res) => {
+router.get("/list", (req, res) => {
 	try {
 		if (!req[cfg.tokenRef]) {
 			return res.status(401).send({error: "token error"});
 		}
 		let selector = {
-			user: req[cfg.tokenRef] as string
+			user: oid(req[cfg.tokenRef])
 		};
 
-		let query = neurons.model.find(selector)
-		.select("_id cell")
-		.populate([{path: "cell", select: "name"}]).lean().exec()
-		.then(raw => {
-			let result = [];
-
-			let neurons = raw as Array<any>;
-			if (neurons) {
-				for (let neuron of neurons as Array<any>) {
-					result.push({
-						_id: neuron._id,
-						name: neuron.cell.name
-					});
-				}
+		switch (req.query.cat) {
+			case "neurons": {
+				let query = neurons.model.aggregate([
+					{$match: selector},
+					{$lookup: {
+						from: "cells",
+						localField: "cell",
+						foreignField: "_id",
+						as: "meta"
+					}},
+					{$project: {_id: 1, name: {$arrayElemAt: ["$meta.name", 0]}}}
+				])
+				.exec().then(nameids => {
+					res.status(200).send(nameids);
+				})
+				.catch(error => {
+					debugRepositoryError(error);
+					return res.status(400).send({error: "error"});
+				});
 			}
-			res.status(200).send(result);
-		})
-		.catch(error => {
-			debugRepositoryError(error);
-			return res.status(400).send({error: "error"});
-		});
+			break;
+			case "ucells": {
+				let query = cells.model.aggregate([
+					{$match: selector},
+					{$lookup: {
+						from: "neurons",
+						localField: "_id",
+						foreignField: "cell",
+						as: "neurons"
+					}},
+					{$project: {_id: 1, name: 1, neurons: 1}}
+				])
+				.match({neurons: {$eq: []}})
+				.project({_id: 1, name: 1})
+				.exec().then(nameids => {
+					res.status(200).send(nameids);
+				})
+				.catch(error => {
+					debugRepositoryError(error);
+					return res.status(400).send({error: "error"});
+				});
+			}
+			break;
+			default: {
+				return res.status(400).send({error: "cat error"});
+			}
+		}
 	} catch (e) {
 		debug(e);
 		return res.status(500).send({error: "error"});
