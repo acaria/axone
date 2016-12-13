@@ -1,22 +1,20 @@
 import {autoinject, bindable} from 'aurelia-framework';
-import {AuthService, FetchConfig} from 'aurelia-authentication';
+import {FetchConfig} from 'aurelia-authentication';
+import {Authentication} from '../ctrls/authentication';
 import {HttpClient} from 'aurelia-fetch-client';
-import {EventAggregator} from 'aurelia-event-aggregator';
 import {Config as ApiConfig, Rest} from "aurelia-api";
 import {log} from '../logger';
 
 @autoinject()
 export class Profile {
 	heading = 'Profile';
-	profile: Object;
 	
 	avatarFiles;
 	avatarImg = null;
 
 	private client: HttpClient;
 
-	constructor(private auth:AuthService, private event:EventAggregator, private fetch:FetchConfig) {
-		this.profile = null;
+	constructor(private auth:Authentication, private fetch:FetchConfig) {
 		this.client = new HttpClient();
 
 		this.client.configure(config => { config
@@ -24,8 +22,8 @@ export class Profile {
 			.withDefaults({
 				credentials: 'same-origin',
             headers: {
-                'Accept': 'application/json',
-                'X-Requested-With': 'Fetch'
+					'Accept': 'application/json',
+               'X-Requested-With': 'Fetch'
             }
 			});
 		});
@@ -44,16 +42,9 @@ export class Profile {
 		this.avatarFiles = null;
 	}
 
-	setProfile = data => {
-		this.profile = data;
-		this.event.publish("profile-change", this.profile);
-	}
-
 	activate() {
+		this.avatarImg = null;
 		this.fetch.configure(this.client);
-
-		return this.auth.getMe()
-		.then(this.setProfile);
 	}
 
 	save() {
@@ -67,12 +58,11 @@ export class Profile {
 			})
 			.then(response => response.json())
 			.then(result => {
-				myThis.profile["avatar"] = result["avatar"];
+				this.auth.profile["avatar"] = result["avatar"];
 				myThis.avatarImg = null;
 			});
 		}
-		return this.auth.updateMe(this.profile)
-		.then(this.setProfile);
+		return this.auth.updateProfile();
 	}
 
 	logout() {
@@ -80,14 +70,10 @@ export class Profile {
 	}
 
 	link(provider) {
-		return this.auth.authenticate(provider)
-		.then(() => this.auth.getMe())
-		.then(this.setProfile)
+		return this.auth.link(provider);
 	}
 
 	unlink(provider) {
-		return this.auth.unlink(provider)
-		.then(() => this.auth.getMe())
-		.then(this.setProfile)
+		return this.auth.unlink(provider);
 	}
 }

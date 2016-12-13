@@ -8,24 +8,25 @@
 				<span class="icon-bar"></span>
 			</button>
 			<a class="navbar-brand" href="#">
-				<i class="fa fa-home"></i>
+				<i class="fa fa-sitemap" aria-hidden="true"></i>
 				<span>${router.title}</span>
 			</a>
 		</div>
-
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			<ul class="nav navbar-nav">
-				<li repeat.for="row of router.navigation | authFilter : auth.authenticated" class="${row.isActive ? 'active' : ''}">
+				<li repeat.for="row of router.navigation | authFilter : isAuthenticated" class="${row.isActive ? 'active' : ''}">
 					<a data-toggle="collapse" data-target="#bs-example-navbar-collapse-1.in" href.bind="row.href">${row.title}</a>
 				</li>
 			</ul>
-
-			<ul if.bind="!auth.authenticated" class="nav navbar-nav navbar-right">
+			<ul if.bind="!isAuthenticated" class="nav navbar-nav navbar-right">
 				<li><a href="/#/login">Login</a></li>
 				<li><a href="/#/signup">Sign up</a></li>
 			</ul>
-			<ul if.bind="auth.authenticated" class="nav navbar-nav navbar-right">
+			<ul if.bind="isAuthenticated" class="nav navbar-nav navbar-right">
 				<li><a href="/#/profile">${profileName}</a></li>
+				<li>
+					<img if.bind="auth.profile.avatar" class="img-circle img-mini-circle" src="avatar/${auth.avatarName}" onerror="this.src='images/avatar.svg';" />
+				</li>
 			</ul>
 			
 			<ul class="nav navbar-nav navbar-right">

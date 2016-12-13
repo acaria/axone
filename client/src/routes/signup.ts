@@ -1,10 +1,10 @@
-import {inject} from 'aurelia-framework';
-import {AuthService} from 'aurelia-authentication';
+import {autoinject} from 'aurelia-framework';
+import {Authentication} from '../ctrls/authentication';
 
-@inject(AuthService)
+@autoinject()
 export class Signup {
 
-	constructor(private auth: AuthService) { }
+	constructor(private auth: Authentication) { }
 
 	heading = 'Sign Up';
 

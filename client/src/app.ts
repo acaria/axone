@@ -10,6 +10,7 @@ export class App {
 
 		config.map([
 			{ route: ['','home'], 		name: 'home', 		moduleId: './routes/home', 			nav: true, 		title: 'Home' },
+			{ route: 'viewer', 			name: 'viewer',	moduleId: './routes/viewer', 			nav: true, 		title: 'Viewer',	auth:true},
 			{ route: 'neurons/:id?', 	name: 'neurons', 	moduleId: './routes/neurons', 		nav: true, 		title: 'Neurons', auth: true, href: '#/neurons' },
 			{ route: 'cells/:id?', 		name: 'cells', 	moduleId: './routes/cells', 			nav: true, 		title: 'Cells', 	auth: true, href: '#/cells' },
 			{ route: 'about', 			name: 'about', 	moduleId: './routes/about', 			nav: true, 		title: 'About' },

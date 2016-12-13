@@ -34,20 +34,10 @@ section {
 .tag-dendrite {
   margin: 5px 5px;
 }
-.profile-header-container {
-  margin: 0 auto;
-  text-align: center;
-}
-.profile-header-img > img.img-circle {
-  width: 120px;
-  height: 120px;
-  border: 3px solid #888;
-}
-.profile-edition {
-  border: 3px solid #800 !important;
-}
-.profile-header {
-  margin-top: 43px;
+.img-mini-circle {
+  height: 35px;
+  margin-top: 7px;
+  margin-right: 4px;
 }
 .panel-table .panel-body .table-bordered {
   border-style: none;
@@ -91,10 +81,55 @@ section {
 .new-cell {
   margin-top: 10px !important;
 }
+
 ai-dialog-overlay.active {
   background-color: #000;
   opacity: 0.5 !important;
 }
 ai-dialog {
   margin: 100px !important;
+}
+
+.home-container {
+  max-width: 800px;
+  margin: 0 auto;
+  float: none;
+}
+.home-title {
+  margin: 0;
+  padding: 30px 0 10px;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  font-family: "Josefin Slab", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 5em;
+  font-weight: 700;
+  line-height: normal;
+  color: #555;
+}
+.home-subtitle {
+  margin: 0;
+  padding: 0 0 40px;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  text-transform: uppercase;
+  font-size: 1.25em;
+  font-weight: 400;
+  letter-spacing: 3px;
+  color: #555;
+}
+
+.profile-header-container {
+  margin: 0 auto;
+  text-align: center;
+}
+.profile-header-img > img.img-circle {
+  width: 120px;
+  height: 120px;
+  border: 3px solid #888;
+}
+.profile-edition {
+  border: 3px solid #800 !important;
+}
+.profile-header {
+  margin-top: 43px;
 }

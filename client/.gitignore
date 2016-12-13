@@ -1,6 +1,7 @@
 node_modules
 typings
 css
+images
 dist
 .idea
 .DS_STORE

@@ -1,7 +1,7 @@
 import {bindable, autoinject, computedFrom} from "aurelia-framework";
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {Router} from "aurelia-router";
-import {AuthService} from "aurelia-authentication";
+import {Authentication} from "../ctrls/authentication";
 import {log} from '../logger';
 
 @autoinject()
@@ -10,7 +10,7 @@ export class NavBar {
 
 	private profileName:string = "Profile";
 
-	constructor(private auth: AuthService, private event: EventAggregator) {
+	constructor(private auth: Authentication, private event: EventAggregator) {
 		this.event.subscribe("profile-change", profile => {
 			if (profile) {
 				this.profileName = "Logged as " + profile.name;
@@ -18,17 +18,16 @@ export class NavBar {
 				this.profileName = "Profile";
 			}
 		});
+	}
 
-		if (auth.authenticated) {
-			this.auth.getMe()
-			.then(profile => {
-				this.profileName = "Logged as " + profile.name;
-			})
+	created() {
+		if (this.auth.isAuthenticated) {
+			this.profileName = "Logged as " + this.auth.profileName;
 		}
 	}
 
-	@computedFrom('auth.authenticated')
+	@computedFrom('auth.isAuthenticated')
   	get isAuthenticated() {
-		return this.auth.authenticated;
+		return this.auth.isAuthenticated;
 	}
 }

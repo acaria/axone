@@ -7,7 +7,7 @@
 				<form class="form-horizontal">
 					<div class="profile-header-container col-sm-4">   
 						<div class="profile-header-img">
-							<img if.bind="!avatarImg" class="img-circle" src="avatar/${profile.avatar}" onerror="this.src='images/avatar.svg';" />
+							<img if.bind="!avatarImg" class="img-circle" src="avatar/${auth.profile.avatar}" onerror="this.src='images/avatar.svg';" />
 							<img if.bind="avatarImg" class="img-circle profile-edition" src.bind="avatarImg"/>
 							<div class="rank-label-container">
 								<label class="cursor-pointer label label-default rank-label">change avatar 
@@ -23,13 +23,13 @@
 					<div class="form-group">
 						<label class="col-sm-2 control-label"><i class="ion-at"></i>Email</label>
 						<div class="col-sm-10">
-							<input type="email" class="form-control" value.bind="profile.email" disabled/>
+							<input type="email" class="form-control" value.bind="auth.profile.email" disabled/>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="col-sm-2 control-label"><i class="ion-person"></i>Name</label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control" value.bind="profile.name"  />
+							<input type="text" class="form-control" value.bind="auth.profile.name"  />
 						</div>
 					</div>
 					<hr>
