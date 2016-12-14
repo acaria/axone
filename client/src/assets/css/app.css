@@ -117,6 +117,30 @@ ai-dialog {
   letter-spacing: 3px;
   color: #555;
 }
+.home-item > div > img {
+  max-width: 200px;
+}
+.home-item > div > h1 {
+  padding: 10px;
+  font-size: 1.5em;
+  color: #999;
+}
+.home-item > div > h2 {
+  font-size: 1.4em;
+  color: #555;
+}
+#homecarousel {
+  margin-bottom: 25px;
+}
+#homecarousel > .carousel-indicators {
+  bottom: -30px;
+}
+#homecarousel > .carousel-indicators > li {
+  border: 1px solid #555;
+}
+#homecarousel > .carousel-indicators > .active {
+  background-color: #555;
+}
 
 .profile-header-container {
   margin: 0 auto;
