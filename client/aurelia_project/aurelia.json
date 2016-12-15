@@ -143,6 +143,11 @@
 					],
 				"dependencies": [
 					"extend",
+					{
+						"name": "d3",
+						"path": "../node_modules/d3/build",
+						"main": "d3.min"
+					},
 					"aurelia-fetch-client",
 					"aurelia-api",
 					"aurelia-binding",

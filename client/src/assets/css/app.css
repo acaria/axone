@@ -157,3 +157,10 @@ ai-dialog {
 .profile-header {
   margin-top: 43px;
 }
+
+#canvas {
+  margin: 0 auto;
+  background-color: #00f;
+  width: 100%;
+  height: auto;
+}
