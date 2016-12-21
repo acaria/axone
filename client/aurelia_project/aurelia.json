@@ -57,7 +57,8 @@
 			"node_modules/jquery-ui-dist/*.min.css",
 			"node_modules/magicsuggest/*-min.css",
 			"node_modules/bootstrap-fileinput/css/*.min.css",
-			"node_modules/bootstrap-datepicker/dist/css/*.min.css"
+			"node_modules/bootstrap-datepicker/dist/css/*.min.css",
+			"node_modules/vis/dist/*.min.css"
 		]
 	},
 	"copyFiles": [
@@ -147,6 +148,11 @@
 						"name": "d3",
 						"path": "../node_modules/d3/build",
 						"main": "d3.min"
+					},
+					{
+						"name": "vis",
+						"path": "../node_modules/vis/dist",
+						"main": "vis.min"
 					},
 					"aurelia-fetch-client",
 					"aurelia-api",
