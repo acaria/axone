@@ -18,29 +18,24 @@
 			"./typings/**/*.d.ts",
 			"./typings_custom/**/*.d.ts"
 		],
-		"source": "src\\**\\*.ts"
+		"source": "src/**/*.ts"
 	},
 	"markupProcessor": {
 		"id": "none",
 		"displayName": "None",
 		"fileExtension": ".html",
-		"source": "src\\**\\*.html"
+		"source": "src/**/*.html"
 	},
 	"cssProcessor": {
 		"id": "stylus",
 		"displayName": "Stylus",
 		"fileExtension": ".styl",
-		"source": "src\\**\\*.styl",
+		"source": "src/**/*.styl",
 		"filename": "app.css"
 	},
 	"editor": {
 		"id": "sublime",
 		"displayName": "Sublime"
-	},
-	"unitTestRunner": {
-		"id": "karma",
-		"displayName": "Karma",
-		"source": "test\\unit\\**\\*.ts"
 	},
 	"minifyCss": {
 		"output": "css",
@@ -93,11 +88,11 @@
 	},
 	"paths": {
 		"root": "src",
-		"resources": "src\\resources",
-		"elements": "src\\resources\\elements",
-		"attributes": "src\\resources\\attributes",
-		"valueConverters": "src\\resources\\value-converters",
-		"bindingBehaviors": "src\\resources\\binding-behaviors"
+		"resources": "src/resources",
+		"elements": "src/resources/elements",
+		"attributes": "src/resources/attributes",
+		"valueConverters": "src/resources/value-converters",
+		"bindingBehaviors": "src/resources/binding-behaviors"
 	},
 	"testFramework": {
 		"id": "jasmine",
@@ -136,12 +131,12 @@
 				"name": "app-bundle.js",
 				"prepend": [
 					"node_modules/bluebird/js/browser/bluebird.core.js",
-					"src/scripts/require.js"
+					"node_modules/requirejs/require.js"
 				],
 				"source": [
 					"[**/*.js]",
-						"**/*.{css,html}"
-					],
+					"**/*.{css,html}"
+				],
 				"dependencies": [
 					"extend",
 					{
@@ -176,10 +171,7 @@
 					"aurelia-task-queue",
 					"aurelia-templating",
 					"aurelia-templating-binding",
-					{
-						"name": "text",
-						"path": "scripts/text"
-					},
+					"text",
 					{
 						"name": "aurelia-templating-resources",
 						"path": "../node_modules/aurelia-templating-resources/dist/amd",
