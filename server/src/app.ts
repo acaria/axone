@@ -2,6 +2,7 @@
 "use strict";
 
 import express = require("express");
+import cors = require("cors");
 import bodyParser = require("body-parser");
 import cookieParser = require("cookie-parser");
 import methodOverride = require("method-override");
@@ -51,6 +52,8 @@ export default class {
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(cookieParser());
 
+        app.use(cors());
+
         app.use(methodOverride("X-HTTP-Method"));
         app.use(methodOverride("X-HTTP-Method-Override"));
         app.use(methodOverride("X-Method-Override"));
@@ -58,7 +61,7 @@ export default class {
 
         //add static paths
         app.use(express.static(path.join(__dirname, "../storage")));
-        app.use(express.static(path.join(__dirname, "../../client/dist")));
+        //app.use(express.static(path.join(__dirname, "../../client/dist")));
     }
 
     private configMiddle(app: express.Express) {
@@ -73,6 +76,7 @@ export default class {
         app.use("/api/items", require("./routes/api/items"));
         app.use("/api", require("./routes/api"));
         app.use("/auth", require("./routes/auth"));
+        app.use("/", require("./routes"));
     }
 
     private errorHandling(app: express.Express) {

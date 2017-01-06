@@ -18,6 +18,13 @@ let users = new UserRepository();
 let account = new Account(users);
 let uploads = multer({dest: cfg.storage.uploads});
 
+router.use((req, res, next) => {
+	res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, dataType");
+	next();
+});
+
 router.post("/signup", (req, res) => {
 	try {
 		return account.signup(req, res);

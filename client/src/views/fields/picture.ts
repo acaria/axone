@@ -13,8 +13,10 @@ export class Picture implements IField {
 
 	private model:Object;
 	private imgFiles;
-	private img = null;
+	private img: string | null = null;
 	private original: string;
+
+	private pictureUrl: string;
 
 	onSelectPicture(e) {
 		e.cancelBubble = true;
@@ -36,7 +38,7 @@ export class Picture implements IField {
 
 	activate(model) {
 		this.model = model;
-		this.original = model[this.name];
+		this.original = `picture/${model[this.name]}`;
 	}
 
 	preSave(model: Object, client: HttpClient, list: Array<Promise<any>>) {

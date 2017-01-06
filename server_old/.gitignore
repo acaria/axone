@@ -1,0 +1,8 @@
+node_modules
+typings
+build
+data
+storage
+uploads
+logs
+.tscache

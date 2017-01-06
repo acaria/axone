@@ -18,5 +18,8 @@
     "multer": "registry:dt/multer#0.0.0+20160829120954",
     "node": "registry:dt/node#6.0.0+20161110151007",
     "serve-static": "registry:dt/serve-static#0.0.0+20160606155157"
+  },
+  "dependencies": {
+    "cors": "registry:dt/cors#2.8.0+20170104211352"
   }
 }

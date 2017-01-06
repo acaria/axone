@@ -1,0 +1,15 @@
+<template>
+	<require from="../views/cell-list"></require>
+	<section class="au-animate">
+		<div class="panel panel-default panel-table">
+			<div class="panel-heading"></div>
+			
+			<div class="panel-body">
+				<cell-list items.bind="cells"></neuron-list>
+			</div>
+			<div class="panel-footer">
+				<pager nbitems.bind="nbItems" limit.bind="itemsPerPages" page.bind="currentPage"></pager>
+			</div>
+		</div>
+	</section>
+</template>

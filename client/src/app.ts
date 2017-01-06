@@ -1,10 +1,11 @@
+import {Aurelia} from 'aurelia-framework';
 import {Router, RouterConfiguration} from 'aurelia-router';
 import {AuthenticateStep} from 'aurelia-authentication';
 
 export class App {
 	router: Router;
 
-	configureRouter(config: RouterConfiguration, router: Router){
+	configureRouter(config: RouterConfiguration, router: Router) {
 		config.title = 'Axone';
 		config.addPipelineStep('authorize', AuthenticateStep);
 

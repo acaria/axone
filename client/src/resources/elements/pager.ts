@@ -11,7 +11,7 @@ export class Pager {
 	@bindable nbitems;            // items list
 	@bindable pages;              // total amount of pages
 
-	private navs = [];
+	private navs:Object[] = [];
 
 	attached() {
 		if (!this.page) {
@@ -67,7 +67,7 @@ export class Pager {
 	private calculateRange() {
 		let rangeStart = Math.max(this.page - this.pagerange, 1);
 		let rangeEnd   = Math.min(this.page + this.pagerange, this.pages);
-		let navs       = [];
+		let navs:Object[]       = [];
 		let i;
 
 		if (this.page <= this.pagerange) {

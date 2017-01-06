@@ -11,7 +11,7 @@ import * as _ from 'lodash';
 export class CellList {
 	@bindable items: Array<INameID> = [];
 
-	private creating:INameID = null;
+	private creating: INameID | null = null;
 	private apiClient: Rest;
 
 	constructor(apiConfig: ApiConfig, private dlg: DialogService) {
@@ -26,7 +26,7 @@ export class CellList {
 	}
 
 	saveCell(id:string) {
-		let sendData:Object = null;
+		let sendData:Object | null = null;
 		let creatingProgress = false;
 		if (this.creating && this.creating._id == id) {
 			creatingProgress = true;
@@ -64,16 +64,17 @@ export class CellList {
 	}
 
 	removeCell(id:string) {
-		let item = _.find(this.items, {_id: id});
-		if (item != null) {
+		let find = _.find(this.items, {_id: id});
+		if (find) {
+			let item = find as INameID;
 			this.dlg.open({
 				viewModel: Prompt, 
 				model: `Are you sure to delete the cell "${item.name}"?`})
 			.then(res => {
-				if (!res.wasCancelled) {
+				if (!res.wasCancelled && item._id) {
 					this.apiClient.destroy('cells/', item._id)
 					.then(() => {
-						let index = this.items.indexOf(item);
+						let index = this.items.indexOf(item as INameID);
 						var removed = this.items.splice(index, 1);
 					})
 					.catch(err => log.error(err.message));

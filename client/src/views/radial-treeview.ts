@@ -3,7 +3,7 @@ import {log} from '../logger';
 
 export default class {
     private svg;
-    private data: Array<Object> = null;
+    private data: Array<Object>;
 
     constructor(private containerId:string) {}
 

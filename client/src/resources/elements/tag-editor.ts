@@ -1,6 +1,6 @@
 import * as $ from 'jquery';
-import * as _ from "lodash"
-import "magicsuggest";
+import * as _ from "lodash";
+import "./magicsuggest/magicsuggest";
 
 import {bindable} from "aurelia-framework";
 import {INameID} from "../../models/neuron-item";
@@ -10,7 +10,7 @@ export class TagEditor {
 	@bindable content: Array<INameID> = [];
 	@bindable selection: Array<INameID> = [];
 	private tagInput:Element;
-	private el:MagicSuggest.Instance = null;
+	private el:MagicSuggest.Instance;
 
 	isAttached = false;
 

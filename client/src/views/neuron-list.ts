@@ -1,8 +1,7 @@
 
 import {bindable, autoinject} from 'aurelia-framework';
 import {DialogService} from 'aurelia-dialog';
-import {Config as ApiConfig, Rest} from "aurelia-api";
-import {Confirm} from './dialogs/confirm';
+import {Config as ApiConfig, Rest} from 'aurelia-api';
 import {Item, INameID} from '../models/neuron-item';
 import {log} from '../logger';
 import * as _ from 'lodash';
@@ -10,18 +9,19 @@ import * as _ from 'lodash';
 @autoinject()
 export class NeuronList {
 	@bindable items: Array<Item> = [];
-	@bindable axone: string = null;
+	@bindable axone: string = "";
 
-	private editing = new Map<string, Item>();
-	private creating:Item = null;
+	private editing : Map<string, Item>;
+	private creating: Item | null = null;
 	private apiClient: Rest;
 	private newCellMode:boolean = true;
 
 	private neuronsList: Array<INameID>;
 	private unassignedCells: Array<INameID>;
-	@bindable private unassignedSelection: string = null;
+	@bindable unassignedSelection: string = "";
 
 	constructor(apiConfig: ApiConfig, private dlg: DialogService) {
+		this.editing = new Map<string, Item>();
 		this.apiClient = apiConfig.getEndpoint("api");
 	}
 
@@ -49,19 +49,19 @@ export class NeuronList {
 
 	createNeuron(name:string) {
 		if (!this.creating) {
-			let tmp = null;
+			let tmp : Item = {_id: 'NEW', name: name, __dendrites: [], __neuron: null};
 			if (!this.newCellMode && this.unassignedSelection) {
 				let item = _.find(this.unassignedCells, {_id: this.unassignedSelection});
-				if (item) {
+				if (item && item._id) {
 					tmp = {_id: item._id, name: item.name, __dendrites: [], __neuron: null};
 				}
 			}
-			if (!tmp) {
-				tmp = {_id: 'NEW', name: name, __dendrites: [], __neuron: null};
-			}
+			
 			this.creating = tmp;
 			this.items.unshift(this.creating);
-			this.editing[this.creating._id] = this.creating;
+			if (this.creating._id) {
+				this.editing[this.creating._id] = this.creating;
+			}
 		}
 	}
 
@@ -73,7 +73,7 @@ export class NeuronList {
 	}
 
 	saveNeuron(id:string) {
-		let sendData:Object = null;
+		let sendData: Object | null = null;
 		let creatingProgress = false;
 		if (this.creating && this.creating._id == id) {
 			creatingProgress = true;
@@ -151,34 +151,36 @@ export class NeuronList {
 
 	removeNeuron(id:string) {
 		let item = _.find(this.items, {_id: id});
-		if (item != null) {
+		if (item) {
 			this.dlg.open({
-				viewModel: Confirm, 
+				viewModel: "views/dialogs/confirm", 
 				model: {
 					message: `Are you sure you want to delete the neuron "${item.name}"?`, 
 					option: `Also delete the associated cell`,
 					precheck: true
-				}}).then(res => {
-					if (!res.wasCancelled) {
-						if (res.output) {
-							this.apiClient.destroy('cells/', item._id)
+				}
+			}).then(res => {
+				if (!res.wasCancelled && item) {
+					let current = item as Item;
+					if (res.output) {
+						this.apiClient.destroy('cells/', item._id)
+						.then(() => {
+							let index = this.items.indexOf(current);
+							var removed = this.items.splice(index, 1);
+							this.loadSelectorLists();
+						})
+						.catch(err => log.error(err.message));
+					} else {
+						if (current.__neuron) {
+							this.apiClient.destroy("neurons/", current.__neuron)
 							.then(() => {
-								let index = this.items.indexOf(item);
-								var removed = this.items.splice(index, 1);
-								this.loadSelectorLists();
-							})
-							.catch(err => log.error(err.message));
-						} else {
-							this.apiClient.destroy("neurons/", item.__neuron)
-							.then(() => {
-								let index = this.items.indexOf(item);
+								let index = this.items.indexOf(current);
 								var removed = this.items.splice(index, 1);
 								this.loadSelectorLists();
 							})
 						}
 					}
-				})
-				.catch(err => log.error(err.message));
-			}
+			}}).catch(err => log.error(err.message));
 		}
 	}
+}

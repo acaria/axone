@@ -1,0 +1,46 @@
+<template>
+	<table class="table table-striped table-bordered table-list">
+		<thead>
+			<tr>
+				<th><em class="fa fa-cog"></em></th>
+				<th>Name</th>
+				<th>Dendrites</th>
+			</tr> 
+		</thead>
+		<tbody>
+			<tr if.bind="!creating">
+				<td align="right">
+					<a class="btn btn-primary au-target" click.delegate="createNeuron('')" au-target-id="22"><em class="fa fa-plus"></em></a>
+				</td>
+				<td colspan=4>
+					<label class="radio-inline"><input class="new-cell" type="radio" name="newCellMode" checked.bind="newCellMode" model.bind="true">New cell</label>
+					<label if.bind="unassignedCells.length" class="radio-inline"><input class="new-cell" type="radio" name="newCellMode" checked.bind="newCellMode" model.bind="false">or existing</label>
+					<dropdown
+						if.bind="unassignedCells.length"
+						items.bind="unassignedCells"
+						selection.two-way="unassignedSelection" 
+						emptydesc.bind="'cell'">
+					</dropdown>
+				</td>
+			</tr>
+			<tr repeat.for="item of items">
+				<td align="center">
+					<a class="btn btn-primary" if.bind="!editing[item._id]" click.delegate="editNeuron(item._id)"><em class="fa fa-pencil"></em></a>
+					<a class="btn btn-danger" if.bind="!editing[item._id]" click.delegate="removeNeuron(item._id)"><em class="fa fa-trash"></em></a>
+					<a class="btn btn-success" if.bind="editing[item._id]" click.delegate="saveNeuron(item._id)"><em class="fa fa-check"></em></a>
+					<a class="btn btn-warning" if.bind="editing[item._id]" click.delegate="cancelNeuron(item._id)"><em class="fa fa-times"></em></a>
+				</td>
+				<td>
+					<a route-href="route: neurons; params.bind: {id: item.__neuron}" if.bind="!editing[item._id]">${item.name}</a>
+					<input class="form-control" type="text" if.bind="editing[item._id]" value.bind="item.name">
+				</td>
+				<td>
+					<tag-editor content.bind="neuronsList" selection.bind="item.__dendrites" if.bind="editing[item._id]"></tag-editor>
+					<template if.bind="!editing[item._id]">
+						<span repeat.for="dendrite of item.__dendrites" class="label label-info tag-dendrite">${dendrite.name}</span>
+					</template>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</template>

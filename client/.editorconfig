@@ -8,7 +8,7 @@ root = true
 end_of_line = lf
 insert_final_newline = true
 
-# 3 space indentation
+# 3 tab indentation
 [**.*]
 indent_style = tab
 indent_size = 3

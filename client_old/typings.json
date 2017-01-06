@@ -1,0 +1,43 @@
+{
+	"name": "ax-client",
+	"dependencies": {
+		"aurelia-api": "github:spoonx/aurelia-api",
+		"aurelia-authentication": "github:spoonx/aurelia-authentication",
+		"aurelia-binding": "github:aurelia/binding",
+		"aurelia-bootstrapper": "github:aurelia/bootstrapper",
+		"aurelia-dependency-injection": "github:aurelia/dependency-injection",
+		"aurelia-dialog": "github:aurelia/dialog",
+		"aurelia-event-aggregator": "github:aurelia/event-aggregator",
+		"aurelia-fetch-client": "github:aurelia/fetch-client",
+		"aurelia-framework": "github:aurelia/framework",
+		"aurelia-history": "github:aurelia/history",
+		"aurelia-history-browser": "github:aurelia/history-browser",
+		"aurelia-loader": "github:aurelia/loader",
+		"aurelia-logging": "github:aurelia/logging",
+		"aurelia-metadata": "github:aurelia/metadata",
+		"aurelia-pal": "github:aurelia/pal",
+		"aurelia-pal-browser": "github:aurelia/pal-browser",
+		"aurelia-path": "github:aurelia/path",
+		"aurelia-polyfills": "github:aurelia/polyfills",
+		"aurelia-route-recognizer": "github:aurelia/route-recognizer",
+		"aurelia-router": "github:aurelia/router",
+		"aurelia-task-queue": "github:aurelia/task-queue",
+		"aurelia-templating": "github:aurelia/templating",
+		"aurelia-templating-binding": "github:aurelia/templating-binding",
+		"aurelia-templating-resources": "github:aurelia/templating-resources",
+		"aurelia-templating-router": "github:aurelia/templating-router"
+	},
+	"globalDevDependencies": {
+		"jasmine": "registry:dt/jasmine#2.2.0+20160505161446",
+		"selenium-webdriver": "registry:dt/selenium-webdriver#2.44.0+20160317120654"
+	},
+	"globalDependencies": {
+		"jquery": "registry:dt/jquery#1.10.0+20160929162922",
+		"jqueryui": "registry:dt/jqueryui#1.11.0+20160727153854",
+		"lodash": "registry:dt/lodash#4.14.0+20161004174455",
+		"magicsuggest": "registry:dt/magicsuggest#0.0.0+20160316171810",
+		"url": "github:aurelia/fetch-client/doc/url.d.ts#bbe0777ef710d889a05759a65fa2c9c3865fc618",
+		"whatwg-fetch": "registry:dt/whatwg-fetch#0.0.0+20161004182750",
+		"whatwg-streams": "registry:dt/whatwg-streams#0.0.0+20160829180742"
+	}
+}

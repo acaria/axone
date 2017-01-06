@@ -1,0 +1,21 @@
+<template>
+	<div id="${cid}" class="carousel slide">
+		<ol class="carousel-indicators">
+		<li repeat.for="item of items" data-target="#${cid}" data-slide-to="${$index}" class="${($index == 0) ? 'active':''}"></li>
+		</ol>
+		<div class="carousel-inner">
+			<div repeat.for="item of items" class="item ${($index == 0) ? 'active':''}">
+				<!-- <img class="img-responsive img-full" src="images/slide-1.jpg" alt=""> -->
+				<compose view-model="../../views/${item.tpl}" model.bind="item"/>
+			</div>
+		</div>
+
+		<!-- Controls -->
+		<a class="left carousel-control" href="#${cid}" data-slide="prev">
+			<span class="icon-prev"></span>
+		</a>
+		<a class="right carousel-control" href="#${cid}" data-slide="next">
+			<span class="icon-next"></span>
+		</a>
+	</div>
+</template>

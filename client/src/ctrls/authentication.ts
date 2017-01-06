@@ -12,7 +12,7 @@ enum AuthState {
 export class Authentication {
 
 	private state = AuthState.LOADING;
-	profile:Object;
+	profile:Object | null;
 
 	constructor(private auth: AuthService, private event: EventAggregator) {
 		if (this.auth.authenticated) {
@@ -39,6 +39,9 @@ export class Authentication {
 		if (this.state == AuthState.LOADING) {
 			return "Connecting...";
 		}
+		if (this.profile == null) {
+			return "Disconnected";
+		}
 		return this.profile["name"];
 	}
 
@@ -46,17 +49,23 @@ export class Authentication {
 		if (this.state == AuthState.LOADING) {
 			return "Connecting...";
 		}
+		if (this.profile == null) {
+			return "Disconnected";
+		}
 		return this.profile["email"];
 	}
 
 	get avatarName(): string {
 		if (this.state == AuthState.LOADING) {
-			return null;
+			return "";
+		}
+		if (this.profile == null) {
+			return "Disconnected";
 		}
 		return this.profile["avatar"];
 	}
 
-	setProfile(profile:Object) {
+	setProfile(profile:Object | null) {
 		this.profile = profile;
 		this.event.publish("profile-change", this.profile);
 	}
@@ -85,8 +94,10 @@ export class Authentication {
 	}
 
 	updateProfile() {
-		return this.auth.updateMe(this.profile)
-		.then(profile => { this.setProfile(profile); });
+		if (this.profile != null) {
+			return this.auth.updateMe(this.profile)
+			.then(profile => { this.setProfile(profile); });
+		}
 	}
 
 	signup(data:Object) {

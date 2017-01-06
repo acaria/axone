@@ -7,7 +7,7 @@ import {Item} from '../models/neuron-item';
 
 interface IArborescence {
 	name: string;
-	id: string;
+	id: string | null;
 	disabled: boolean;
 }
 
@@ -16,7 +16,7 @@ export default class {
 	private heading;
 
 	//group by axones
-	private axoneId = null;
+	private axoneId: string | null = null;
 	private arb:Array<IArborescence> = [];
 	
 	private items:Array<Item> = [];

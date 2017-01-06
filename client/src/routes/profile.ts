@@ -10,8 +10,9 @@ export class Profile {
 	heading = 'Profile';
 	
 	avatarFiles;
-	avatarImg = null;
+	avatarImg: string | null = null;
 
+	private avatarUrl: string;
 	private client: HttpClient;
 
 	constructor(private auth:Authentication, private fetch:FetchConfig) {
@@ -45,6 +46,10 @@ export class Profile {
 	activate() {
 		this.avatarImg = null;
 		this.fetch.configure(this.client);
+
+		if (this.auth.profile != null) {
+			this.updateAvatarUrl();
+		}
 	}
 
 	save() {
@@ -58,8 +63,11 @@ export class Profile {
 			})
 			.then(response => response.json())
 			.then(result => {
-				this.auth.profile["avatar"] = result["avatar"];
-				myThis.avatarImg = null;
+				if (this.auth.profile != null) {
+					this.auth.profile["avatar"] = result["avatar"];
+					this.updateAvatarUrl();
+					myThis.avatarImg = null;
+				}
 			});
 		}
 		return this.auth.updateProfile();
@@ -75,5 +83,11 @@ export class Profile {
 
 	unlink(provider) {
 		return this.auth.unlink(provider);
+	}
+
+	private updateAvatarUrl() {
+		if (this.auth.profile != null) {
+			this.avatarUrl = `avatar/${this.auth.profile["avatar"]}`;
+		}
 	}
 }

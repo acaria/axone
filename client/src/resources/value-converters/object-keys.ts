@@ -1,6 +1,6 @@
 export class ObjectKeysValueConverter {
 	toView(obj) {
-		let temp = [];
+		let temp:Object[] = [];
 		for (let prop in obj) {
 			if (obj.hasOwnProperty(prop)) {
 				temp.push(obj[prop]);

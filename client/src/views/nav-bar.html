@@ -25,7 +25,7 @@
 			<ul if.bind="isAuthenticated" class="nav navbar-nav navbar-right">
 				<li><a href="/#/profile">${profileName}</a></li>
 				<li>
-					<img if.bind="auth.profile.avatar" class="img-circle img-mini-circle" src="avatar/${auth.avatarName}" onerror="this.src='images/avatar.svg';" />
+					<img if.bind="auth.profile.avatar" class="img-circle img-mini-circle" src.bind="profileUrl" onerror="this.src='images/avatar.svg';" />
 				</li>
 			</ul>
 			

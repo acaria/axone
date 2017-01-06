@@ -14,6 +14,6 @@ export class Confirm {
    activate(data:{message: string, option:string, precheck?:boolean}) {
       this.message = data.message;
       this.option = data.option;
-      this.check = data.precheck;
+      this.check = data.precheck || false;
    }
 }

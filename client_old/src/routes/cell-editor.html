@@ -1,0 +1,46 @@
+<template>
+	<section class="au-animate">
+		<div class="panel panel-primary">
+			<div class="panel-heading"><h3 class="panel-title">${heading}</h3></div>
+			<div class="panel-body">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Name</label>
+						<div class="col-sm-10">
+							<input type="text" placeholder="Name" class="form-control" value.bind="cell.name">
+						</div>
+					</div>
+					<hr>
+					<div repeat.for="property of properties" class="form-group">
+						<compose class="col-sm-11" model.bind="cell.properties" view-model="../views/fields/${property.type}"></compose>
+						<div class="col-sm-1">
+						<i class="cursor-pointer fa fa-trash-o" click.trigger="$parent.removeProperty($event, property.name)"></i>
+						</div>
+					</div>
+					<hr if.bind="withNewProperties">
+					<div if.bind="withNewProperties" class="form-group">
+						<label class="col-sm-2 control-label"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Add</label>
+						<div class="col-sm-8 dropdown">
+							<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+								New property
+								<span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+								<li repeat.for="property of newProperties">
+									<a click.delegate="addProperty(property.name)">${property.title}</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<hr>
+					<div class="form-group">
+						<div class="col-sm-10 col-sm-offset-2">
+							<button class="btn btn-success" click.delegate="save()" disabled.bind="!canSave">Save</button>
+							<button class="btn btn-warning" click.delegate="cancel()">Cancel</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</section>
+</template>

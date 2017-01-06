@@ -1,0 +1,69 @@
+<template>
+	<section class="au-animate">
+		<div class="panel panel-default">
+			<div class="panel-heading">Edit my profile</div>
+			<div class="panel-body">
+				<!-- <legend><i class="ion-clipboard"></i> Edit My Profile</legend> -->
+				<form class="form-horizontal">
+					<div class="profile-header-container col-sm-4">   
+						<div class="profile-header-img">
+							<img if.bind="!avatarImg" class="img-circle" src="avatar/${auth.profile.avatar}" onerror="this.src='images/avatar.svg';" />
+							<img if.bind="avatarImg" class="img-circle profile-edition" src.bind="avatarImg"/>
+							<div class="rank-label-container">
+								<label class="cursor-pointer label label-default rank-label">change avatar 
+									<input type="file" style="display: none;" accept="image/*" files.bind="avatarFiles" change.delegate="onSelectAvatar($event)">
+								</label>
+								<label if.bind="avatarImg" class="cursor-pointer label label-default rank-label" click.trigger="removeAvatar($event)">
+									<br>remove avatar
+								</label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group col-sm-8">
+					<div class="form-group">
+						<label class="col-sm-2 control-label"><i class="ion-at"></i>Email</label>
+						<div class="col-sm-10">
+							<input type="email" class="form-control" value.bind="auth.profile.email" disabled/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label"><i class="ion-person"></i>Name</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" value.bind="auth.profile.name"  />
+						</div>
+					</div>
+					<hr>
+					<div class="form-group">
+						<div class="col-sm-10 col-sm-offset-2">
+							<button class="btn btn-success" click.delegate="save()">Update</button>
+							<button class="btn btn-warning" click.delegate="logout()">Logout</button>
+						</div>
+					</div>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="panel panel-default">
+			<div class="panel-heading">Linked Accounts</div>
+			<div class="panel-body">
+				<!-- <legend><i class="ion-link"></i> Linked Accounts</legend> -->
+				<div class="btn-group-vertical">
+					<button class="btn btn-sm btn-danger" if.bind="profile.facebook" click.delegate="unlink('facebook')">
+						<i class="ion-social-facebook"></i> Unlink Facebook Account
+					</button>
+					<button class="btn btn-sm btn-primary" if.bind="!profile.facebook" click.delegate="link('facebook')">
+						<i class="ion-social-facebook"></i> Link Facebook Account
+					</button>
+
+					<button class="btn btn-sm btn-danger" if.bind="profile.google" click.delegate="unlink('google')">
+						<i class="ion-social-googleplus"></i> Unlink Google Account
+					</button>
+					<button class="btn btn-sm btn-primary" if.bind="!profile.google" click.delegate="link('google')">
+						<i class="ion-social-googleplus"></i> Link Google Account
+					</button>
+				</div>
+			</div>
+		</div>
+	</section>
+</template>

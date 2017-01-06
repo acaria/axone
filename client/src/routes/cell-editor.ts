@@ -30,7 +30,6 @@ export class CellEditor {
 
 		this.client = new HttpClient();
 		this.client.configure(config => { config
-			.withBaseUrl("api/cells/")
 			.withDefaults({
 				credentials: 'same-origin',
 				headers: {
@@ -48,7 +47,10 @@ export class CellEditor {
 		return this.apiClient.findOne("cells", params.id)
 		.then(cell => {
 			this.cell = cell;
-			this.routeConfig.navModel.setTitle(cell.name);
+
+			if (this.routeConfig.navModel != null) {
+				this.routeConfig.navModel.setTitle(cell.name);
+			}
 			this.originalCell = _.clone(cell);
 
 			this.properties = new Array<IField>();
@@ -99,7 +101,10 @@ export class CellEditor {
 		.then(() => {
 			this.apiClient.update("cells", this.cell._id, this.cell).then(cell => {
 				this.cell = cell
-				this.routeConfig.navModel.setTitle(cell.name);
+
+				if (this.routeConfig.navModel != null) {
+					this.routeConfig.navModel.setTitle(cell.name);
+				}
 				this.originalCell = _.clone(cell);
 				history.back();
 			});

@@ -1,11 +1,13 @@
 <template>
 	<section class="au-animate">
-		<div class="well col-md-12 home-container text-center">
+		<div class="well">
 			<div class="home-title">${title}</div>
 			<div class="home-subtitle">${subtitle}</div>
 			<carousel cid="homecarousel" items.bind="carouselItems"></carousel>
 			<br>
-			<a class="btn btn-lg btn-primary">Start</a>
+			<div class="text-center">
+				<a class="btn btn-lg btn-primary">Start</a>
+			</div>
 		</div>
 	</section>
 </template>

@@ -31,17 +31,17 @@ var cfg = require('./config.js');
 
 function runCommand(command) {    
 	exec(command, function(err, stdout, stderr) {
-        //console.log(stdout);
-        console.log(stderr);
-        if (err !== null) {
-        	console.log('exec error: ' + err);
-        }
-     });
+		//console.log(stdout);
+		console.log(stderr);
+		if (err !== null) {
+			console.log('exec error: ' + err);
+		}
+	});
 }
 
 gulp.task('clean', function clean(done) {
 	return del([cfg.path.dir.dest,
-					cfg.path.dir.client
+		cfg.path.dir.client
 		], {force: true}, done);
 });
 
@@ -100,11 +100,7 @@ gulp.task('mongo-stop', function(done) {
 	done();
 });
 
-gulp.task('build-client', shell.task('au build', {cwd: '../client'}));
-
-gulp.task('run-client', shell.task('au run --watch', {cwd: '../client'}));
-
-gulp.task('look-client', shell.task('au look', {cwd: '../client'}));
+gulp.task('build-client', shell.task('npm start', {cwd: '../webpack_client'}));
 
 gulp.task('nodemon', function() {
 	var stream = nodemon({
@@ -149,14 +145,14 @@ gulp.task('open-dev', function(){
 gulp.task('build', 
 	gulp.series(
 		'clean',
-		gulp.parallel('build-ts', 'build-js', 'build-client')
+		gulp.parallel('build-ts', 'build-js')
 		)
 	);
 
 gulp.task('run',
 	gulp.series(
 		gulp.parallel('mongo-start', 'build'),
-		gulp.parallel('look-client', 'nodemon', 'watch', 'browser-sync')
+		gulp.parallel('nodemon', 'watch', 'browser-sync')
 		)
 	);
 
