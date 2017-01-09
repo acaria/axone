@@ -65,6 +65,10 @@ export class Authentication {
 		return this.profile["avatar"];
 	}
 
+	invalidateProfile() {
+		this.setProfile(this.profile);
+	}
+
 	setProfile(profile:Object | null) {
 		this.profile = profile;
 		this.event.publish("profile-change", this.profile);

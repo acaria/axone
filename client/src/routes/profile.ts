@@ -4,6 +4,7 @@ import {Authentication} from '../ctrls/authentication';
 import {HttpClient} from 'aurelia-fetch-client';
 import {Config as ApiConfig, Rest} from "aurelia-api";
 import {log} from '../logger';
+import appCfg from '../app-config';
 
 @autoinject()
 export class Profile {
@@ -19,7 +20,7 @@ export class Profile {
 		this.client = new HttpClient();
 
 		this.client.configure(config => { config
-			.withBaseUrl("auth/")
+			.withBaseUrl(appCfg.endPoint.baseUrl + appCfg.endPoint.auth)
 			.withDefaults({
 				credentials: 'same-origin',
             headers: {
@@ -48,7 +49,7 @@ export class Profile {
 		this.fetch.configure(this.client);
 
 		if (this.auth.profile != null) {
-			this.updateAvatarUrl();
+			this.avatarUrl = appCfg.storage.baseUrl + appCfg.storage.avatar + this.auth.profile["avatar"];
 		}
 	}
 
@@ -64,8 +65,7 @@ export class Profile {
 			.then(response => response.json())
 			.then(result => {
 				if (this.auth.profile != null) {
-					this.auth.profile["avatar"] = result["avatar"];
-					this.updateAvatarUrl();
+					this.updateAvatarUrl(result["avatar"]);
 					myThis.avatarImg = null;
 				}
 			});
@@ -85,9 +85,11 @@ export class Profile {
 		return this.auth.unlink(provider);
 	}
 
-	private updateAvatarUrl() {
+	private updateAvatarUrl(avatarName: string) {
 		if (this.auth.profile != null) {
-			this.avatarUrl = `avatar/${this.auth.profile["avatar"]}`;
+			this.auth.profile["avatar"] = avatarName;
+			this.avatarUrl = appCfg.storage.baseUrl + appCfg.storage.avatar + avatarName;
+			this.auth.invalidateProfile();
 		}
 	}
 }
