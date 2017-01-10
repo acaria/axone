@@ -1,33 +1,32 @@
 import {bindable, autoinject, computedFrom} from "aurelia-framework";
-import {EventAggregator} from 'aurelia-event-aggregator';
 import {AuthService} from "aurelia-authentication";
 import {log} from '../logger';
+import {IEvent, EventDispatcher} from '../models/event-dispatcher';
 
-enum AuthState {
-	LOADING,
-	READY
+interface Profile {
+	name: string;
+	email: string;
+	avatar: string | null;
 }
 
 @autoinject()
 export class Authentication {
 
-	private state = AuthState.LOADING;
-	profile:Object | null;
+	private state: 'ready'|'loading'|'loaded' = 'ready';
 
-	constructor(private auth: AuthService, private event: EventAggregator) {
-		if (this.auth.authenticated) {
-			this.state = AuthState.LOADING;
-			this.auth.getMe()
-			.then(profile => {
-				this.state = AuthState.READY;
+	private profile: Profile | null;
+	private _onProfileChanged = new EventDispatcher<Authentication, Profile | null>();
+
+	constructor(private auth: AuthService) {}
+
+	async activate() {
+		if (this.state === 'ready') {
+			this.state = 'loading';
+			if (this.auth.authenticated) {
+				let profile = await this.auth.getMe();
 				this.setProfile(profile);
-			})
-			.catch(error => {
-				log.error(error);
-				this.state = AuthState.READY;
-				this.setProfile(null);
-				this.auth.logout();
-			});
+				this.state = 'loaded';
+			}
 		}
 	}
 
@@ -35,44 +34,46 @@ export class Authentication {
 		return this.auth.authenticated;
 	}
 
-	get profileName(): string {
-		if (this.state == AuthState.LOADING) {
-			return "Connecting...";
-		}
-		if (this.profile == null) {
-			return "Disconnected";
-		}
-		return this.profile["name"];
-	}
-
-	get profileEmail(): string {
-		if (this.state == AuthState.LOADING) {
-			return "Connecting...";
-		}
-		if (this.profile == null) {
-			return "Disconnected";
-		}
-		return this.profile["email"];
-	}
-
-	get avatarName(): string {
-		if (this.state == AuthState.LOADING) {
-			return "";
-		}
-		if (this.profile == null) {
-			return "Disconnected";
-		}
-		return this.profile["avatar"];
+	get onProfileChanged(): IEvent<Authentication, Profile | null> {
+		return this._onProfileChanged;
 	}
 
 	invalidateProfile() {
 		this.setProfile(this.profile);
 	}
 
-	setProfile(profile:Object | null) {
-		this.profile = profile;
-		this.event.publish("profile-change", this.profile);
+	getProfile(): Profile | null {
+		if (this.state == 'ready') {
+			this.activate();
+			return null;
+		}
+		if (this.state == 'loading') {
+			return null;
+		}
+		return this.profile;
 	}
+
+	setProfile(profile:Object | null) {
+		if (profile == null)
+			this.profile = null;
+		else
+			this.profile = {
+				name: profile['name'],
+				email: profile['email'],
+				avatar: profile['avatar']
+			};
+		this._onProfileChanged.dispatch(this, this.profile);
+	}
+
+	setProfileAvatarName(avatar:string) {
+		if (this.profile != null) {
+			this.profile.avatar = avatar;
+		}
+		this._onProfileChanged.dispatch(this, this.profile);
+	}
+
+	//commands
+	//--------
 
 	login(email:string, pass:string) {
 		return this.auth.login(email, pass)

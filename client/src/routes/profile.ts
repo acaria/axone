@@ -44,13 +44,23 @@ export class Profile {
 		this.avatarFiles = null;
 	}
 
-	activate() {
+	async activate() {
 		this.avatarImg = null;
 		this.fetch.configure(this.client);
 
-		if (this.auth.profile != null) {
-			this.avatarUrl = appCfg.storage.baseUrl + appCfg.storage.avatar + this.auth.profile["avatar"];
+		let profile = this.auth.getProfile();
+		if (profile != null && profile.avatar != null) {
+			this.avatarUrl = appCfg.storage.baseUrl + appCfg.storage.avatar + profile.avatar;
+		} else {
+			this.avatarUrl = "images/avatar.svg";
 		}
+		this.auth.onProfileChanged.sub((sender, profile) => {
+			if (profile != null && profile.avatar != null) {
+				this.avatarUrl = appCfg.storage.baseUrl + appCfg.storage.avatar + profile.avatar;
+			} else {
+				this.avatarUrl = "images/avatar.svg";
+			} 
+		});
 	}
 
 	save() {
@@ -64,10 +74,8 @@ export class Profile {
 			})
 			.then(response => response.json())
 			.then(result => {
-				if (this.auth.profile != null) {
-					this.updateAvatarUrl(result["avatar"]);
-					myThis.avatarImg = null;
-				}
+				this.updateAvatarUrl(result["avatar"]);
+				myThis.avatarImg = null;
 			});
 		}
 		return this.auth.updateProfile();
@@ -86,10 +94,7 @@ export class Profile {
 	}
 
 	private updateAvatarUrl(avatarName: string) {
-		if (this.auth.profile != null) {
-			this.auth.profile["avatar"] = avatarName;
-			this.avatarUrl = appCfg.storage.baseUrl + appCfg.storage.avatar + avatarName;
-			this.auth.invalidateProfile();
-		}
+		this.auth.setProfileAvatarName(avatarName);
+		this.avatarUrl = appCfg.storage.baseUrl + appCfg.storage.avatar + avatarName;
 	}
 }
