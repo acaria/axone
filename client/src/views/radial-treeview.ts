@@ -1,9 +1,15 @@
 import * as d3 from "d3";
 import {log} from '../logger';
 
-export default class {
+export interface Node {
+	id: string;
+	parent: string | null;
+	name: string;
+}
+
+export class RadialTreeview {
     private svg;
-    private data: Array<Object>;
+    private tree: Array<Node>;
 
     constructor(private containerId:string) {}
 
@@ -16,23 +22,23 @@ export default class {
         this.svg = this.createSvg(this.containerId);
     }
 
-    public setData(data:Array<Object>) {
-        this.data = data;
+    public setData(data:Array<Node>) {
+        this.tree = data;
         this.refreshGraph();
     }
 
-    public addData(entry: Object) {
-        this.data.push(entry);
+    public addElement(node:Node) {
+        this.tree.push(node);
         this.refreshGraph();
     }
 
     private refreshGraph() {
         let cdata:any = d3.stratify()
-        .id(function(d) { return d["name"]; })
-        .parentId(function(d) { return d["parent"]; })
-        (this.data);
+        .id(function(d:Node) { return d.name; })
+        .parentId(function(d:Node) { return d.parent; })
+        (this.tree);
 
-        cdata.each(function(d) {
+        cdata.each(function(d:Node) {
             d.name = d.id;
         });
 
