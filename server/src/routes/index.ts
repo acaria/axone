@@ -1,6 +1,3 @@
-/// <reference path="../_all.d.ts" />
-"use strict";
-
 import express = require("express");
 var debug = require("debug")("ax-server:index");
 var cfg = require("../../config");
@@ -20,4 +17,4 @@ router.use((req, res, next) => {
 	res.status(404).send({error: "error"});
 });
 
-module.exports = router;
+export { router as RootRoute };

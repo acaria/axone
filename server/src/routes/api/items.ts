@@ -1,17 +1,14 @@
-/// <reference path="../../../_all.d.ts" />
-"use strict";
-
-import express = require("express");
-import { CellRepository } from "../../../models/repository/cell";
-import { ICellModel } from "../../../models/schema/cell";
-import { NeuronRepository } from "../../../models/repository/neuron";
-import Utils from "../../utils";
+import { Router, Request, Response, NextFunction} from "express";
+import { CellRepository } from "../../models/repository/cell";
+import { ICellModel } from "../../models/schema/cell";
+import { NeuronRepository } from "../../models/repository/neuron";
+import Utils from "../utils";
 import * as _ from "lodash";
 
-var debug = require("debug")("ax-server:apiCells");
-var cfg = require("../../../../config.js");
+let debug = require("debug")("ax-server:apiCells");
+var cfg = require("../../../config.js");
 var oid = require("mongoose").Types.ObjectId;
-let router = express.Router();
+let router = Router();
 let neurons = new NeuronRepository();
 let cells = new CellRepository();
 
@@ -39,27 +36,28 @@ interface INameID {
 
 router.use(Utils.ensureAuthenticated);
 
-router.use((req, res, next) => {
+router.use((req: Request, res: Response, next: NextFunction) => {
 	res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	next();
 });
 
-function batchUpdateOrCreate(req: any, res: any, callback: (error: any, isNew: boolean, result: ICellModel) => void) {
-	if (!req[cfg.tokenRef]) {
+function batchUpdateOrCreate(req: Request, res: Response, callback: (error: any, isNew: boolean, result: ICellModel) => void) {
+	let userId = Utils.getToken(req);
+	if (!userId) {
 		return res.status(401).send({error: "token error"});
 	}
 
 	if (!req.body.cell) {
 		return res.status(400).send({error: "cell field missing"});
 	}
-	req.body.cell.user = req[cfg.tokenRef];
+	req.body.cell.user = userId;
 
 	if (req.body.cell._id) {
 		let selector = {
 			_id: req.body.cell._id as string,
-			user: req[cfg.tokenRef] as string
+			user: userId
 		};
 		cells.update(selector, req.body.cell, (error, result) => {
 			callback(error, false, result);
@@ -71,9 +69,9 @@ function batchUpdateOrCreate(req: any, res: any, callback: (error: any, isNew: b
 }
 
 function createBucket(bucketName: string, user: string, callback: (error: any, neuronId: string) => void) {
-	cells.model.findOneAndUpdate({name: bucketName, user: user}, {}, {new: true, upsert: true, setDefaultsOnInsert: true}).exec()
+	cells.model.findOneAndUpdate({name: bucketName, user: user}, null, {new: true, upsert: true, setDefaultsOnInsert: true}).exec()
 	.then(cell => {
-		neurons.model.findOneAndUpdate({cell: cell._id, user: cell.user}, {}, {new: true, upsert: true, setDefaultsOnInsert: true}).exec()
+		neurons.model.findOneAndUpdate({cell: cell._id, user: cell.user}, null, {new: true, upsert: true, setDefaultsOnInsert: true}).exec()
 		.then(neuron => {
 			callback(null, neuron._id);
 		})
@@ -116,7 +114,7 @@ function genNewDendrites(names: Set<string>, user: string, bucketId: string, cal
 	.catch(error => callback(error, null));
 }
 
-function prepareDendriteIds(neuronBody: any, user: string, callback: (error: any, result: Array<INameID>) => void) {
+function prepareDendriteIds(neuronBody: any, user: string, callback: (error: any, result?: Array<INameID>) => void) {
 
 	let buckNewNames = new Set<string>();
 	let buckOldIds = new Array<INameID>();
@@ -141,7 +139,7 @@ function prepareDendriteIds(neuronBody: any, user: string, callback: (error: any
 			if (error) {
 				return callback(error, null);
 			}
-			let dendrites = _.unionWith(buckOldIds, result, (p1, p2) => {
+			let dendrites = _.unionWith(buckOldIds, result, (p1: any, p2: any) => {
 				return ((p1._id as string) === (p2._id as string)) || ((p1.name as string) === (p2.name as string));
 			});
 			return callback(null, dendrites);
@@ -149,18 +147,19 @@ function prepareDendriteIds(neuronBody: any, user: string, callback: (error: any
 	});
 }
 
-router.get("/list", (req, res) => {
+router.get("/list", (req: Request, res: Response) => {
 	try {
-		if (!req[cfg.tokenRef]) {
+		let userId = Utils.getToken(req);
+		if (!userId) {
 			return res.status(401).send({error: "token error"});
 		}
 		let selector = {
-			user: oid(req[cfg.tokenRef])
+			user: oid(userId)
 		};
 
 		switch (req.query.cat) {
 			case "neurons": {
-				let query = neurons.model.aggregate([
+				neurons.model.aggregate([
 					{$match: selector},
 					{$lookup: {
 						from: "cells",
@@ -169,18 +168,18 @@ router.get("/list", (req, res) => {
 						as: "meta"
 					}},
 					{$project: {_id: 1, name: {$arrayElemAt: ["$meta.name", 0]}}}
-				])
-				.exec().then(nameids => {
+					])
+				.exec().then((nameids: any) => {
 					res.status(200).send(nameids);
 				})
-				.catch(error => {
+				.catch((error: any) => {
 					debugRepositoryError(error);
 					return res.status(400).send({error: "error"});
 				});
 			}
 			break;
 			case "ucells": {
-				let query = cells.model.aggregate([
+				cells.model.aggregate([
 					{$match: selector},
 					{$lookup: {
 						from: "neurons",
@@ -189,13 +188,13 @@ router.get("/list", (req, res) => {
 						as: "neurons"
 					}},
 					{$project: {_id: 1, name: 1, neurons: 1}}
-				])
+					])
 				.match({neurons: {$eq: []}})
 				.project({_id: 1, name: 1})
-				.exec().then(nameids => {
+				.exec().then((nameids: any) => {
 					res.status(200).send(nameids);
 				})
-				.catch(error => {
+				.catch((error: any) => {
 					debugRepositoryError(error);
 					return res.status(400).send({error: "error"});
 				});
@@ -211,13 +210,14 @@ router.get("/list", (req, res) => {
 	}
 });
 
-router.get("/", (req, res) => {
+router.get("/", (req: Request, res: Response) => {
 	try {
-		if (!req[cfg.tokenRef]) {
+		let userId = Utils.getToken(req);
+		if (!userId) {
 			return res.status(401).send({error: "token error"});
 		}
 		let selector = {
-			user: req[cfg.tokenRef] as string,
+			user: userId,
 			axone: req.query.axone,
 		};
 
@@ -267,7 +267,7 @@ router.get("/", (req, res) => {
 	}
 });
 
-router.post("/", (req, res) => {
+router.post("/", (req: Request, res: Response) => {
 	try {
 		batchUpdateOrCreate(req, res, (errorCell, isNewCell, cellResult) => {
 			if (errorCell || !cellResult) {
@@ -311,4 +311,4 @@ router.post("/", (req, res) => {
 	}
 });
 
-module.exports = router;
+export { router as ItemsRoute };

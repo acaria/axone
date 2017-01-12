@@ -1,31 +1,26 @@
-/// <reference path="_all.d.ts" />
-"use strict";
+import * as express from "express";
+import * as cors from "cors";
+import * as bodyParser from "body-parser";
+import * as cookieParser from "cookie-parser";
+import * as methodOverride from "method-override";
+import * as path from "path";
+import * as morgan from "morgan";
 
-import express = require("express");
-import cors = require("cors");
-import bodyParser = require("body-parser");
-import cookieParser = require("cookie-parser");
-import methodOverride = require("method-override");
-import path = require("path");
-import morgan = require("morgan");
-import database from "./database";
-import fs = require("fs");
-
+var fs = require("fs");
 var debug = require("debug")("ax-server:express");
-var requireDir = require("require-dir");
 var favicon = require("serve-favicon");
 
 var accessLogStream = fs.createWriteStream(path.join(__dirname, "../logs/access.log"), {flags: "a"});
-var cfg = require("../config.js");
 
-export default class {
+import { RootRoute } from "./routes/index";
+import { ApiRoute } from "./routes/api/index";
+import { CellsRoute } from "./routes/api/cells";
+import { NeuronsRoute } from "./routes/api/neurons";
+import { ItemsRoute } from "./routes/api/items";
+import { AuthRoute } from "./routes/auth/index";
 
-	constructor(private app: express.Express, private port: Number) {
-        database.connect()
-        .catch(error => {
-            throw error;
-        });
-
+export class App {
+	constructor(private app: express.Express, private cfg: any) {
         try {
             this.configSetup(app);
             this.configMiddle(app);
@@ -37,7 +32,7 @@ export default class {
     }
 
     private configSetup(app: express.Express) {
-        for (let dir of ["storage", cfg.storage.avatar, cfg.storage.picture]) {
+        for (let dir of ["storage", this.cfg.storage.avatar, this.cfg.storage.picture]) {
             if (!fs.existsSync(dir)) {
                 fs.mkdirSync(dir);
             }
@@ -52,6 +47,12 @@ export default class {
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(cookieParser());
 
+        //add static paths
+        app.use(express.static(path.join(__dirname, "../storage")));
+        //app.use(express.static(path.join(__dirname, "../../client/dist")));
+    }
+
+    private configMiddle(app: express.Express) {
         app.use(cors());
 
         app.use(methodOverride("X-HTTP-Method"));
@@ -59,24 +60,19 @@ export default class {
         app.use(methodOverride("X-Method-Override"));
         app.use(methodOverride("_method"));
 
-        //add static paths
-        app.use(express.static(path.join(__dirname, "../storage")));
-        //app.use(express.static(path.join(__dirname, "../../client/dist")));
-    }
-
-    private configMiddle(app: express.Express) {
     	app.use(favicon(path.join(__dirname, "../public/favicon.ico")));
-    	app.use(morgan("dev"));
+
+        app.use(morgan("dev"));
         app.use(morgan("combined", {stream: accessLogStream}));
     }
 
     private configRoutes(app: express.Express) {
-    	app.use("/api/cells", require("./routes/api/cells"));
-        app.use("/api/neurons", require("./routes/api/neurons"));
-        app.use("/api/items", require("./routes/api/items"));
-        app.use("/api", require("./routes/api"));
-        app.use("/auth", require("./routes/auth"));
-        app.use("/", require("./routes"));
+    	app.use("/api/cells", CellsRoute);
+        app.use("/api/neurons", NeuronsRoute);
+        app.use("/api/items", ItemsRoute);
+        app.use("/api", ApiRoute);
+        app.use("/auth", AuthRoute);
+        app.use("/", RootRoute);
     }
 
     private errorHandling(app: express.Express) {
@@ -109,8 +105,8 @@ export default class {
     }
 
     public run() {
-    	this.app.listen(this.port, () => {
-    		debug(`App is running at localhost:${this.port}`);
+    	this.app.listen(this.cfg.port.node, () => {
+    		debug(`App is running at localhost:${this.cfg.port.node}`);
     	});
     }
 }

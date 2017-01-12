@@ -1,6 +1,3 @@
-/// <reference path="../../_all.d.ts" />
-"use strict";
-
 import { ICellModel, cellModel} from "../schema/cell";
 import { RepositoryBase } from "./base";
 

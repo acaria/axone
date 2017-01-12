@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-import AxServer from "./app";
+import AxServer from "app";
 
 var cfg = require("../config.js");
 var express = require("express");

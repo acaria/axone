@@ -1,6 +1,3 @@
-/// <reference path="../../_all.d.ts" />
-"use strict";
-
 import * as express from "express";
 import { UserRepository } from "../../models/repository/user";
 import Account from "./account";
@@ -88,4 +85,4 @@ router.use(function(req: express.Request, res: express.Response, next: express.N
 	res.status(404).send({error: "error"});
 });
 
-module.exports = router;
+export { router as AuthRoute };

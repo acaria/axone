@@ -1,15 +1,12 @@
-/// <reference path="../../../_all.d.ts" />
-"use strict";
-
-import express = require("express");
-import { CellRepository } from "../../../models/repository/cell";
-import { NeuronRepository } from "../../../models/repository/neuron";
-import Utils from "../../utils";
+import { Router, Request, Response, NextFunction} from "express";
+import { CellRepository } from "../../models/repository/cell";
+import { NeuronRepository } from "../../models/repository/neuron";
+import Utils from "../utils";
 import * as _ from "lodash";
 
 var debug = require("debug")("ax-server:apiCells");
-var cfg = require("../../../../config.js");
-let router = express.Router();
+var cfg = require("../../../config.js");
+let router = Router();
 let neurons = new NeuronRepository();
 let cells = new CellRepository();
 
@@ -31,7 +28,7 @@ function debugRepositoryError(err: any) {
 
 router.use(Utils.ensureAuthenticated);
 
-router.use((req, res, next) => {
+router.use((req: Request, res: Response, next: NextFunction) => {
 	res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -40,11 +37,12 @@ router.use((req, res, next) => {
 
 router.get("/", (req, res) => {
 	try {
-		if (!req[cfg.tokenRef]) {
+		let userId = Utils.getToken(req);
+		if (!userId) {
 			return res.status(401).send({error: "token error"});
 		}
 		let selector = {
-			user: req[cfg.tokenRef] as string,
+			user: userId,
 			axone: req.query.axone,
 		};
 
@@ -52,7 +50,7 @@ router.get("/", (req, res) => {
 			selector = _.extend({cell: req.query.cell}, selector);
 		}
 
-		let query = neurons.model.find(selector)
+		neurons.model.find(selector)
 		.populate("axone cell").exec()
 		.then(result => res.status(200).send(result))
 		.catch(error => {
@@ -65,13 +63,14 @@ router.get("/", (req, res) => {
 	}
 });
 
-router.get("/count", (req, res) => {
+router.get("/count", (req: Request, res: Response) => {
 	try {
-		if (!req[cfg.tokenRef]) {
+		let userId = Utils.getToken(req);
+		if (!userId) {
 			return res.status(401).send({error: "token error"});
 		}
 		let selector = {
-			user: req[cfg.tokenRef] as string,
+			user: userId,
 			axone: req.query.axone,
 		};
 
@@ -89,12 +88,13 @@ router.get("/count", (req, res) => {
 	}
 });
 
-router.post("/", (req, res) => {
+router.post("/", (req: Request, res: Response) => {
 	try {
-		if (!req[cfg.tokenRef]) {
+		let userId = Utils.getToken(req);
+		if (!userId) {
 			return res.status(401).send({error: "token error"});
 		}
-		req.body.user = req[cfg.tokenRef];
+		req.body.user = userId;
 
 		let selector = _.pick(req.body, ["axone", "user", "cell"]);
 		neurons.upsert(selector, req.body, (error, isNew, result) => {
@@ -110,14 +110,15 @@ router.post("/", (req, res) => {
 	}
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", (req: Request, res: Response) => {
 	try {
-		if (!req[cfg.tokenRef]) {
+		let userId = Utils.getToken(req);
+		if (!userId) {
 			return res.status(401).send({error: "token error"});
 		}
 		let selector = {
 			_id: req.params.id as string,
-			user: req[cfg.tokenRef] as string
+			user: userId
 		};
 
 		neurons.model.findOne(selector).populate("cell axone dendrites").exec()
@@ -137,14 +138,15 @@ router.get("/:id", (req, res) => {
 	}
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", (req: Request, res: Response) => {
 	try {
-		if (!req[cfg.tokenRef]) {
+		let userId = Utils.getToken(req);
+		if (!userId) {
 			return res.status(401).send({error: "token error"});
 		}
 		let selector = {
 			_id: req.params.id as string,
-			user: req[cfg.tokenRef] as string
+			user: userId
 		};
 		neurons.update(selector, req.body, (error, result) => {
 			if (error || !result) {
@@ -159,14 +161,15 @@ router.put("/:id", (req, res) => {
 	}
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", (req: Request, res: Response) => {
 	try {
-		if (!req[cfg.tokenRef]) {
+		let userId = Utils.getToken(req);
+		if (!userId) {
 			return res.status(401).send({error: "token error"});
 		}
 		let selector = {
 			_id: req.params.id as string,
-			user: req[cfg.tokenRef] as string
+			user: userId
 		};
 
 		neurons.delete(selector, (error, result) => {
@@ -182,4 +185,4 @@ router.delete("/:id", (req, res) => {
 	}
 });
 
-module.exports = router;
+export { router as NeuronsRoute };

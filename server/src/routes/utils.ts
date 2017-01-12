@@ -1,15 +1,12 @@
-/// <reference path="../_all.d.ts" />
-"use strict";
-
-import express = require("express");
+import { Request, Response, NextFunction} from "express";
 import jwt = require("jwt-simple");
 import moment = require("moment");
 
-var debug = require("debug")("ax-server:utils");
+//var debug = require("debug")("ax-server:utils");
 var cfg = require("../../config.js");
 
 export default class {
-	static ensureAuthenticated(req: express.Request, res: express.Response, next: express.NextFunction) {
+	static ensureAuthenticated(req: Request, res: Response, next: NextFunction) {
 		let authKey = "authorization";
 
 		if (!req.headers[authKey]) {
@@ -27,7 +24,11 @@ export default class {
 		if (payload.exp <= moment().unix()) {
 			return res.status(401).send({error: "Expired token"});
 		}
-		req[cfg.tokenRef] = payload.sub;
+		(req as any)[cfg.tokenRef] = payload.sub;
 		next();
+	}
+
+	static getToken(req: Request): string | null {
+		return (req as any)[cfg.tokenRef];
 	}
 }

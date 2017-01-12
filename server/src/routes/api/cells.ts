@@ -1,10 +1,7 @@
-/// <reference path="../../../_all.d.ts" />
-"use strict";
-
-import express = require("express");
-import { CellRepository } from "../../../models/repository/cell";
-import { NeuronRepository } from "../../../models/repository/neuron";
-import Utils from "../../utils";
+import { Router, Request, Response, NextFunction} from "express";
+import { CellRepository } from "../../models/repository/cell";
+import { NeuronRepository } from "../../models/repository/neuron";
+import Utils from "../utils";
 import path = require("path");
 import mime = require("mime");
 import fs = require("fs");
@@ -12,10 +9,10 @@ import multer = require("multer");
 import * as _ from "lodash";
 
 var debug = require("debug")("ax-server:apiCells");
-var cfg = require("../../../../config.js");
+var cfg = require("../../../config.js");
 var oid = require("mongoose").Types.ObjectId;
 
-let router = express.Router();
+let router = Router();
 let neurons = new NeuronRepository();
 let cells = new CellRepository();
 let uploads = multer({dest: cfg.storage.uploads});
@@ -39,20 +36,21 @@ function debugRepositoryError(err: any) {
 
 router.use(Utils.ensureAuthenticated);
 
-router.use((req, res, next) => {
+router.use((req: Request, res: Response, next: NextFunction) => {
 	res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	next();
 });
 
-router.get("/", (req, res) => {
+router.get("/", (req: Request, res: Response) => {
 	try {
-		if (!req[cfg.tokenRef]) {
+		let userId = Utils.getToken(req);
+		if (!userId) {
 			return res.status(401).send({error: "token error"});
 		}
 		let selector = {
-			user: req[cfg.tokenRef] as string
+			user: userId
 		};
 
 		let query = cells.model.find(selector);
@@ -80,13 +78,14 @@ router.get("/", (req, res) => {
 	}
 });
 
-router.get("/count", (req, res) => {
+router.get("/count", (req: Request, res: Response) => {
 	try {
-		if (!req[cfg.tokenRef]) {
+		let userId = Utils.getToken(req);
+		if (!userId) {
 			return res.status(401).send({error: "token error"});
 		}
 		let selector = {
-			user: req[cfg.tokenRef] as string
+			user: userId
 		};
 
 		let query = cells.model.count(selector);
@@ -103,14 +102,14 @@ router.get("/count", (req, res) => {
 	}
 });
 
-router.post("/", (req, res) => {
+router.post("/", (req: Request, res: Response) => {
 	try {
-		if (!req[cfg.tokenRef]) {
+		let userId = Utils.getToken(req);
+		if (!userId) {
 			return res.status(401).send({error: "token error"});
 		}
-		req.body.user = req[cfg.tokenRef];
+		req.body.user = userId;
 
-		var selector = _.pick(req.body, ["user"]);
 		cells.create(req.body, (error, result) => {
 			if (error || !result) {
 				debugRepositoryError(error);
@@ -125,7 +124,7 @@ router.post("/", (req, res) => {
 	}
 });
 
-router.post("/picture", uploads.single("file"), (req, res) => {
+router.post("/picture", uploads.single("file"), (req: Request, res: Response) => {
 	try {
 		let fileName = req.file.filename + "." + mime.extension(req.file.mimetype);
 		fs.rename(
@@ -148,14 +147,15 @@ router.post("/picture", uploads.single("file"), (req, res) => {
 	}
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", (req: Request, res: Response) => {
 	try {
-		if (!req[cfg.tokenRef]) {
+		let userId = Utils.getToken(req);
+		if (!userId) {
 			return res.status(401).send({error: "token error"});
 		}
 		let selector = {
 			_id: req.params.id as string,
-			user: req[cfg.tokenRef] as string
+			user: userId
 		};
 		cells.findOne(selector, null, null, (error, result) => {
 			if (error) {
@@ -173,14 +173,15 @@ router.get("/:id", (req, res) => {
 	}
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", (req: Request, res: Response) => {
 	try {
-		if (!req[cfg.tokenRef]) {
+		let userId = Utils.getToken(req);
+		if (!userId) {
 			return res.status(401).send({error: "token error"});
 		}
 		var selector = {
 			_id: req.params.id as string,
-			user: req[cfg.tokenRef] as string
+			user: userId
 		};
 
 		cells.update(selector, req.body, (error, result) => {
@@ -196,14 +197,15 @@ router.put("/:id", (req, res) => {
 	}
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", (req: Request, res: Response) => {
 	try {
-		if (!req[cfg.tokenRef]) {
+		let userId = Utils.getToken(req);
+		if (!userId) {
 			return res.status(401).send({error: "token error"});
 		}
 		var selector = {
 			_id: req.params.id as string,
-			user: req[cfg.tokenRef] as string
+			user: userId
 		};
 
 		neurons.model.find({user: selector.user, cell: selector._id}).select("_id").exec()
@@ -249,4 +251,4 @@ router.delete("/:id", (req, res) => {
 	}
 });
 
-module.exports = router;
+export { router as CellsRoute };

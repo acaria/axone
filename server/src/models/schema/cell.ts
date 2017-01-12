@@ -1,6 +1,3 @@
-/// <reference path="../../_all.d.ts" />
-"use strict";
-
 import { Document, Schema, model} from "mongoose";
 
 import * as neuron from "./neuron";
@@ -51,5 +48,5 @@ cellSchema.pre("save", function(next: () => void) {
 export var cellModel = model<ICellModel>("cell", cellSchema, "cells", false);
 
 cellModel.on("index", function(err: any) {
-	debug(err);
+	debug(">>>>>>>>>> todo");
 });

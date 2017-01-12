@@ -1,4 +1,4 @@
-﻿import {Aurelia} from 'aurelia-framework';
+import {Aurelia} from 'aurelia-framework';
 import {log, ConsoleAppender} from './logger';
 import authConfig from './auth-config';
 import appConfig from './app-config';

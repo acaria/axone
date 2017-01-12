@@ -1,6 +1,3 @@
-/// <reference path="../../_all.d.ts" />
-"use strict";
-
 import { Document, Schema, model} from "mongoose";
 
 export interface INeuronModel extends Document {

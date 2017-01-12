@@ -1,9 +1,6 @@
-/// <reference path="../../_all.d.ts" />
-"use strict";
-
 import * as mongoose from "mongoose";
 
-var debug = require("debug")("ax-server:repository");
+//var debug = require("debug")("ax-server:repository");
 
 interface IRead<T> {
 	findOne(cond: Object, fields: Object, options: Object, callback: (err: any, result: T) => void): void;
@@ -45,11 +42,11 @@ export class RepositoryBase<T extends mongoose.Document> implements IRead<T>, IW
 		this._model.findOne(cond, fields, options, callback);
 	}
 
-	find(selector: {_id: string}, fields: Object, options: Object,  callback: (err: any, res: T[]) => void) {
+	find(selector: {_id: string}, fields: Object, options: Object, callback: (err: any, res: T[]) => void) {
 		this._model.find(selector, fields, options, callback);
 	}
 
-	upsert(selector: Object, item: T, callback: (err: any, isNew: boolean, res: T) => void) {
+	upsert(selector: Object, item: T, callback: (err: any, isNew: boolean, res: T | null) => void) {
 		this._model.findOne(selector).exec()
 		.then(result => {
 			if (result === null) {

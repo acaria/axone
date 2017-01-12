@@ -1,6 +1,3 @@
-/// <reference path="../../_all.d.ts" />
-"use strict";
-
 import { INeuronModel, neuronModel} from "../schema/neuron";
 import { RepositoryBase } from "./base";
 

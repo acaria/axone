@@ -19,6 +19,7 @@ mkdirs = require('mkdirs');
 argv = require('yargs').argv;
 shell = require('gulp-shell');
 
+var tsProject = ts.createProject('tsconfig.json');
 var cfg = require('./config.js');
 
 // if (argv.production) {
@@ -67,13 +68,7 @@ gulp.task('build-ts', function() {
 	.pipe(tslint.report({
 		emitError: false
 	}))
-	.pipe(ts({
-		module: "commonjs",
-		target: "es6",
-		sourceMap: false,
-		declaration: false,
-		removeComments: true
-	}))
+	.pipe(tsProject())
 	.pipe(gulp.dest('build'));
 });
 

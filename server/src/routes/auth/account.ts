@@ -1,10 +1,8 @@
-/// <reference path="../../_all.d.ts" />
-"use strict";
-
 import moment = require("moment");
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { UserRepository } from "../../models/repository/user";
 import jwt = require("jwt-simple");
+import Utils from "../utils";
 
 var cfg = require("../../../config.js");
 var debug = require("debug")("ax-server:auth");
@@ -67,8 +65,12 @@ export default class {
 	}
 
 	get(req: Request, res: Response) {
+		let userId = Utils.getToken(req);
+		if (!userId) {
+			return res.status(401).send({error: "token error"});
+		}
 		let selector = {
-			_id: req[cfg.tokenRef] as string
+			_id: userId
 		};
 		this.repo.findOne(selector, null, null, (err, user) => {
 			if (!user) {
@@ -79,8 +81,12 @@ export default class {
 	}
 
 	update(req: Request, res: Response) {
+		let userId = Utils.getToken(req);
+		if (!userId) {
+			return res.status(401).send({error: "token error"});
+		}
 		let selector = {
-			_id: req[cfg.tokenRef] as string
+			_id: userId
 		};
 		this.repo.update(selector, req.body, (err, user) => {
 			if (err) {
