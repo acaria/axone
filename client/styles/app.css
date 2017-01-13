@@ -29,14 +29,6 @@ body {
 	margin-top: 50px;
 }
 
-.navbar-right {
-	margin-right: 0 !important;
-}
-
-.navbar-nav li.loader {
-	margin: 12px 24px 0 6px;
-}
-
 .router-view {
 	position: absolute;
 	left: 0;
@@ -59,8 +51,6 @@ section {
 .cursor-pointer {
 	cursor: pointer;
 }
-
-
 
 .panel-table .panel-body {
 	padding:0;

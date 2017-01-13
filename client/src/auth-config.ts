@@ -16,7 +16,7 @@ export default {
 	loginroute: '/login',
 	loginRedirect: '#/profile',
 	signupRedirect: '#/login',
-	logoutRedirect: '#/login',
+	logoutRedirect: '#/home',
    expiredRedirect: true,
    
    authHeader: 'Authorization',

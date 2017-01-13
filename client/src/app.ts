@@ -18,7 +18,6 @@ export class App {
 
 			{ route: 'editor', 			name: 'editor',	moduleId: './routes/cell-editor', 	nav: false,		title: 'Editor'},
 			{ route: 'signup', 			name: 'signup',	moduleId: './routes/signup', 			nav: false,		title: 'Signup'},
-			{ route: 'login',				name: 'login',		moduleId: './routes/login',			nav: false, 	title: 'Login'},
 			{ route: 'profile',			name: 'profile', 	moduleId: './routes/profile',			nav: false,		title: 'Profile', auth: true},
 			{ route: 'notfound', 		name: 'notfound', moduleId: './routes/notfound', 		nav: false, 	title: '404 | Page not found' }
 		]);

@@ -1,4 +1,5 @@
 import {bindable, autoinject, computedFrom} from "aurelia-framework";
+import {EventAggregator} from "aurelia-event-aggregator";
 import {AuthService} from "aurelia-authentication";
 import {log} from '../logger';
 import {IEvent, EventDispatcher} from '../models/event-dispatcher';
@@ -17,7 +18,16 @@ export class Authentication {
 	private profile: Profile | null;
 	private _onProfileChanged = new EventDispatcher<Authentication, Profile | null>();
 
-	constructor(private auth: AuthService) {}
+	constructor(private auth: AuthService, private events: EventAggregator) {
+		this.events.subscribe('authentication-change', authenticated => {
+			if (!authenticated) {
+				this.setProfile(null);
+			} else {
+				this.auth.getMe()
+				.then(profile => { this.setProfile(profile); });
+			}
+		});
+	}
 
 	async activate() {
 		if (this.state === 'ready') {
@@ -38,10 +48,6 @@ export class Authentication {
 		return this._onProfileChanged;
 	}
 
-	invalidateProfile() {
-		this.setProfile(this.profile);
-	}
-
 	getProfile(): Profile | null {
 		if (this.state == 'ready') {
 			this.activate();
@@ -53,7 +59,7 @@ export class Authentication {
 		return this.profile;
 	}
 
-	setProfile(profile:Object | null) {
+	private setProfile(profile:Object | null) {
 		if (profile == null)
 			this.profile = null;
 		else
@@ -76,26 +82,19 @@ export class Authentication {
 	//--------
 
 	login(email:string, pass:string) {
-		return this.auth.login(email, pass)
-		.then(() => this.auth.getMe())
-		.then(profile => { this.setProfile(profile); });
+		return this.auth.login(email, pass);
 	}
 
 	logout() {
-		return this.auth.logout()
-		.then(() => this.setProfile(null));
+		return this.auth.logout();
 	}
 
 	link(provider:string) {
-		return this.auth.authenticate(provider)
-		.then(() => this.auth.getMe())
-		.then(profile => { this.setProfile(profile); });
+		return this.auth.authenticate(provider);
 	}
 
 	unlink(provider:string) {
-		return this.auth.unlink(provider)
-		.then(() => this.auth.getMe())
-		.then(profile => { this.setProfile(profile); });
+		return this.auth.unlink(provider);
 	}
 
 	updateProfile() {
@@ -106,7 +105,6 @@ export class Authentication {
 	}
 
 	signup(data:Object) {
-		return this.auth.signup(data)
-		.then(profile => { this.setProfile(profile); });
+		return this.auth.signup(data);
 	}
 }

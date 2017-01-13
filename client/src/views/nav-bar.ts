@@ -8,33 +8,9 @@ import {log} from '../logger';
 export class NavBar {
 	@bindable router: Router;
 
-	private profileName:string = "Profile";
-	private profileUrl:string = "";
+	constructor(private auth: Authentication) {}
 
-	constructor(private auth: Authentication) {
-		this.auth.onProfileChanged.sub((sender, profile) => {
-			if (profile != null) {
-				this.profileName = "Logged as " + profile.name;
-				this.profileUrl = appCfg.storage.baseUrl + appCfg.storage.avatar + profile.avatar;
-			} else {
-				this.profileName = "Profile";
-				this.profileUrl = `images/avatar.svg`;
-			}
-		});
-	}
-
-	created() {
-		if (this.auth.isAuthenticated) {
-			let profile = this.auth.getProfile();
-			if (profile != null) {
-				this.profileName = "Logged as " + profile.name;
-				this.profileUrl = appCfg.storage.baseUrl + appCfg.storage.avatar + profile.avatar;
-			} else {
-				this.profileName = "Profile";
-				this.profileUrl = `images/avatar.svg`;
-			}
-		}
-	}
+	created() {}
 
 	@computedFrom('auth.isAuthenticated')
   	get isAuthenticated() {
