@@ -35,16 +35,19 @@ router.use((req: Request, res: Response, next: NextFunction) => {
 	next();
 });
 
-router.get("/", (req, res) => {
+router.get("/", (req: Request, res: Response) => {
 	try {
 		let userId = Utils.getToken(req);
 		if (!userId) {
 			return res.status(401).send({error: "token error"});
 		}
 		let selector = {
-			user: userId,
-			axone: req.query.axone,
+			user: userId
 		};
+
+		if (req.query.hasOwnProperty("axone")) {
+			selector = _.extend({axone: req.query.axone}, selector);
+		}
 
 		if (req.query.cell) {
 			selector = _.extend({cell: req.query.cell}, selector);

@@ -34,12 +34,12 @@ export class RadialTreeview {
 
     private refreshGraph() {
         let cdata:any = d3.stratify()
-        .id(function(d:Node) { return d.name; })
+        .id(function(d:Node) { return d.id; })
         .parentId(function(d:Node) { return d.parent; })
         (this.tree);
 
-        cdata.each(function(d:Node) {
-            d.name = d.id;
+        cdata.each(function(d) {
+            d.name = d.data.name;
         });
 
         let treemap = d3.tree()

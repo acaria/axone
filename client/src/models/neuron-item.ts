@@ -11,15 +11,15 @@ export interface INameID {
 };
 
 export interface Neuron {
-	id: string;
+	_id: string;
 
 	cell: {
-		"id": string;
+		"_id": string;
 		"name": string;
 	};
 
 	axone: {
-		"id": string;
+		"_id": string;
 	} | null;
 
 	dendrites: Array<string> | null;
