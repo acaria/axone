@@ -13,7 +13,7 @@ export default {
 	unlinkMethod: 'get',
 	
 	loginOnSignup: true,
-	loginroute: '/login',
+	loginRoute: '/login',
 	loginRedirect: '#/profile',
 	signupRedirect: '#/login',
 	logoutRedirect: '#/home',
