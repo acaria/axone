@@ -33,7 +33,7 @@ module.exports = {
 		user: '', pass: '',
 		uri: process.env.MONGO_URI || 'localhost',
 		db: 'axone',
-		debug: !(process.env.NODE_ENV && process.env.NODE_ENV === 'production')
+		debug: parseInt(process.env.MONGO_DEBUG) || !(process.env.NODE_ENV && process.env.NODE_ENV === 'production')
 	},
 
 	storage: {

@@ -7,14 +7,20 @@ import * as path from "path";
 import * as morgan from "morgan";
 
 var fs = require("fs");
+var fileStreamRotator = require("file-stream-rotator");
 var debug = require("debug")("ax-server:express");
 var favicon = require("serve-favicon");
 
 var logDir = path.join(__dirname, "../logs");
 if (!fs.existsSync(logDir)) {
-    fs.mkdirSync(logDir);
+    fs.mkdirSync(logDir)();
 }
-var accessLogStream = fs.createWriteStream(path.join(__dirname, "../logs/access.log"), {flags: "a"});
+var accessLogStream = fileStreamRotator.getStream({
+    date_format: "YYYYMMDD",
+    filename: logDir + "/access-%DATE%.log",
+    frequency: "daily",
+    verbose: false
+});
 
 import { RootRoute } from "./routes/index";
 import { ApiRoute } from "./routes/api/index";
@@ -66,7 +72,7 @@ export class App {
 
     	app.use(favicon(path.join(__dirname, "../public/favicon.ico")));
 
-        app.use(morgan("dev"));
+        app.use(morgan("dev", {skip: function(req: any, res: any) {return res.statusCode < 400; }}));
         app.use(morgan("combined", {stream: accessLogStream}));
     }
 
