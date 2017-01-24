@@ -13,7 +13,7 @@ export class Profile {
 	avatarFiles;
 	avatarImg: string | null = null;
 
-	private avatarUrl: string;
+	private avatarUrl: string | null = null;
 	private client: HttpClient;
 
 	constructor(private auth:Authentication, private fetch:FetchConfig) {
@@ -41,24 +41,24 @@ export class Profile {
 	removeAvatar(e) {
 		e.cancelBubble = true;
 		this.avatarImg = null;
+		this.avatarUrl = null;
 		this.avatarFiles = null;
 	}
 
 	async activate() {
 		this.avatarImg = null;
+		this.avatarUrl = null;
 		this.fetch.configure(this.client);
 
 		let profile = this.auth.getProfile();
 		if (profile != null && profile.avatar != null) {
 			this.avatarUrl = appCfg.storage.baseUrl + appCfg.storage.avatar + profile.avatar;
-		} else {
-			this.avatarUrl = "images/avatar.svg";
 		}
 		this.auth.onProfileChanged.sub((sender, profile) => {
 			if (profile != null && profile.avatar != null) {
 				this.avatarUrl = appCfg.storage.baseUrl + appCfg.storage.avatar + profile.avatar;
 			} else {
-				this.avatarUrl = "images/avatar.svg";
+				this.avatarUrl = null;
 			} 
 		});
 	}

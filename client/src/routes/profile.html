@@ -7,7 +7,10 @@
 				<form class="form-horizontal">
 					<div class="profile-header-container col-sm-4">
 						<div class="profile-header-img">
-							<img if.bind="!avatarImg" class="img-circle" src.bind="avatarUrl" onerror="this.src='images/avatar.svg';" />
+							<template if.bind="!avatarImg">
+								<img if.bind="!avatarUrl" class="img-circle" src="../../images/avatar.svg" />
+								<img if.bind="avatarUrl" class="img-circle" src.bind="avatarUrl" />
+							</template>
 							<img if.bind="avatarImg" class="img-circle profile-edition" src.bind="avatarImg"/>
 							<div class="rank-label-container">
 								<label class="cursor-pointer label label-default rank-label">change avatar 

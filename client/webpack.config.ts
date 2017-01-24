@@ -77,9 +77,8 @@ let config = generateConfig(
 		}
 	},
 
-	ENV === 'test' || ENV === 'development' ? 
-	// envDev(ENV !== 'test' ? {} : {devtool: 'inline-source-map'}) : <<< cannot debug wrong sourcemap
-	envDev(/*ENV !== 'test' ? {} : */{devtool: 'inline-source-map'}) :
+	ENV === 'test' || ENV === 'development' ?
+	envDev({devtool: 'inline-source-map'}) :
 	envProd({ /* devtool: '...' */ }),
 
 	aurelia({root: rootDir, src: srcDir, title: title, baseUrl: baseUrl}),
@@ -100,10 +99,7 @@ let config = generateConfig(
 
 	ENV === 'production' ? 
 	uglify({debug: false, mangle: { except: ['cb', '__webpack_require__'] }}) : 
-	{},
-
-	{ devServer: { port: debugPort } },
-
+	{ devServer: { port: debugPort } }
 );
 
 module.exports = stripMetadata(config);

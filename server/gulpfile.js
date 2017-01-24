@@ -14,9 +14,9 @@ gulpif = require('gulp-if'),
 open = require('gulp-open'),
 browserSync = require('browser-sync'),
 del = require('del'),
-exec = require('child_process').exec,
-mkdirs = require('mkdirs');
-argv = require('yargs').argv;
+cp = require('child_process'),
+mkdirs = require('mkdirs'),
+argv = require('yargs').argv,
 shell = require('gulp-shell');
 
 var tsProject = ts.createProject('tsconfig.json');
@@ -31,7 +31,7 @@ var cfg = require('./config.js');
 // }
 
 function runCommand(command) {    
-	exec(command, function(err, stdout, stderr) {
+	cp.exec(command, function(err, stdout, stderr) {
 		//console.log(stdout);
 		console.log(stderr);
 		if (err !== null) {
@@ -44,6 +44,11 @@ gulp.task('clean', function clean(done) {
 	return del([cfg.path.dir.dest,
 		cfg.path.dir.client
 		], {force: true}, done);
+});
+
+gulp.task('set-prod-node-env', function(done) {
+    process.env.NODE_ENV = 'production';
+    done();
 });
 
 gulp.task('browser-sync', function() {
@@ -95,7 +100,7 @@ gulp.task('mongo-stop', function(done) {
 	done();
 });
 
-gulp.task('build-client', shell.task('npm start', {cwd: '../webpack_client'}));
+gulp.task('build-client', shell.task('npm run build:prod', {cwd: '../client'}));
 
 gulp.task('nodemon', function() {
 	var stream = nodemon({
@@ -116,7 +121,7 @@ gulp.task('nodemon', function() {
 	.on('restart', function() {
 		setTimeout(function() {
 			browserSync.reload();
-		}, 1000);
+		}, 2000);
 
 	})
 	.on('crash', function() {
@@ -128,7 +133,11 @@ gulp.task('nodemon', function() {
 gulp.task('config', function(done) {
 	console.log(JSON.stringify(cfg, null, 2));
 	done();
-})
+});
+
+gulp.task('transfert', function() {
+	return cp.exec('scp -P 7222 -r build ../client/dist ../client/images package.json setenv.prod.sh tsconfig.json tslint.json public acaria@acasrv:~/project/axone');
+});
 
 gulp.task('open-dev', function(){
 	setTimeout(function() {
@@ -137,19 +146,24 @@ gulp.task('open-dev', function(){
 	}, 1500);
 });
 
-gulp.task('build', 
+gulp.task('build',
 	gulp.series(
 		'clean',
-		gulp.parallel('build-ts', 'build-js')
-		)
-	);
+		gulp.parallel('build-ts', 'build-js')));
 
 gulp.task('run',
 	gulp.series(
 		gulp.parallel('mongo-start', 'build'),
-		gulp.parallel('nodemon', 'watch', 'browser-sync')
-		)
-	);
+		gulp.parallel('nodemon', 'watch', 'browser-sync')));
+
+gulp.task('deploy',
+	gulp.series(
+		'set-prod-node-env',
+		'clean',
+		'build-client',
+		'build-ts',
+		'build-js',
+		'transfert'));
 
 gulp.task('default', gulp.series('run'));
 gulp.task('default').description = "build and run devenv";

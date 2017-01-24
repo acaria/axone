@@ -10,6 +10,10 @@ var fs = require("fs");
 var debug = require("debug")("ax-server:express");
 var favicon = require("serve-favicon");
 
+var logDir = path.join(__dirname, "../logs");
+if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir);
+}
 var accessLogStream = fs.createWriteStream(path.join(__dirname, "../logs/access.log"), {flags: "a"});
 
 import { RootRoute } from "./routes/index";
@@ -49,7 +53,7 @@ export class App {
 
         //add static paths
         app.use(express.static(path.join(__dirname, "../storage")));
-        //app.use(express.static(path.join(__dirname, "../../client/dist")));
+        app.use(express.static(path.join(__dirname, "../dist")));
     }
 
     private configMiddle(app: express.Express) {

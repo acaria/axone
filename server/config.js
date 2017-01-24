@@ -23,16 +23,17 @@ module.exports = {
 	env: process.env.NODE_ENV || 'development',
 
 	port: {
-		node: parseInt(process.env.PORT) || 8080,
-		bs: 4000,
-		bsUi: 4001,
-		mongo: parseInt(process.env.MONGO_PORT) || 5050
+		node: parseInt(process.env.NODE_PORT) || 7250,
+		bs: process.env.PROXY_PORT || 7251,
+		bsUi: 7252,
+		mongo: parseInt(process.env.MONGO_PORT) || 7227
 	},
 
 	mongo: {
+		user: '', pass: '',
 		uri: process.env.MONGO_URI || 'localhost',
 		db: 'axone',
-		debug: true
+		debug: !(process.env.NODE_ENV && process.env.NODE_ENV === 'production')
 	},
 
 	storage: {
