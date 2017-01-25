@@ -21,7 +21,7 @@ const ENV: 'development' | 'production' | 'test' = process.env.NODE_ENV && proce
 
 // basic configuration:
 const title = 'Axone';
-const debugPort = 666;
+const debugPort = 7249;
 const baseUrl = '/';
 const rootDir = path.resolve();
 const srcDir = path.resolve('src');

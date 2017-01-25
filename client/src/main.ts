@@ -2,16 +2,7 @@ import {Aurelia} from 'aurelia-framework';
 import {log, ConsoleAppender} from './logger';
 import authConfig from './auth-config';
 import appConfig from './app-config';
-// we want font-awesome to load as soon as possible to show the fa-spinner
-import '../styles/app.css';
-import '../styles/dialog.css';
-import '../styles/navbar.css';
-import '../styles/home.css';
-import '../styles/profile.css';
-import '../styles/viewer.css';
-import 'font-awesome/css/font-awesome.css';
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap';
+import './preloader';
 
 // comment out if you don't want a Promise polyfill (remove also from webpack.config.js)
 import * as Bluebird from 'bluebird';

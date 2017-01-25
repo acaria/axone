@@ -4,6 +4,7 @@ import {HttpClient} from 'aurelia-fetch-client';
 import {RouteConfig} from "aurelia-router";
 import {Config as ApiConfig, Rest} from "aurelia-api";
 import {log} from '../logger';
+import appCfg from '../app-config';
 import * as _ from 'lodash';
 
 import {fieldList} from "../views/fields/all-fields";
@@ -30,6 +31,7 @@ export class CellEditor {
 
 		this.client = new HttpClient();
 		this.client.configure(config => { config
+			.withBaseUrl(appCfg.endPoint.baseUrl + appCfg.endPoint.api + "cells/")
 			.withDefaults({
 				credentials: 'same-origin',
 				headers: {

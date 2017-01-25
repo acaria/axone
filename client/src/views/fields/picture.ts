@@ -2,6 +2,7 @@ import {autoinject, bindable, customElement} from 'aurelia-framework';
 import {HttpClient} from 'aurelia-fetch-client';
 import {IField} from "./base/field";
 import {log} from '../../logger';
+import appCfg from '../../app-config';
 import * as _ from 'lodash';
 
 @autoinject()
@@ -38,7 +39,11 @@ export class Picture implements IField {
 
 	activate(model) {
 		this.model = model;
-		this.original = `picture/${model[this.name]}`;
+		if (model[this.name]) {
+			this.original = appCfg.storage.baseUrl + appCfg.storage.picture + model[this.name];
+		} else {
+			this.original = "";
+		}
 	}
 
 	preSave(model: Object, client: HttpClient, list: Array<Promise<any>>) {
