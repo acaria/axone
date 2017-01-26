@@ -11,6 +11,10 @@ export class RadialTreeview {
 	private svg;
 	private tree: Array<Node>;
 
+	private startPos: {x:number, y:number} = {x:0,y:0};
+	private curPos: {x:number, y:number} = {x:0,y:0};
+	private curZoom:number = 1.0;
+	
 	constructor(private containerId:string) {}
 
 	public init() {
@@ -20,6 +24,9 @@ export class RadialTreeview {
 		}
 
 		this.svg = this.createSvg(this.containerId);
+
+		d3.select(document)
+			.on('wheel', () => this.wheel());
 	}
 
 	public setData(data:Array<Node>) {
@@ -60,11 +67,63 @@ export class RadialTreeview {
 		.append("svg")
 		.attr("width", "100%")
 		.attr("height", "100%")
+		.on("mousedown", () => this.mousedown())
 		.append("g");
 
-		svg.attr("transform", "translate(" + $(containerId).width() / 2 + "," + $(containerId).height() / 2 + ")"); 
+		this.curPos.x = $(containerId).width() / 2;
+		this.curPos.y = $(containerId).height() / 2;
+
+		svg.attr("transform", "translate(" + this.curPos.x + "," + this.curPos.y + ")"); 
 		return svg;
 	}
+
+	private mousedown() {
+		d3.event.preventDefault();
+		if (d3.event.which !== 1 || d3.event.ctrlKey) { 
+			return; 
+		}
+    	
+    	this.startPos.x = this.curPos.x - d3.event.clientX;
+    	this.startPos.y = this.curPos.y - d3.event.clientY;
+    	log.info(this.startPos);
+    	log.info(this.curPos);
+    	d3.select(document).on('mousemove', () => this.mousemove(), true);
+    	d3.select(document).on('mouseup', () => this.mouseup(), true);
+	}
+
+	private mousemove() {
+		d3.event.preventDefault();
+		this.curPos.x = this.startPos.x + d3.event.clientX;
+		this.curPos.y = this.startPos.y + d3.event.clientY;
+		this.setView();
+	}
+
+	private mouseup() {
+		d3.select(document).on('mousemove', null);
+		d3.select(document).on('mouseup', null);
+	}
+
+	private wheel() {
+		let dz, newZ;
+		if (d3.event.wheelDeltaY !== 0) {  // up-down
+      	dz = Math.pow(1.2, d3.event.wheelDeltaY * 0.001 * 1);
+      newZ = this.limitZ(this.curZoom * dz);
+      dz = newZ / this.curZoom;
+      this.curZoom = newZ;
+
+      this.curPos.x -= (d3.event.clientX - this.curPos.x) * (dz - 1);
+      this.curPos.y -= (d3.event.clientY - this.curPos.y) * (dz - 1);
+      this.setView();
+    }
+	}
+
+	private setView() {
+		this.svg.attr('transform', 'translate(' + this.curPos.x + ' ' + this.curPos.y + ')scale(' + this.curZoom + ')');
+	}
+
+	private limitZ(z) {
+    return Math.max(Math.min(z, 3), 0.1);
+  }
 
 	private updateNodes(nodes) {
 		var link = this.svg.selectAll(".link")
