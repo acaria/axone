@@ -70,6 +70,34 @@ export class RadialTreeview {
 		.on("mousedown", () => this.mousedown())
 		.append("g");
 
+		let defs = svg.append("defs");
+
+		let defGradient = defs.append("radialGradient")
+			.attr("id", "gradient")
+			.attr("cx", 0.5).attr("cy", 0.5)
+			.attr("r", 0.5)
+			.attr("fx", 0.25).attr("fy", 0.25);
+		
+		defGradient.append("stop")
+			.attr("offset", "0%")
+			.attr("stop-color", "red");
+		defGradient.append("stop")
+			.attr("offset", "100%")
+			.attr("stop-color", "blue");
+
+		let defGradient2 = defs.append("radialGradient")
+			.attr("id", "gradient2")
+			.attr("cx", 0.5).attr("cy", 0.5)
+			.attr("r", 0.5)
+			.attr("fx", 0.25).attr("fy", 0.25);
+		
+		defGradient2.append("stop")
+			.attr("offset", "0%")
+			.attr("stop-color", "green");
+		defGradient2.append("stop")
+			.attr("offset", "100%")
+			.attr("stop-color", "blue");
+
 		this.curPos.x = $(containerId).width() / 2;
 		this.curPos.y = $(containerId).height() / 2;
 
@@ -144,12 +172,13 @@ export class RadialTreeview {
 		.attr("transform", (d) => "translate(" + project(d.x, d.y) + ")");
 
 		node.append("circle")
-		.attr("r", 2.5);
+		.attr("r", 50);
 
 		node.append("text")
 		.attr("dy", ".31em")
 		.attr("x", (d) => (d.x < 180 === !d.children ? 6 : -6))
-		.style("text-anchor", (d) => (d.x < 180 === !d.children ? "start" : "end"))
+		.style("text-anchor", "middle")
+		//.style("text-anchor", (d) => (d.x < 180 === !d.children ? "start" : "end"))
 		//.attr("transform", function(d) { return "rotate(" + (d.x < 180 ? d.x - 90 : d.x + 90) + ")"; })
 		.text((d) => d.data.name);
 
