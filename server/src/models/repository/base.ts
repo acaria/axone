@@ -1,6 +1,6 @@
 import * as mongoose from "mongoose";
 
-//var debug = require("debug")("ax-server:repository");
+//var debug = require("debug")("axone:repository");
 
 interface IRead<T> {
 	findOne(cond: Object, fields: Object, options: Object, callback: (err: any, result: T) => void): void;

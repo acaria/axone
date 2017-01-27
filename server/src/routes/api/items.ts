@@ -5,7 +5,7 @@ import { NeuronRepository } from "../../models/repository/neuron";
 import Utils from "../utils";
 import * as _ from "lodash";
 
-let debug = require("debug")("ax-server:apiCells");
+let debug = require("debug")("axone:apiCells");
 var cfg = require("../../../config.js");
 var oid = require("mongoose").Types.ObjectId;
 let router = Router();

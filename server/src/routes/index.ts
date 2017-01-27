@@ -1,5 +1,5 @@
 import express = require("express");
-var debug = require("debug")("ax-server:index");
+var debug = require("debug")("axone:index");
 var cfg = require("../../config");
 
 let router = express.Router();

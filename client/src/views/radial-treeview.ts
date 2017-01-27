@@ -176,7 +176,7 @@ export class RadialTreeview {
 
 		node.append("text")
 		.attr("dy", ".31em")
-		.attr("x", (d) => (d.x < 180 === !d.children ? 6 : -6))
+		//.attr("x", (d) => (d.x < 180 === !d.children ? 6 : -6))
 		.style("text-anchor", "middle")
 		//.style("text-anchor", (d) => (d.x < 180 === !d.children ? "start" : "end"))
 		//.attr("transform", function(d) { return "rotate(" + (d.x < 180 ? d.x - 90 : d.x + 90) + ")"; })

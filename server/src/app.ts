@@ -8,7 +8,7 @@ import * as morgan from "morgan";
 
 var fs = require("fs");
 var fileStreamRotator = require("file-stream-rotator");
-var debug = require("debug")("ax-server:express");
+var debug = require("debug")("axone:express");
 var favicon = require("serve-favicon");
 
 var logDir = path.join(__dirname, "../logs");

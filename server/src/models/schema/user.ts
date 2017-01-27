@@ -1,7 +1,7 @@
 import { Document, Schema, model} from "mongoose";
 import bcrypt = require("bcryptjs");
 
-var debug = require("debug")("ax-server:user");
+var debug = require("debug")("axone:user");
 
 export interface IUserModel extends Document {
 	email: string;

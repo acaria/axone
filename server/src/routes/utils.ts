@@ -2,7 +2,7 @@ import { Request, Response, NextFunction} from "express";
 import jwt = require("jwt-simple");
 import moment = require("moment");
 
-//var debug = require("debug")("ax-server:utils");
+//var debug = require("debug")("axone:utils");
 var cfg = require("../../config.js");
 
 export default class {

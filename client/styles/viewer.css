@@ -18,7 +18,17 @@
 
 .node--internal text, .node text {
 	font: 12px sans-serif;
-   text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff; 
+   text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
+}
+
+.node--internal text:hover, .node text:hover {
+	font-size: 1.2em;
+	transition: font-size 0.1s;
+}
+
+.node--internal text:not(hover), .node text:not(hover) {
+	transition: fint-size 1s;
+	transition-delay: 0.5s;
 }
 
 .link {

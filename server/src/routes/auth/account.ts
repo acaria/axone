@@ -5,7 +5,7 @@ import jwt = require("jwt-simple");
 import Utils from "../utils";
 
 var cfg = require("../../../config.js");
-var debug = require("debug")("ax-server:auth");
+var debug = require("debug")("axone:auth");
 
 export default class {
 	constructor(private repo: UserRepository) {}

@@ -1,5 +1,5 @@
 import express = require("express");
-var debug = require("debug")("ax-server:api");
+var debug = require("debug")("axone:api");
 
 let router = express.Router();
 

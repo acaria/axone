@@ -2,7 +2,7 @@ import { Document, Schema, model} from "mongoose";
 
 import * as neuron from "./neuron";
 
-var debug = require("debug")("ax-server:cell");
+var debug = require("debug")("axone:cell");
 
 export interface ICellModel extends Document {
 	name: string;

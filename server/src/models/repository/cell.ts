@@ -1,7 +1,7 @@
 import { ICellModel, cellModel} from "../schema/cell";
 import { RepositoryBase } from "./base";
 
-var debug = require("debug")("ax-server:cell");
+var debug = require("debug")("axone:cell");
 
 export class CellRepository extends RepositoryBase<ICellModel> {
 	constructor() {

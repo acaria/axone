@@ -7,9 +7,6 @@ var express = require("express");
 
 Bluebird.config({ warnings: false });
 
-Database.connect(cfg)
-.catch(error => {
-	throw error;
-});
+new Database(cfg).connect();
 
 new App(express(), cfg).run();

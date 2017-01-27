@@ -8,7 +8,7 @@ import fs = require("fs");
 import multer = require("multer");
 import * as _ from "lodash";
 
-var debug = require("debug")("ax-server:apiCells");
+var debug = require("debug")("axone:apiCells");
 var cfg = require("../../../config.js");
 var oid = require("mongoose").Types.ObjectId;
 

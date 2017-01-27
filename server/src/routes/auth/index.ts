@@ -7,7 +7,7 @@ import mime = require("mime");
 import fs = require("fs");
 import multer = require("multer");
 
-var debug = require("debug")("ax-server:auth");
+var debug = require("debug")("axone:auth");
 var cfg = require("../../../config");
 
 let router = express.Router();
