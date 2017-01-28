@@ -10,7 +10,7 @@ import "./schema/neuron";
 import "./schema/user";
 
 export default class {
-	constructor(cfg:any) {
+	constructor(cfg: any) {
 		this.cnx = `${cfg.mongo.uri}:${cfg.port.mongo}/${cfg.mongo.db}`;
 		this.options = {
 			server: { reconnectTries: Number.MAX_VALUE, socketOptions: { keepAlive: 1000, connectTimeoutMS: 30000 } },
@@ -32,7 +32,7 @@ export default class {
 	connect() {
 		mongoose.connection.on("connecting", () => debug(`connecting to ${this.cnx}...`));
 		mongoose.connection.on("connected", () => debug("connected."));
-		mongoose.connection.on("error", (err: any) => debug("error detected."));
+		mongoose.connection.on("error", (err: any) => debug(err));
 		mongoose.connection.on("disconnected", () => debug("disconnected."));
 
 		return mongoose.connect(this.cnx, this.options)

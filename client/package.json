@@ -80,7 +80,8 @@
     "d3": "^4.4.0",
     "font-awesome": "^4.7.0",
     "isomorphic-fetch": "^2.2.1",
-    "jquery": "^3.1.1"
+    "jquery": "^3.1.1",
+    "vis": "^4.18.0"
   },
   "devDependencies": {
     "@easy-webpack/config-aurelia": "^2.2.2",
@@ -109,6 +110,7 @@
     "@types/jqueryui": "^1.11.32",
     "@types/magicsuggest": "^2.1.30",
     "@types/node": "^6.0.48",
+    "@types/vis": "^4.17.1",
     "@types/webpack": "^2.0.0",
     "@types/whatwg-fetch": "^0.0.32",
     "aurelia-protractor-plugin": "^1.0.1",

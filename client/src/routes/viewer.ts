@@ -21,7 +21,7 @@ export default class {
 		this.loadData()
 		.catch(error => {
 			log.error(error);
-		})
+		});
 	}
 
 	private Neurons2NodeConverter(items:Array<Neuron>):Array<Node>

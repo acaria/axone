@@ -11,10 +11,12 @@ export class App {
 
 		config.map([
 			{ route: ['','home'], 		name: 'home', 		moduleId: './routes/home', 			nav: true, 		title: 'Home' },
-			{ route: 'viewer', 			name: 'viewer',	moduleId: './routes/viewer', 			nav: true, 		title: 'Viewer',	auth:true},
+			{ route: 'viewer', 			name: 'viewer',	moduleId: './routes/viewer', 			nav: true, 		title: 'Viewer',	auth: true},
+			{ route: 'viewer2', 			name: 'viewer2',	moduleId: './routes/viewer2', 		nav: true, 		title: 'Viewer2',	auth: true},
+			{ route: 'viewer3', 			name: 'viewer3',	moduleId: './routes/viewer3', 		nav: true, 		title: 'Viewer3',	auth: true},
 			{ route: 'neurons/:id?', 	name: 'neurons', 	moduleId: './routes/neurons', 		nav: true, 		title: 'Neurons', auth: true, href: '#/neurons' },
 			{ route: 'cells/:id?', 		name: 'cells', 	moduleId: './routes/cells', 			nav: true, 		title: 'Cells', 	auth: true, href: '#/cells' },
-			{ route: 'about', 			name: 'about', 	moduleId: './routes/about', 			nav: true, 		title: 'About' },
+			{ route: 'about',				name: 'about', 	moduleId: './routes/about', 			nav: true, 		title: 'About' },
 
 			{ route: 'editor', 			name: 'editor',	moduleId: './routes/cell-editor', 	nav: false,		title: 'Editor'},
 			{ route: 'signup', 			name: 'signup',	moduleId: './routes/signup', 			nav: false,		title: 'Signup'},
