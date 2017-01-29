@@ -30,15 +30,8 @@ body {
 }
 
 .router-view {
-	position: absolute;
-	left: 0;
-	right: 0;
-	top: 50px;
-	bottom: 0;
-	overflow-x: hidden;
-	overflow-y: auto;
-	padding-right: 15px;
-   padding-left: 15px;
+	padding-top: 50px;
+   padding-bottom: 15px;
    margin-right: auto;
    margin-left: auto;
    max-width: 1024px;
@@ -50,6 +43,14 @@ section {
 
 section.shadowed {
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.no-padding {
+	padding: 0 !important;
+}
+
+.no-margin {
+	margin: 0 !important;
 }
 
 .cursor-pointer {

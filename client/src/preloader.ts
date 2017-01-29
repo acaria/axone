@@ -1,8 +1,7 @@
 import '../styles/app.css';
 import '../styles/dialog.css';
 import '../styles/navbar.css';
-import '../styles/home.css';
-import '../styles/profile.css';
+import '../styles/page.css';
 import '../styles/viewer.css';
 import 'font-awesome/css/font-awesome.css';
 import 'vis/dist/vis-network.min.css';

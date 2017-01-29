@@ -1,17 +1,17 @@
 <template>
 	<require from="../views/neuron-list"></require>
-	<section class="au-animate">
-		<ol class="breadcrumb">
-			<li><a href="#/neurons">root</a></li>
-			<li repeat.for="el of arb">
-				<label if.bind="el.disabled">${el.name}</label>
-				<a if.bind="!el.disabled" route-href="route: neurons; params.bind: {id: el.id}">${el.name}</a>
-			</li>
-			<li class="active">${heading}</li>
-		</ol>
+	<section class="au-animate shadowed">
 		<div class="panel panel-default panel-table">
-			<div class="panel-heading"></div>
-			
+			<div class="panel-heading">
+				<ol class="breadcrumb no-margin">
+					<li><a href="#/neurons">root</a></li>
+					<li repeat.for="el of arb">
+						<label if.bind="el.disabled">${el.name}</label>
+						<a if.bind="!el.disabled" route-href="route: neurons; params.bind: {id: el.id}">${el.name}</a>
+					</li>
+					<li class="active">${heading}</li>
+				</ol>
+			</div>
 			<div class="panel-body">
 				<neuron-list items.bind="items" axone.bind="axoneId"></neuron-list>
 			</div>
