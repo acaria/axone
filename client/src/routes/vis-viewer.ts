@@ -8,12 +8,6 @@ import SyncNetwork from '../ctrls/vis-sync-network';
 @autoinject()
 export default class {
 	private readonly containerId = "canvas";
-	private readonly uidTmpTag = "_TMP_";
-
-	private tmpUID:number = 1; 
-
-
-	private apiClient: Rest;
 
 	private nodes: vis.DataSet<vis.Node>;
 	private edges: vis.DataSet<vis.Edge>;
@@ -24,8 +18,7 @@ export default class {
 	private linkingMode:boolean = false;
 	private deleteCmdEnabled:boolean = false;
 
-	constructor(apiConfig: ApiConfig, private sync: SyncNetwork) {
-		this.apiClient = apiConfig.getEndpoint("api");
+	constructor(private sync: SyncNetwork) {
 	}
 
 	attached() {
@@ -48,15 +41,11 @@ export default class {
 		});
 	}
 
-	genTmpID() {
-		return this.uidTmpTag + this.tmpUID++;
-	}
-
 	toggleAddingMode() {
 		if (!this.addingMode) {
 			let selection = this.network.getSelection();
 			if (selection.nodes.length == 1) {
-				let tmpId = this.genTmpID();
+				let tmpId = this.sync.genTmpID();
 				this.nodes.add({id: tmpId, label: "new"});
 				this.edges.add({from: tmpId, to: selection.nodes[0].toString()});
 			} else {
@@ -98,9 +87,9 @@ export default class {
 
 			if (properties.items && properties.items.length > 0) {
 				for(let itemId of properties.items) {
-					if (!_.startsWith(itemId, this.uidTmpTag)) {
+					if (!_.startsWith(itemId, this.sync.uidTmpTag)) {
 						let node:vis.Node = this.nodes.get(itemId);
-						node.id = this.genTmpID();
+						node.id = this.sync.genTmpID();
 						node.label = "new";
 					}
 				}

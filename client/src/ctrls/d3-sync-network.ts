@@ -1,41 +1,37 @@
 import {bindable, autoinject, computedFrom} from "aurelia-framework";
 import {Config as ApiConfig, Rest} from "aurelia-api";
 import {log} from '../logger';
-import {IEvent, EventDispatcher} from '../models/event-dispatcher';
 import {Neuron} from '../models/neuron-item';
+import {RadialTreeview, Node} from '../views/radial-treeview';
 import * as _ from 'lodash';
 import * as vis from "vis";
 
 @autoinject()
 export default class {
-	public readonly uidTmpTag = "_TMP_";
-
-	private tmpUID:number = 1; 
 	private apiClient: Rest;
 
 	constructor(apiConfig: ApiConfig) {
 		this.apiClient = apiConfig.getEndpoint("api");
 	}
 
-	public genTmpID() {
-		return this.uidTmpTag + this.tmpUID++;
-	}
-
-	async loadNetworkData(): Promise<vis.Data> {
-		let nodes = new vis.DataSet<vis.Node>();
-		let edges = new vis.DataSet<vis.Edge>();
+	async loadNetworkData(): Promise<Array<Node>> {
+		let result = new Array<Node>({
+			name: "Root",
+			id: "_root",
+			parent: null
+		});
 
 		let items = await this.apiClient.find("neurons");
 
 		if (items != null) {
 			for (let item of items) {
-				nodes.add({id: item._id, label: item.cell.name});
-
-				if (item.axone) {
-					edges.add({from: item.axone._id, to: item._id});
-				}
+				result.push({
+					name: item.cell.name,
+					id: item._id,
+					parent: (item.axone ? item.axone._id : "_root")
+				});
 			}
 		}
-		return {nodes: nodes, edges: edges};
+		return result;
 	}
 }
