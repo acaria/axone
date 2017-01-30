@@ -35,3 +35,7 @@
    stroke: blue;
    stroke-width: 3px;
 }
+
+.viewer-panel-info {
+	margin-left: 10px
+}
