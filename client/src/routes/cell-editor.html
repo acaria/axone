@@ -7,14 +7,14 @@
 					<div class="form-group">
 						<label class="col-sm-2 control-label">Name</label>
 						<div class="col-sm-10">
-							<input type="text" placeholder="Name" class="form-control" value.bind="cell.name">
+							<input type="text" placeholder="Name" class="form-control cell-label-editbox" value.bind="cell.name">
 						</div>
 					</div>
 					<hr>
 					<div repeat.for="property of properties" class="form-group">
 						<compose class="col-sm-11" model.bind="cell.properties" view-model="../views/fields/${property.type}"></compose>
 						<div class="col-sm-1">
-						<i class="cursor-pointer fa fa-trash-o" click.trigger="$parent.removeProperty($event, property.name)"></i>
+						<i class="cursor-pointer fa fa-trash-o fa-lg" click.trigger="$parent.removeProperty($event, property.name)"></i>
 						</div>
 					</div>
 					<hr if.bind="withNewProperties">
@@ -26,7 +26,7 @@
 								<span class="caret"></span>
 							</button>
 							<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-								<li repeat.for="property of newProperties">
+								<li repeat.for="property of propertiesCtrl.availableProperties">
 									<a click.delegate="addProperty(property.name)">${property.title}</a>
 								</li>
 							</ul>

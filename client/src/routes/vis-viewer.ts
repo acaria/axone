@@ -1,4 +1,5 @@
 import {bindable, autoinject} from 'aurelia-framework';
+import {DialogService} from 'aurelia-dialog';
 import {log} from '../logger';
 import * as _ from 'lodash';
 import * as vis from "vis";
@@ -17,7 +18,7 @@ export default class {
 	private linkingMode:boolean = false;
 	private deleteCmdEnabled:boolean = false;
 
-	constructor(private sync: SyncNetwork) {
+	constructor(private sync: SyncNetwork, private dlg: DialogService) {
 	}
 
 	attached() {
@@ -125,6 +126,22 @@ export default class {
 		this.network.on("dragEnd", (params) => {
 			let selection = this.network.getSelection();
 			this.deleteCmdEnabled = (selection.edges.length != 0 || selection.nodes.length != 0);
+		});
+
+		this.network.on("doubleClick", (params) => {
+			let selection = this.network.getSelection();
+			if (selection.nodes.length == 1) {
+				this.dlg.open({
+					viewModel: "views/dialogs/cell-editor",
+					model: selection.nodes[0]
+				})
+				.then(res => {
+					if (!res.wasCancelled) {
+						log.info(res.output);
+					}
+				})
+				.catch(err => log.error(err.message));
+			}
 		});
 
 		// events

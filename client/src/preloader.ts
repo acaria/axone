@@ -1,5 +1,5 @@
 import '../styles/app.css';
-import '../styles/dialog.css';
+import '../styles/editor.css';
 import '../styles/navbar.css';
 import '../styles/page.css';
 import '../styles/viewer.css';

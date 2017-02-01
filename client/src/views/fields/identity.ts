@@ -23,7 +23,7 @@ export class Identity implements IField {
 
 	activate(model:Object) {
 		this.model = model;
-		if (!this.model[this.name]) {
+		if (this.model && !this.model[this.name]) {
 			this.model[this.name] = {};
 		}
 	}
