@@ -68,7 +68,7 @@ export class CellList {
 		if (find) {
 			let item = find as INameID;
 			this.dlg.open({
-				viewModel: Prompt, 
+				viewModel: "views/dialogs/prompt", 
 				model: `Are you sure to delete the cell "${item.name}"?`})
 			.then(res => {
 				if (!res.wasCancelled && item._id) {
