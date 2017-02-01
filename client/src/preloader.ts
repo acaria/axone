@@ -4,7 +4,6 @@ import '../styles/navbar.css';
 import '../styles/page.css';
 import '../styles/viewer.css';
 import 'font-awesome/css/font-awesome.css';
-import 'vis/dist/vis-network.min.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-fileinput/css/fileinput.css';
 import 'bootstrap';

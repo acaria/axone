@@ -36,6 +36,15 @@
    stroke-width: 3px;
 }
 
-.viewer-panel-info {
-	margin-left: 10px
+.btool-info {
+	margin-left: 10px;
+	color: darkorange;
+}
+
+.btool-std.active {
+	color:darkorange !important;
+}
+
+.btool-info {
+	color:darkorange;
 }

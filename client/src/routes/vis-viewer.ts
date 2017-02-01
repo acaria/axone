@@ -1,5 +1,4 @@
 import {bindable, autoinject} from 'aurelia-framework';
-import {Config as ApiConfig, Rest} from "aurelia-api";
 import {log} from '../logger';
 import * as _ from 'lodash';
 import * as vis from "vis";
@@ -45,9 +44,7 @@ export default class {
 		if (!this.addingMode) {
 			let selection = this.network.getSelection();
 			if (selection.nodes.length == 1) {
-				let tmpId = this.sync.genTmpID();
-				this.nodes.add({id: tmpId, label: "new"});
-				this.edges.add({from: tmpId, to: selection.nodes[0].toString()});
+				this.addNodeNextSelection();
 			} else {
 				this.linkingMode = false;
 				this.network.addNodeMode();
@@ -59,6 +56,15 @@ export default class {
 			this.addingMode = false;
 			this.cmdInfo = "";
 		}
+	}
+
+	addNodeNextSelection() {
+		let selection = this.network.getSelection();
+		let positions = this.network.getPositions(selection.nodes);
+		let sPos = positions[selection.nodes[0]];
+		let tmpId = this.sync.genTmpID();
+		this.nodes.add({id: tmpId, label: "new", x: sPos.x + _.random(-20, 20), y: sPos.y + _.random(-20, 20)});
+		this.edges.add({from: tmpId, to: selection.nodes[0].toString()});
 	}
 
 	toggleLinkingMode() {
@@ -116,80 +122,28 @@ export default class {
 			this.deleteCmdEnabled = (selection.edges.length != 0 || selection.nodes.length != 0);
 		});
 
-/*		this.network.on("selectNode", (params) => {
-			log.info("selectNode" + params);
-		});
-
-		this.network.on("selectEdge", (params) => {
-			log.info("selectEdge" + params);
-		});
-
-		this.network.on("deselectNode", (params) => {
-			log.info("deselectNode" + params);
-		});
-
-		this.network.on("deselectEdge", (params) => {
-			log.info("deselectEdge" + params);
-		});
-
-		this.network.on("hoverNode", (params) => {
-			log.info("hoverNode" + params);
-		});
-
-		this.network.on("hoverEdge", (params) => {
-			log.info("hoverEdge" + params);
-		});
-
-		this.network.on("hoverNode", (params) => {
-			log.info("hoverNode" + params);
-		});
-
-		this.network.on("blurNode", (params) => {
-			log.info("blurNode" + params);
-		});
-
-		this.network.on("blurEdge", (params) => {
-			log.info("blurEdge" + params);
-		});
-
-		this.network.on("click", (params) => {
-			log.info("click" + params);
-		});
-
-		this.network.on("doubleClick", (params) => {
-			log.info("doubleClick" + params);
-		});
-
-		this.network.on("oncontext", (params) => {
-			log.info("oncontext" + params);
-		});
-
-		this.network.on("dragStart", (params) => {
-			log.info("dragStart" + params);
-		});
-
-		this.network.on("dragging", (params) => {
-			log.info("dragging" + params);
-		});
-
 		this.network.on("dragEnd", (params) => {
-			log.info("dragEnd" + params);
+			let selection = this.network.getSelection();
+			this.deleteCmdEnabled = (selection.edges.length != 0 || selection.nodes.length != 0);
 		});
 
-		this.network.on("dragEnd", (params) => {
-			log.info("dragEnd" + params);
-		});
-
-		this.network.on("zoom", (params) => {
-			log.info("zoom" + params);
-		});
-
-		this.network.on("showPopup", (params) => {
-			log.info("showPopup" + params);
-		});
-
-		this.network.on("hidePopup", (params) => {
-			log.info("hidePopup" + params);
-		});*/
+		// events
+		// "selectNode"
+		// "selectEdge"
+		// "deselectNode"
+		// "deselectEdge"
+		// "hoverNode"
+		// "hoverEdge"
+		// "hoverNode"
+		// "blurNode"
+		// "blurEdge"
+		// "click"
+		// "doubleClick"
+		// "oncontext"
+		// "dragStart"
+		// "dragging"
+		// "zoom"
+		// "showPopup"
+		// "hidePopup"
 	}
 }

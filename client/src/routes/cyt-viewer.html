@@ -1,9 +1,9 @@
-<template>	
+<template>
 	<section class="au-animate shadowed">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<div class="btn-group">
-					<button type="button" class="btn btn-default ${addingMode?'active':''} btool-std" click.delegate="toggleAddingMode()">
+					<button type="button" class="btn btn-default ${addingMode?'active':''}" click.delegate="toggleAddingMode()">
 						<i class="fa fa-plus" aria-hidden="true"></i>
 					</button>
 					<button type="button" class="btn btn-default">
@@ -12,11 +12,11 @@
 					<button disabled.bind="!deleteCmdEnabled" disabled type="button" class="btn btn-default" click.delegate="deleteSelection()">
 						<i class="fa fa-trash" aria-hidden="true"></i>
 					</button>
-					<button type="button" class="btn btn-default ${linkingMode?'active':''} btool-std" data-toggle="button" click.delegate="toggleLinkingMode()">
+					<button type="button" class="btn btn-default ${linkingMode?'active':''}" data-toggle="button" click.delegate="toggleLinkingMode()">
 						<i class="fa fa-link" aria-hidden="true"></i>
 					</button>
 				</div>
-				<div class="btn-group btool-info">${cmdInfo}</div>
+				<div class="btn-group viewer-panel-info">${cmdInfo}</div>
 			</div>
 			<div class="panel_body">
 				<div id="canvas"></div>
